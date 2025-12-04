@@ -15,21 +15,17 @@ type CoursePlayerPageProps = {
 export default async function CoursePlayerPage({
   params,
 }: CoursePlayerPageProps) {
-  const { courseId, topicId } = await params; // ✅ NO await
+  const { courseId, topicId } = await params;
 
-  // Get user session
   const session = await getServerSession(authOptions);
   if (!session?.user?.id) redirect("/login");
   const userId = session.user.id;
 
-  // Fetch course
   const course = await getCourseById(courseId);
   if (!course) notFound();
 
-  // Fetch user progress
   const progress = await getUserProgress(userId);
 
-  // Verify topic exists in the course
   const allTopicIds = course.modules.flatMap((m) => m.topics.map((t) => t.id));
   if (!allTopicIds.includes(topicId)) notFound();
 
