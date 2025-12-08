@@ -19,26 +19,36 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { addUser } from "@/lib/data";
+import { addUserOnServer } from "../actions";
+import { Loader2 } from "lucide-react";
 
-export function AddUserModal() {
+interface AddUserModalProps {}
+
+export function AddUserModal({}: AddUserModalProps) {
   const [open, setOpen] = useState(false);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<"user" | "admin">("user");
   const [isPending, startTransition] = useTransition();
 
-  const handleAddUser = async () => {
+  const handleAddUser = () => {
     startTransition(async () => {
       try {
-        await addUser({ name, email, role });
-        toast.success("User added successfully! Default password: 123456");
-        setOpen(false);
-        setName("");
-        setEmail("");
-        setRole("user");
+        const result = await addUserOnServer({ name, email, role });
+
+        if (result.success && result.user) {
+          toast.success(
+            `User "${result.user.name}" added successfully! Default password: 123456`
+          );
+          setOpen(false);
+          setName("");
+          setEmail("");
+          setRole("user");
+        } else {
+          toast.error(result.error || "Failed to add user.");
+        }
       } catch (err: any) {
-        toast.error(err.message || "Failed to add user");
+        toast.error(err.message || "Failed to add user.");
       }
     });
   };
@@ -78,6 +88,9 @@ export function AddUserModal() {
         </div>
         <DialogFooter>
           <Button onClick={handleAddUser} disabled={isPending}>
+            {isPending ? (
+              <Loader2 className="h-4 w-4 animate-spin mr-2" />
+            ) : null}
             Add User
           </Button>
         </DialogFooter>

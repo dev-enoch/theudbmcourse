@@ -100,25 +100,31 @@ export async function addUser(input: AddUserInput) {
     progress: [],
   });
 
-  // Send email with Resend
   const bannerPath = path.join(process.cwd(), "src", "lib", "mail.png");
   const bannerData = await fs.readFile(bannerPath);
-  const bannerBase64 = `data:image/png;base64,${bannerData.toString("base64")}`;
+  const bannerBase64 = bannerData.toString("base64");
 
   await resend.emails.send({
     from: process.env.EMAIL_FROM!,
     to: input.email,
     subject: "Your Login Credentials",
     html: `
-    <div style="text-align: center; margin-bottom: 20px;">
-      <img src="${bannerBase64}" alt="Banner" style="width: 100%; max-width: 600px; height: auto;" />
-    </div>
-    <p>Hello <strong>${input.name}</strong>,</p>
-    <p>Your account has been created.</p>
-    <p><b>Email:</b> ${input.email}</p>
-    <p><b>Password:</b> ${defaultPassword}</p>
-    <p>Please log in and change your password.</p>
-  `,
+      <div style="text-align:center; margin-bottom:20px;">
+        <img src="cid:banner-image" alt="Banner" style="width:100%; max-width:600px; height:auto;" />
+      </div>
+      <p>Hello <strong>${input.name}</strong>,</p>
+      <p>Your account has been created.</p>
+      <p><b>Email:</b> ${input.email}</p>
+      <p><b>Password:</b> ${defaultPassword}</p>
+      <p>Please log in and change your password.</p>
+    `,
+    attachments: [
+      {
+        filename: "mail.png",
+        content: bannerBase64,
+        contentId: "banner-image",
+      },
+    ],
   });
 
   return {
@@ -128,6 +134,80 @@ export async function addUser(input: AddUserInput) {
     role: newUser.role,
     active: newUser.active,
     createdAt: newUser.createdAt,
+  };
+}
+
+// -------------------------------
+// RESEND LOGIN DETAILS
+// -------------------------------
+export async function resendLoginDetails(userId: string) {
+  await connectDB();
+
+  const user = await User.findById(userId);
+  if (!user) throw new Error("User not found.");
+
+  const defaultPassword = "123456";
+  const hashedPassword = await hashPassword(defaultPassword);
+
+  user.password = hashedPassword;
+  await user.save();
+
+  const bannerPath = path.join(process.cwd(), "src", "lib", "mail.png");
+  const bannerData = await fs.readFile(bannerPath);
+  const bannerBase64 = bannerData.toString("base64");
+
+  await resend.emails.send({
+    from: process.env.EMAIL_FROM!,
+    to: user.email,
+    subject: "Your Login Details (Resent)",
+    html: `
+      <div style="text-align:center; margin-bottom:20px;">
+        <img src="cid:banner-image" alt="Banner" style="width:100%; max-width:600px; height:auto;" />
+      </div>
+      <p>Hello <strong>${user.name}</strong>,</p>
+      <p>Your login details have been resent as requested.</p>
+      <p><b>Email:</b> ${user.email}</p>
+      <p><b>New Password:</b> ${defaultPassword}</p>
+      <p>Please log in and change your password.</p>
+    `,
+    attachments: [
+      {
+        filename: "mail.png",
+        content: bannerBase64,
+        contentId: "banner-image",
+      },
+    ],
+  });
+
+  return {
+    success: true,
+    message: "Login details resent and password reset.",
+  };
+}
+
+// -------------------------------
+// DELETE USER
+// -------------------------------
+export async function deleteUser(userId: string) {
+  await connectDB();
+
+  const user = await User.findById(userId);
+  if (!user) {
+    throw new Error("User not found.");
+  }
+
+  if (user.role === "admin") {
+    const adminCount = await User.countDocuments({ role: "admin" });
+    if (adminCount <= 1) {
+      throw new Error("Cannot delete the last admin user.");
+    }
+  }
+
+  await User.findByIdAndDelete(userId);
+
+  return {
+    success: true,
+    message: `User ${user.email} deleted successfully.`,
   };
 }
 

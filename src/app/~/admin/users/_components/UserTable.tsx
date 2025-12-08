@@ -20,10 +20,17 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Loader2 } from "lucide-react";
-import { updateUserOnServer } from "../actions";
+import { MoreHorizontal, Loader2, Trash, RefreshCcw } from "lucide-react";
+
+import {
+  updateUserOnServer,
+  deleteUserOnServer,
+  resendLoginDetailsOnServer,
+} from "../actions";
+
 import { toast } from "sonner";
 import { User } from "@/lib/types";
+import { ConfirmActionModal } from "@/components/common/ConfirmActionModal";
 
 interface UserTableProps {
   initialUsers: User[];
@@ -34,7 +41,7 @@ export function UserTable({ initialUsers, currentAdminEmail }: UserTableProps) {
   const [users, setUsers] = useState<User[]>(initialUsers);
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
-  const [loadingStates, setLoadingStates] = useState<Record<string, boolean>>(
+  const [loadingStates, setLoadingStates] = useState<Record<string, string>>(
     {}
   );
 
@@ -48,11 +55,14 @@ export function UserTable({ initialUsers, currentAdminEmail }: UserTableProps) {
     });
   }, [users, searchTerm, roleFilter]);
 
+  // --------------------------
+  // UPDATE ROLE (promote/demote)
+  // --------------------------
   const handleUpdateUser = async (
     user: User,
     updates: Partial<{ role: "user" | "admin" }>
   ) => {
-    setLoadingStates((prev) => ({ ...prev, [user.id]: true }));
+    setLoadingStates((prev) => ({ ...prev, [user.id]: "update" }));
 
     const result = await updateUserOnServer(user.id, updates);
 
@@ -65,7 +75,42 @@ export function UserTable({ initialUsers, currentAdminEmail }: UserTableProps) {
       toast.error(result.error || "Failed to update user.");
     }
 
-    setLoadingStates((prev) => ({ ...prev, [user.id]: false }));
+    setLoadingStates((prev) => ({ ...prev, [user.id]: "" }));
+  };
+
+  // --------------------------
+  // DELETE USER
+  // --------------------------
+  const handleDeleteUser = async (user: User) => {
+    setLoadingStates((prev) => ({ ...prev, [user.id]: "delete" }));
+
+    const result = await deleteUserOnServer(user.id);
+
+    if (result.success) {
+      setUsers((prev) => prev.filter((u) => u.id !== user.id));
+      toast.success("User deleted.");
+    } else {
+      toast.error(result.error || "Failed to delete user.");
+    }
+
+    setLoadingStates((prev) => ({ ...prev, [user.id]: "" }));
+  };
+
+  // --------------------------
+  // RESEND LOGIN DETAILS
+  // --------------------------
+  const handleResendLogin = async (user: User) => {
+    setLoadingStates((prev) => ({ ...prev, [user.id]: "resend" }));
+
+    const result = await resendLoginDetailsOnServer(user.id);
+
+    if (result.success) {
+      toast.success("Login email resent successfully.");
+    } else {
+      toast.error(result.error || "Failed to resend login email.");
+    }
+
+    setLoadingStates((prev) => ({ ...prev, [user.id]: "" }));
   };
 
   return (
@@ -99,10 +144,12 @@ export function UserTable({ initialUsers, currentAdminEmail }: UserTableProps) {
             </TableHead>
           </TableRow>
         </TableHeader>
+
         <TableBody>
           {filteredUsers.length > 0 ? (
             filteredUsers.map((user) => {
               const isCurrentAdmin = user.email === currentAdminEmail;
+              const isLoading = loadingStates[user.id];
 
               return (
                 <TableRow key={user.id}>
@@ -112,7 +159,9 @@ export function UserTable({ initialUsers, currentAdminEmail }: UserTableProps) {
                       <span className="text-primary">(You)</span>
                     )}
                   </TableCell>
+
                   <TableCell>{user.email}</TableCell>
+
                   <TableCell>
                     <Badge
                       variant={user.role === "admin" ? "default" : "secondary"}
@@ -120,36 +169,73 @@ export function UserTable({ initialUsers, currentAdminEmail }: UserTableProps) {
                       {user.role}
                     </Badge>
                   </TableCell>
+
                   <TableCell>
-                    {loadingStates[user.id] ? (
+                    {isLoading ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
                     ) : (
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
-                          <Button
-                            aria-haspopup="true"
-                            size="icon"
-                            variant="ghost"
-                          >
+                          <Button size="icon" variant="ghost">
                             <MoreHorizontal className="h-4 w-4" />
-                            <span className="sr-only">Toggle menu</span>
                           </Button>
                         </DropdownMenuTrigger>
+
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            disabled={isCurrentAdmin && user.role === "admin"}
-                            onSelect={() =>
+
+                          {/* Promote/Demote */}
+                          <ConfirmActionModal
+                            title={
+                              user.role === "admin"
+                                ? "Demote this user to User?"
+                                : "Promote this user to Admin?"
+                            }
+                            actionLabel={
+                              user.role === "admin" ? "Demote" : "Promote"
+                            }
+                            onConfirm={() =>
                               handleUpdateUser(user, {
                                 role: user.role === "admin" ? "user" : "admin",
                               })
                             }
                           >
-                            {user.role === "admin"
-                              ? "Demote to User"
-                              : "Promote to Admin"}
-                          </DropdownMenuItem>
+                            <DropdownMenuItem disabled={isCurrentAdmin}>
+                              {user.role === "admin"
+                                ? "Demote to User"
+                                : "Promote to Admin"}
+                            </DropdownMenuItem>
+                          </ConfirmActionModal>
+
+                          {/* Resend Login Email */}
+                          <ConfirmActionModal
+                            title="Resend login details?"
+                            description="This will reset the user's password to the default."
+                            actionLabel="Resend"
+                            onConfirm={() => handleResendLogin(user)}
+                          >
+                            <DropdownMenuItem>
+                              <RefreshCcw className="mr-2 h-4 w-4" />
+                              Resend Login Email
+                            </DropdownMenuItem>
+                          </ConfirmActionModal>
+
+                          {/* Delete User */}
+                          <ConfirmActionModal
+                            title={`Delete ${user.name || user.email}?`}
+                            description="This action cannot be undone."
+                            actionLabel="Delete"
+                            onConfirm={() => handleDeleteUser(user)}
+                          >
+                            <DropdownMenuItem
+                              disabled={isCurrentAdmin}
+                              className="text-red-600"
+                            >
+                              <Trash className="mr-2 h-4 w-4" />
+                              Delete User
+                            </DropdownMenuItem>
+                          </ConfirmActionModal>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     )}
