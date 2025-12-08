@@ -1,95 +1,328 @@
-
 [
-    {
-      "id": "en-affiliate-marketing",
-      "title": "Affiliate Marketing",
-      "description": "Learn the fundamentals of affiliate marketing and how to succeed.",
-      "language": "en",
-      "modules": [
-        {
-          "id": "en-am-m1",
-          "title": "Module 1: Introduction",
-          "topics": [
-            { "id": "en-am-m1-t1", "title": "What is Affiliate Marketing?", "description": "An overview of the affiliate marketing ecosystem.", "videoId": "u-g_N4s4p2s" },
-            { "id": "en-am-m1-t2", "title": "Choosing Your Niche", "description": "How to find a profitable niche that you are passionate about.", "videoId": "bT_32G-8a3g" }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "en-graphics-design",
-      "title": "Graphics Design",
-      "description": "Master the art of graphics design with modern tools and techniques.",
-      "language": "en",
-      "modules": [
-        {
-          "id": "en-gd-m1",
-          "title": "Module 1: The Basics",
-          "topics": [
-            { "id": "en-gd-m1-t1", "title": "Introduction to Design Principles", "description": "Learn about the core principles of great design.", "videoId": "YqQx75OPRa0" }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "en-fb-tiktok-ads",
-      "title": "Facebook & Tiktok Advertising",
-      "description": "Drive growth with powerful advertising strategies on social media.",
-      "language": "en",
-      "modules": [
-        {
-          "id": "en-fta-m1",
-          "title": "Module 1: Getting Started",
-          "topics": [
-            { "id": "en-fta-m1-t1", "title": "Setting up Your Ad Accounts", "description": "A step-by-step guide to creating your advertising accounts.", "videoId": "s-g2I_b2aFU" }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "ha-affiliate-marketing",
-      "title": "Affiliate Marketing (Hausa)",
-      "description": "Koyi tushen tallan haɗin gwiwa da yadda ake samun nasara.",
-      "language": "ha",
-      "modules": [
-        {
-          "id": "ha-am-m1",
-          "title": "Babi na 1: Gabatarwa",
-          "topics": [
-            { "id": "ha-am-m1-t1", "title": "Menene Affiliate Marketing?", "description": "Cikakken bayani akan tsarin affiliate marketing.", "videoId": "x4q-o1f12I" },
-            { "id": "ha-am-m1-t2", "title": "Zaben Fannin Ka", "description": "Yadda zaka nemo fannin da zai kawo riba wanda kake sha'awa.", "videoId": "v8sXkGq33c" }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "ha-graphics-design",
-      "title": "Graphics Design (Hausa)",
-      "description": "Kware a fasahar zane-zane na zamani da dabaru.",
-      "language": "ha",
-       "modules": [
-        {
-          "id": "ha-gd-m1",
-          "title": "Babi na 1: Tushe",
-          "topics": [
-            { "id": "ha-gd-m1-t1", "title": "Gabatarwa ga Ka'idojin Zane", "description": "Koyi game da muhimman ka'idojin zane mai kyau.", "videoId": "a_hOpYiiX" }
-          ]
-        }
-      ]
-    },
-    {
-      "id": "ha-fb-tiktok-ads",
-      "title": "Facebook & Tiktok Advertising (Hausa)",
-      "description": "Samu ci gaba da manyan dabarun talla a shafukan sada zumunta.",
-      "language": "ha",
-       "modules": [
-        {
-          "id": "ha-fta-m1",
-          "title": "Babi na 1: Farawa",
-          "topics": [
-            { "id": "ha-fta-m1-t1", "title": "Kafa Asusun Tallan Ka", "description": "Jagora mataki-mataki don ƙirƙirar asusun tallan ka.", "videoId": "5Z1b_V_mX" }
-          ]
-        }
-      ]
-    }
+  {
+    "id": "ha-affiliate-marketing",
+    "title": "Affiliate Marketing (Hausa)",
+    "description": "Koyi tushen tallan haɗin gwiwa da yadda ake samun nasara.",
+    "language": "ha",
+    "modules": [
+      {
+        "id": "ha-am-m1",
+        "title": "Module 1",
+        "topics": [
+          {
+            "id": "ha-am-m1-t1",
+            "title": "Gyaran tunanin",
+            "description": "",
+            "videoId": "B714_k9eWgE"
+          },
+          {
+            "id": "ha-am-m1-t2",
+            "title": "Tunanin kaman kwararen dan kasuwa",
+            "description": "",
+            "videoId": "HL7r2Yb3N2U"
+          },
+          {
+            "id": "ha-am-m1-t3",
+            "title": "Gina kai amatsayin zama affiliate",
+            "description": "",
+            "videoId": "wqlNLzLNb54"
+          }
+        ]
+      },
+      {
+        "id": "ha-am-m2",
+        "title": "Module 2",
+        "topics": [
+          {
+            "id": "ha-am-m2-t1",
+            "title": "Kasuwanci da Payonaire",
+            "description": "",
+            "videoId": "sUAk4-uO9x0"
+          },
+          {
+            "id": "ha-am-m2-t2",
+            "title": "Yanda ake bude account da Payonaire",
+            "description": "",
+            "videoId": "xrh4NpRQBEk"
+          },
+          {
+            "id": "ha-am-m2-t3",
+            "title": "Gyare-gyaren Account na Payonaire",
+            "description": "",
+            "videoId": "I3JwDCW7MwY"
+          },
+          {
+            "id": "ha-am-m2-t4",
+            "title": "Kayayyaki mafi riba a kasuwa",
+            "description": "",
+            "videoId": "OMnyrbGdtV4"
+          },
+          {
+            "id": "ha-am-m2-t5",
+            "title": "Yanda ake promoting digital product a Payonaire",
+            "description": "",
+            "videoId": "1X2b-YZm61c"
+          }
+        ]
+      },
+      {
+        "id": "ha-am-m3",
+        "title": "Module 3",
+        "topics": [
+          {
+            "id": "ha-am-m3-t1",
+            "title": "Gabatarwa Flyer a Affiliate Marketing",
+            "description": "",
+            "videoId": "zrwK9NXdOag"
+          },
+          {
+            "id": "ha-am-m3-t2",
+            "title": "Kirkiran Flyer account da Canva",
+            "description": "",
+            "videoId": "xED3m3QK1qw"
+          },
+          {
+            "id": "ha-am-m3-t3",
+            "title": "Yanda ake cire Background a hoto, domin hada flyer mai kyau",
+            "description": "",
+            "videoId": "g9P7sfmUh_g"
+          }
+        ]
+      },
+      {
+        "id": "ha-am-conclusion",
+        "title": "Conclusion",
+        "topics": [
+          {
+            "id": "ha-am-conclusion-t1",
+            "title": "Kammalawa",
+            "description": "Mun taya ka murna! Ka kammala wannan darasin. Zaka iya shiga cikin kungiyar tallafi a WhatsApp: https://chat.whatsapp.com/E6a22YQGmtb0ZXX9EqgRPa",
+            "videoId": "sIhsTaHQfvo"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ha-facebook-instagram-ads",
+    "title": "Facebook & Instagram Ads (Hausa)",
+    "description": "Samu ci gaba da manyan dabarun talla a shafukan sada zumunta.",
+    "language": "ha",
+    "modules": [
+      {
+        "id": "ha-fbads-m1",
+        "title": "Module 1",
+        "topics": [
+          {
+            "id": "ha-fbads-m1-t1",
+            "title": "Gabatarwa Talla a kasuwancin affiliate marketing",
+            "description": "",
+            "videoId": "jkUNyuVAdLA"
+          },
+          {
+            "id": "ha-fbads-m1-t2",
+            "title": "Abu mai anfani daya kamata a sani a talla",
+            "description": "",
+            "videoId": "kY-Gs-ZyyWE"
+          },
+          {
+            "id": "ha-fbads-m1-t3",
+            "title": "Kirkiran Tallace-Tallace",
+            "description": "",
+            "videoId": "AbnHXhOdeQk"
+          }
+        ]
+      },
+      {
+        "id": "ha-fbads-m2",
+        "title": "Module 2",
+        "topics": [
+          {
+            "id": "ha-fbads-m2-t1",
+            "title": "Gyaran Facebook Page",
+            "description": "",
+            "videoId": "hH-qpYmHymg"
+          }
+        ]
+      },
+      {
+        "id": "ha-fbads-m3",
+        "title": "Module 3",
+        "topics": [
+          {
+            "id": "ha-fbads-m3-t1",
+            "title": "Gyaran META Ads Account (1)",
+            "description": "",
+            "videoId": "M1NeSQODqoA"
+          },
+          {
+            "id": "ha-fbads-m3-t2",
+            "title": "Gyaran META Ads Account (2)",
+            "description": "",
+            "videoId": "s1QFnzDgdFY"
+          },
+          {
+            "id": "ha-fbads-m3-t3",
+            "title": "Gyaran META Ads Account (3)",
+            "description": "",
+            "videoId": "jw25qO8QX6M"
+          },
+          {
+            "id": "ha-fbads-m3-t4",
+            "title": "Misalin talla a matsayin fashion designer",
+            "description": "",
+            "videoId": "iC63DwLsAls"
+          },
+          {
+            "id": "ha-fbads-m3-t5",
+            "title": "Misalin talla a matsayin Affiliate Marketer",
+            "description": "",
+            "videoId": "1yAsNNCbrCg"
+          }
+        ]
+      },
+      {
+        "id": "ha-fbads-conclusion",
+        "title": "Conclusion",
+        "topics": [
+          {
+            "id": "ha-fbads-conclusion-t1",
+            "title": "Kammalawa",
+            "description": "Mun taya ka murna! Ka kammala wannan darasin. Shiga cikin kungiyar tallafi: https://chat.whatsapp.com/E6a22YQGmtb0ZXX9EqgRPa",
+            "videoId": "sIhsTaHQfvo"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ha-tiktok-ads",
+    "title": "TikTok Ads (Hausa)",
+    "description": "Koyi yadda ake yin tallan TikTok da dabaru masu amfani.",
+    "language": "ha",
+    "modules": [
+      {
+        "id": "ha-ttads-m1",
+        "title": "Module 1",
+        "topics": [
+          {
+            "id": "ha-ttads-m1-t1",
+            "title": "Gabatarwa a kan TikTok Ads",
+            "description": "",
+            "videoId": "9DzGZE0igfc"
+          },
+          {
+            "id": "ha-ttads-m1-t2",
+            "title": "Meyasa mutane ke son talla a TikTok?",
+            "description": "",
+            "videoId": "0Bi0tX1cNNM"
+          }
+        ]
+      },
+      {
+        "id": "ha-ttads-m2",
+        "title": "Module 2",
+        "topics": [
+          {
+            "id": "ha-ttads-m2-t1",
+            "title": "Yanda ake daura video a TikTok domin talla",
+            "description": "",
+            "videoId": "KKFBKasQpfY"
+          },
+          {
+            "id": "ha-ttads-m2-t2",
+            "title": "Gyaran TikTok Ads account (1)",
+            "description": "",
+            "videoId": "2gM5SaeViu0"
+          },
+          {
+            "id": "ha-ttads-m2-t3",
+            "title": "Gyaran TikTok Ads account (2)",
+            "description": "",
+            "videoId": "m1DPY3AFITk"
+          }
+        ]
+      },
+      {
+        "id": "ha-ttads-conclusion",
+        "title": "Conclusion",
+        "topics": [
+          {
+            "id": "ha-ttads-conclusion-t1",
+            "title": "Kammalawa",
+            "description": "Mun taya ka murna! Ka kammala wannan darasin. Shiga kungiyar tallafi: https://chat.whatsapp.com/E6a22YQGmtb0ZXX9EqgRPa",
+            "videoId": "sIhsTaHQfvo"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "ha-whatsapp-marketing",
+    "title": "WhatsApp Marketing (Hausa)",
+    "description": "Koyi yadda ake amfani da WhatsApp domin kasuwanci.",
+    "language": "ha",
+    "modules": [
+      {
+        "id": "ha-wm-m1",
+        "title": "Module 1",
+        "topics": [
+          {
+            "id": "ha-wm-m1-t1",
+            "title": "Gabatarwa akan kasuwanci da WhatsApp",
+            "description": "",
+            "videoId": "blBPSM8meAw"
+          },
+          {
+            "id": "ha-wm-m1-t2",
+            "title": "Muhimmanci kasuwanci da WhatsApp",
+            "description": "",
+            "videoId": "SPA6r9RP0tQ"
+          },
+          {
+            "id": "ha-wm-m1-t3",
+            "title": "Gabatarwa Akan Muhimmanchi WhatsApp Auto-responder",
+            "description": "",
+            "videoId": "_Y-mfC-qyr8"
+          }
+        ]
+      },
+      {
+        "id": "ha-wm-m2",
+        "title": "Module 2",
+        "topics": [
+          {
+            "id": "ha-wm-m2-t1",
+            "title": "Kirkiran WhatsApp Link",
+            "description": "",
+            "videoId": "yZkEcuf4M9g"
+          },
+          {
+            "id": "ha-wm-m2-t2",
+            "title": "Yanda ake saukar da auto-responder",
+            "description": "",
+            "videoId": "21UAVCNgcos"
+          },
+          {
+            "id": "ha-wm-m2-t3",
+            "title": "Gwajin da kuma tabbatar da Aikin",
+            "description": "",
+            "videoId": "mue9BrfeqyA"
+          }
+        ]
+      },
+      {
+        "id": "ha-wm-conclusion",
+        "title": "Conclusion",
+        "topics": [
+          {
+            "id": "ha-wm-conclusion-t1",
+            "title": "Kammalawa",
+            "description": "Mun taya ka murna! Ka kammala wannan darasin. Shiga kungiyar tallafi: https://chat.whatsapp.com/E6a22YQGmtb0ZXX9EqgRPa",
+            "videoId": "sIhsTaHQfvo"
+          }
+        ]
+      }
+    ]
+  }
 ]

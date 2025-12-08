@@ -1,9 +1,17 @@
 import { getUsers } from "@/lib/data";
 import { UserTable } from "./_components/UserTable";
 import { AddUserModal } from "./_components/AddUserModal";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth/authOptions";
+import { redirect } from "next/navigation";
 
 export default async function AdminUsersPage() {
-  // Server call to get users
+  const session = await getServerSession(authOptions);
+  if (!session?.user?.email) {
+    redirect("/login");
+  }
+  const currentAdminEmail = session.user.email;
+
   const users = await getUsers();
 
   return (
@@ -15,11 +23,10 @@ export default async function AdminUsersPage() {
             View, search, and manage user roles.
           </p>
         </div>
-        {/* Add User Modal is now a Client Component */}
         <AddUserModal />
       </div>
 
-      <UserTable initialUsers={users} />
+      <UserTable initialUsers={users} currentAdminEmail={currentAdminEmail} />
     </div>
   );
 }

@@ -25,7 +25,12 @@ import { updateUserOnServer } from "../actions";
 import { toast } from "sonner";
 import { User } from "@/lib/types";
 
-export function UserTable({ initialUsers }: { initialUsers: User[] }) {
+interface UserTableProps {
+  initialUsers: User[];
+  currentAdminEmail: string;
+}
+
+export function UserTable({ initialUsers, currentAdminEmail }: UserTableProps) {
   const [users, setUsers] = useState<User[]>(initialUsers);
   const [searchTerm, setSearchTerm] = useState("");
   const [roleFilter, setRoleFilter] = useState("all");
@@ -96,54 +101,62 @@ export function UserTable({ initialUsers }: { initialUsers: User[] }) {
         </TableHeader>
         <TableBody>
           {filteredUsers.length > 0 ? (
-            filteredUsers.map((user) => (
-              <TableRow key={user.id}>
-                <TableCell className="font-medium">
-                  {user.name || "-"}
-                </TableCell>
-                <TableCell>{user.email}</TableCell>
-                <TableCell>
-                  <Badge
-                    variant={user.role === "admin" ? "default" : "secondary"}
-                  >
-                    {user.role}
-                  </Badge>
-                </TableCell>
-                <TableCell>
-                  {loadingStates[user.id] ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                  ) : (
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          aria-haspopup="true"
-                          size="icon"
-                          variant="ghost"
-                        >
-                          <MoreHorizontal className="h-4 w-4" />
-                          <span className="sr-only">Toggle menu</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                          onSelect={() =>
-                            handleUpdateUser(user, {
-                              role: user.role === "admin" ? "user" : "admin",
-                            })
-                          }
-                        >
-                          {user.role === "admin"
-                            ? "Demote to User"
-                            : "Promote to Admin"}
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  )}
-                </TableCell>
-              </TableRow>
-            ))
+            filteredUsers.map((user) => {
+              const isCurrentAdmin = user.email === currentAdminEmail;
+
+              return (
+                <TableRow key={user.id}>
+                  <TableCell className="font-medium">
+                    {user.name || "-"}{" "}
+                    {isCurrentAdmin && (
+                      <span className="text-primary">(You)</span>
+                    )}
+                  </TableCell>
+                  <TableCell>{user.email}</TableCell>
+                  <TableCell>
+                    <Badge
+                      variant={user.role === "admin" ? "default" : "secondary"}
+                    >
+                      {user.role}
+                    </Badge>
+                  </TableCell>
+                  <TableCell>
+                    {loadingStates[user.id] ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            aria-haspopup="true"
+                            size="icon"
+                            variant="ghost"
+                          >
+                            <MoreHorizontal className="h-4 w-4" />
+                            <span className="sr-only">Toggle menu</span>
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
+                            disabled={isCurrentAdmin && user.role === "admin"}
+                            onSelect={() =>
+                              handleUpdateUser(user, {
+                                role: user.role === "admin" ? "user" : "admin",
+                              })
+                            }
+                          >
+                            {user.role === "admin"
+                              ? "Demote to User"
+                              : "Promote to Admin"}
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    )}
+                  </TableCell>
+                </TableRow>
+              );
+            })
           ) : (
             <TableRow>
               <TableCell colSpan={4} className="h-24 text-center">

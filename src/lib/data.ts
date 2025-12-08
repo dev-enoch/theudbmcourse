@@ -3,10 +3,12 @@
 import User from "@/models/User";
 import { connectDB } from "./mongoose";
 import { hashPassword } from "./auth/password";
-import nodemailer from "nodemailer";
 import path from "path";
-import { Course, UserProgress } from "./types";
+import { Course } from "./types";
 import fs from "fs/promises";
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
 
 // -------------------------------
 // USER FETCH
@@ -28,7 +30,6 @@ export async function getUsers() {
 // -------------------------------
 // USER UPDATE
 // -------------------------------
-
 type UpdateUserInput = Partial<{
   role: "user" | "admin";
   active: boolean;
@@ -39,15 +40,27 @@ type UpdateUserInput = Partial<{
 export async function updateUser(userId: string, updates: UpdateUserInput) {
   await connectDB();
 
+  if (updates.role && updates.role !== "admin") {
+    const user = await User.findById(userId).lean();
+    if (!user) throw new Error("User not found.");
+
+    if (user.role === "admin") {
+      const adminCount = await User.countDocuments({ role: "admin" });
+      if (adminCount <= 1) {
+        throw new Error(
+          "Cannot change role: there must be at least one admin."
+        );
+      }
+    }
+  }
+
   const updatedUser = await User.findByIdAndUpdate(
     userId,
     { $set: updates },
     { new: true, runValidators: true }
   ).lean();
 
-  if (!updatedUser) {
-    throw new Error("User not found.");
-  }
+  if (!updatedUser) throw new Error("User not found.");
 
   return {
     id: updatedUser._id.toString(),
@@ -63,7 +76,6 @@ export async function updateUser(userId: string, updates: UpdateUserInput) {
 // -------------------------------
 // ADD USER + SEND LOGIN EMAIL
 // -------------------------------
-
 type AddUserInput = {
   name: string;
   email: string;
@@ -74,9 +86,7 @@ export async function addUser(input: AddUserInput) {
   await connectDB();
 
   const existingUser = await User.findOne({ email: input.email });
-  if (existingUser) {
-    throw new Error("User with this email already exists.");
-  }
+  if (existingUser) throw new Error("User with this email already exists.");
 
   const defaultPassword = "123456";
   const hashedPassword = await hashPassword(defaultPassword);
@@ -90,31 +100,25 @@ export async function addUser(input: AddUserInput) {
     progress: [],
   });
 
-  // EMAIL TRANSPORTER (uses NextAuth EMAIL_SERVER standard)
-  const transporter = nodemailer.createTransport(
-    JSON.parse(process.env.EMAIL_SERVER!)
-  );
+  // Send email with Resend
+  const bannerPath = path.join(process.cwd(), "src", "lib", "mail.png");
+  const bannerData = await fs.readFile(bannerPath);
+  const bannerBase64 = `data:image/png;base64,${bannerData.toString("base64")}`;
 
-  // EMAIL BODY (includes name)
-  await transporter.sendMail({
-    from: process.env.EMAIL_FROM,
+  await resend.emails.send({
+    from: process.env.EMAIL_FROM!,
     to: input.email,
     subject: "Your Login Credentials",
-    text: `Hello ${input.name},
-
-Your account has been created.
-
-Email: ${input.email}
-Password: ${defaultPassword}
-
-Please log in and change your password.`,
     html: `
-      <p>Hello <strong>${input.name}</strong>,</p>
-      <p>Your account has been created.</p>
-      <p><b>Email:</b> ${input.email}</p>
-      <p><b>Password:</b> ${defaultPassword}</p>
-      <p>Please log in and change your password.</p>
-    `,
+    <div style="text-align: center; margin-bottom: 20px;">
+      <img src="${bannerBase64}" alt="Banner" style="width: 100%; max-width: 600px; height: auto;" />
+    </div>
+    <p>Hello <strong>${input.name}</strong>,</p>
+    <p>Your account has been created.</p>
+    <p><b>Email:</b> ${input.email}</p>
+    <p><b>Password:</b> ${defaultPassword}</p>
+    <p>Please log in and change your password.</p>
+  `,
   });
 
   return {
@@ -130,14 +134,12 @@ Please log in and change your password.`,
 // -------------------------------
 // USER PROGRESS FUNCTIONS
 // -------------------------------
-
 export async function getUserProgress(userId: string) {
   await connectDB();
 
   const user = await User.findById(userId).lean();
   if (!user) throw new Error("User not found.");
 
-  // Format progress as simple object map like Firestore structure
   const progress: Record<string, boolean> = {};
   user.progress.forEach((p: any) => {
     progress[p.topicId] = p.completed;
@@ -158,11 +160,8 @@ export async function updateUserProgress(
 
   const existing = user.progress.find((p: any) => p.topicId === topicId);
 
-  if (existing) {
-    existing.completed = completed;
-  } else {
-    user.progress.push({ topicId, completed });
-  }
+  if (existing) existing.completed = completed;
+  else user.progress.push({ topicId, completed });
 
   await user.save();
   return getUserProgress(userId);
@@ -171,7 +170,6 @@ export async function updateUserProgress(
 // -------------------------------
 // COURSES JSON FILE UTILITIES
 // -------------------------------
-
 const coursesFilePath = path.join(process.cwd(), "src", "lib", "courses.json");
 
 async function readCoursesFile(): Promise<Course[]> {
