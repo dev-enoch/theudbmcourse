@@ -13,18 +13,37 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 // -------------------------------
 // USER FETCH
 // -------------------------------
-export async function getUsers() {
-  await connectDB();
-  const users = await User.find().lean();
+type GetUsersOptions = {
+  page?: number; // current page, default 1
+  limit?: number; // items per page, default 10
+};
 
-  return users.map((u) => ({
-    id: u._id.toString(),
-    name: u.name ?? "",
-    email: u.email,
-    role: u.role,
-    active: u.active ?? true,
-    createdAt: u.createdAt,
-  }));
+export async function getUsers({ page = 1, limit = 10 }: GetUsersOptions = {}) {
+  await connectDB();
+
+  const skip = (page - 1) * limit;
+
+  const [users, total] = await Promise.all([
+    User.find().sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+    User.countDocuments(),
+  ]);
+
+  return {
+    users: users.map((u) => ({
+      id: u._id.toString(),
+      name: u.name ?? "",
+      email: u.email,
+      role: u.role,
+      active: u.active ?? true,
+      createdAt: u.createdAt,
+    })),
+    pagination: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
 }
 
 // -------------------------------

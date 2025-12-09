@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import { Input } from "@/components/ui/input";
+import { useState } from "react";
 import {
   Table,
   TableBody,
@@ -11,54 +10,50 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
 import { MoreHorizontal, Loader2, Trash, RefreshCcw } from "lucide-react";
-
+import {
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuItem,
+} from "@/components/ui/dropdown-menu";
+import { User } from "@/lib/types";
+import { ConfirmActionModal } from "@/components/common/ConfirmActionModal";
 import {
   updateUserOnServer,
   deleteUserOnServer,
   resendLoginDetailsOnServer,
 } from "../actions";
-
 import { toast } from "sonner";
-import { User } from "@/lib/types";
-import { ConfirmActionModal } from "@/components/common/ConfirmActionModal";
+
+type ModalType = "promote" | "resend" | "delete" | null;
 
 interface UserTableProps {
   initialUsers: User[];
   currentAdminEmail: string;
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  };
 }
 
-type ModalType = "promote" | "resend" | "delete" | null;
-
-export function UserTable({ initialUsers, currentAdminEmail }: UserTableProps) {
+export function UserTable({
+  initialUsers,
+  currentAdminEmail,
+  pagination,
+}: UserTableProps) {
   const [users, setUsers] = useState<User[]>(initialUsers);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [roleFilter, setRoleFilter] = useState("all");
   const [loadingStates, setLoadingStates] = useState<Record<string, string>>(
     {}
   );
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [activeModalType, setActiveModalType] = useState<ModalType>(null);
   const [activeUser, setActiveUser] = useState<User | null>(null);
-
-  const filteredUsers = useMemo(() => {
-    return users.filter((user) => {
-      const searchMatch =
-        user.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        user.name?.toLowerCase().includes(searchTerm.toLowerCase());
-      const roleMatch = roleFilter === "all" || user.role === roleFilter;
-      return searchMatch && roleMatch;
-    });
-  }, [users, searchTerm, roleFilter]);
 
   const openModal = (user: User, type: ModalType) => {
     setActiveUser(user);
@@ -76,20 +71,12 @@ export function UserTable({ initialUsers, currentAdminEmail }: UserTableProps) {
         await updateUserOnServer(activeUser.id, {
           role: activeUser.role === "admin" ? "user" : "admin",
         });
-        setUsers((prev) =>
-          prev.map((u) =>
-            u.id === activeUser.id
-              ? { ...u, role: activeUser.role === "admin" ? "user" : "admin" }
-              : u
-          )
-        );
         toast.success("User role updated successfully.");
       } else if (activeModalType === "resend") {
         await resendLoginDetailsOnServer(activeUser.id);
         toast.success("Login details resent successfully.");
       } else if (activeModalType === "delete") {
         await deleteUserOnServer(activeUser.id);
-        setUsers((prev) => prev.filter((u) => u.id !== activeUser.id));
         toast.success("User deleted.");
       }
     } catch (err: any) {
@@ -100,28 +87,19 @@ export function UserTable({ initialUsers, currentAdminEmail }: UserTableProps) {
     setConfirmModalOpen(false);
     setActiveUser(null);
     setActiveModalType(null);
+
+    // Reload current page to reflect changes
+    window.location.reload();
+  };
+
+  const goToPage = (page: number) => {
+    const url = new URL(window.location.href);
+    url.searchParams.set("page", page.toString());
+    window.location.href = url.toString();
   };
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-4">
-        <Input
-          placeholder="Search by email or name..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="max-w-sm"
-        />
-        <select
-          value={roleFilter}
-          onChange={(e) => setRoleFilter(e.target.value)}
-          className="border rounded px-3 py-1"
-        >
-          <option value="all">All Roles</option>
-          <option value="user">User</option>
-          <option value="admin">Admin</option>
-        </select>
-      </div>
-
       <Table>
         <TableHeader>
           <TableRow>
@@ -135,8 +113,8 @@ export function UserTable({ initialUsers, currentAdminEmail }: UserTableProps) {
         </TableHeader>
 
         <TableBody>
-          {filteredUsers.length > 0 ? (
-            filteredUsers.map((user) => {
+          {users.length > 0 ? (
+            users.map((user) => {
               const isCurrentAdmin = user.email === currentAdminEmail;
               const isLoading = loadingStates[user.id];
 
@@ -148,9 +126,7 @@ export function UserTable({ initialUsers, currentAdminEmail }: UserTableProps) {
                       <span className="text-primary">(You)</span>
                     )}
                   </TableCell>
-
                   <TableCell>{user.email}</TableCell>
-
                   <TableCell>
                     <Badge
                       variant={user.role === "admin" ? "default" : "secondary"}
@@ -158,7 +134,6 @@ export function UserTable({ initialUsers, currentAdminEmail }: UserTableProps) {
                       {user.role}
                     </Badge>
                   </TableCell>
-
                   <TableCell>
                     {isLoading ? (
                       <Loader2 className="h-4 w-4 animate-spin" />
@@ -169,11 +144,9 @@ export function UserTable({ initialUsers, currentAdminEmail }: UserTableProps) {
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
-
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
                           <DropdownMenuSeparator />
-
                           <DropdownMenuItem
                             disabled={isCurrentAdmin}
                             onSelect={() => openModal(user, "promote")}
@@ -182,21 +155,18 @@ export function UserTable({ initialUsers, currentAdminEmail }: UserTableProps) {
                               ? "Demote to User"
                               : "Promote to Admin"}
                           </DropdownMenuItem>
-
                           <DropdownMenuItem
                             onSelect={() => openModal(user, "resend")}
                           >
-                            <RefreshCcw className="mr-2 h-4 w-4" />
-                            Resend Login Email
+                            <RefreshCcw className="mr-2 h-4 w-4" /> Resend Login
+                            Email
                           </DropdownMenuItem>
-
                           <DropdownMenuItem
                             disabled={isCurrentAdmin}
                             className="text-red-600"
                             onSelect={() => openModal(user, "delete")}
                           >
-                            <Trash className="mr-2 h-4 w-4" />
-                            Delete User
+                            <Trash className="mr-2 h-4 w-4" /> Delete User
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -214,6 +184,27 @@ export function UserTable({ initialUsers, currentAdminEmail }: UserTableProps) {
           )}
         </TableBody>
       </Table>
+
+      {/* Pagination */}
+      {pagination.totalPages > 1 && (
+        <div className="flex justify-between items-center mt-4">
+          <Button
+            disabled={pagination.page === 1}
+            onClick={() => goToPage(pagination.page - 1)}
+          >
+            Previous
+          </Button>
+          <span>
+            Page {pagination.page} of {pagination.totalPages}
+          </span>
+          <Button
+            disabled={pagination.page === pagination.totalPages}
+            onClick={() => goToPage(pagination.page + 1)}
+          >
+            Next
+          </Button>
+        </div>
+      )}
 
       {/* Confirm Modal */}
       <ConfirmActionModal

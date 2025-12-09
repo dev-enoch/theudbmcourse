@@ -5,14 +5,25 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/authOptions";
 import { redirect } from "next/navigation";
 
-export default async function AdminUsersPage() {
+interface AdminUsersPageProps {
+  searchParams?: { page?: string; limit?: string };
+}
+
+export default async function AdminUsersPage({
+  searchParams,
+}: AdminUsersPageProps) {
   const session = await getServerSession(authOptions);
+
   if (!session?.user?.email) {
     redirect("/login");
   }
+
   const currentAdminEmail = session.user.email;
 
-  const users = await getUsers();
+  const page = searchParams?.page ? parseInt(searchParams.page, 10) : 1;
+  const limit = searchParams?.limit ? parseInt(searchParams.limit, 10) : 10;
+
+  const { users, pagination } = await getUsers({ page, limit });
 
   return (
     <div>
@@ -26,7 +37,12 @@ export default async function AdminUsersPage() {
         <AddUserModal />
       </div>
 
-      <UserTable initialUsers={users} currentAdminEmail={currentAdminEmail} />
+      {/* Pass the users and pagination to a client-side UserTable */}
+      <UserTable
+        initialUsers={users}
+        currentAdminEmail={currentAdminEmail}
+        pagination={pagination}
+      />
     </div>
   );
 }
