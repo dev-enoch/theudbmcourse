@@ -18,13 +18,15 @@ export default function LoginPage() {
       <div className="mt-10 sm:mx-auto sm:w-full sm:max-w-sm">
         <LoginForm />
         <p className="mt-10 text-center text-sm text-muted-foreground">
-          Don't have an account?{" "}
-          <Link
-            href="/register"
+          Need help?{" "}
+          <a
+            href="https://wa.me/2349038633816"
+            target="_blank"
+            rel="noopener noreferrer"
             className="font-semibold leading-6 text-primary hover:text-primary/80"
           >
-            Register here
-          </Link>
+            Contact Support on WhatsApp
+          </a>
         </p>
       </div>
     </div>

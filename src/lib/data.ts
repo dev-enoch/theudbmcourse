@@ -100,31 +100,20 @@ export async function addUser(input: AddUserInput) {
     progress: [],
   });
 
-  const bannerPath = path.join(process.cwd(), "src", "lib", "mail.png");
-  const bannerData = await fs.readFile(bannerPath);
-  const bannerBase64 = bannerData.toString("base64");
-
+  // --- SEND ACTIVATION EMAIL USING TEMPLATE ---
   await resend.emails.send({
     from: process.env.EMAIL_FROM!,
     to: input.email,
-    subject: "Your Login Credentials",
-    html: `
-      <div style="text-align:center; margin-bottom:20px;">
-        <img src="cid:banner-image" alt="Banner" style="width:100%; max-width:600px; height:auto;" />
-      </div>
-      <p>Hello <strong>${input.name}</strong>,</p>
-      <p>Your account has been created.</p>
-      <p><b>Email:</b> ${input.email}</p>
-      <p><b>Password:</b> ${defaultPassword}</p>
-      <p>Please log in and change your password.</p>
-    `,
-    attachments: [
-      {
-        filename: "mail.png",
-        content: bannerBase64,
-        contentId: "banner-image",
+    subject: "Your Account Has Been Successfully Activated",
+    template: {
+      id: process.env.RESEND_ACTIVATION_TEMPLATE_ID!,
+      variables: {
+        name: input.name,
+        email: input.email,
+        password: defaultPassword,
+        login_url: `${process.env.APP_URL}/login`,
       },
-    ],
+    },
   });
 
   return {
@@ -152,31 +141,20 @@ export async function resendLoginDetails(userId: string) {
   user.password = hashedPassword;
   await user.save();
 
-  const bannerPath = path.join(process.cwd(), "src", "lib", "mail.png");
-  const bannerData = await fs.readFile(bannerPath);
-  const bannerBase64 = bannerData.toString("base64");
-
+  // --- SEND RESEND LOGIN EMAIL USING TEMPLATE ---
   await resend.emails.send({
     from: process.env.EMAIL_FROM!,
     to: user.email,
-    subject: "Your Login Details (Resent)",
-    html: `
-      <div style="text-align:center; margin-bottom:20px;">
-        <img src="cid:banner-image" alt="Banner" style="width:100%; max-width:600px; height:auto;" />
-      </div>
-      <p>Hello <strong>${user.name}</strong>,</p>
-      <p>Your login details have been resent as requested.</p>
-      <p><b>Email:</b> ${user.email}</p>
-      <p><b>New Password:</b> ${defaultPassword}</p>
-      <p>Please log in and change your password.</p>
-    `,
-    attachments: [
-      {
-        filename: "mail.png",
-        content: bannerBase64,
-        contentId: "banner-image",
+    subject: "Your Login Details Have Been Reset",
+    template: {
+      id: process.env.RESEND_RESEND_TEMPLATE_ID!,
+      variables: {
+        name: user.name,
+        email: user.email,
+        password: defaultPassword,
+        login_url: `${process.env.APP_URL}`,
       },
-    ],
+    },
   });
 
   return {
@@ -212,7 +190,7 @@ export async function deleteUser(userId: string) {
 }
 
 // -------------------------------
-// USER PROGRESS FUNCTIONS
+// USER PROGRESS
 // -------------------------------
 export async function getUserProgress(userId: string) {
   await connectDB();
@@ -248,7 +226,7 @@ export async function updateUserProgress(
 }
 
 // -------------------------------
-// COURSES JSON FILE UTILITIES
+// COURSES
 // -------------------------------
 const coursesFilePath = path.join(process.cwd(), "src", "lib", "courses.json");
 

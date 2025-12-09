@@ -37,6 +37,8 @@ interface UserTableProps {
   currentAdminEmail: string;
 }
 
+type ModalType = "promote" | "resend" | "delete" | null;
+
 export function UserTable({ initialUsers, currentAdminEmail }: UserTableProps) {
   const [users, setUsers] = useState<User[]>(initialUsers);
   const [searchTerm, setSearchTerm] = useState("");
@@ -44,6 +46,9 @@ export function UserTable({ initialUsers, currentAdminEmail }: UserTableProps) {
   const [loadingStates, setLoadingStates] = useState<Record<string, string>>(
     {}
   );
+  const [confirmModalOpen, setConfirmModalOpen] = useState(false);
+  const [activeModalType, setActiveModalType] = useState<ModalType>(null);
+  const [activeUser, setActiveUser] = useState<User | null>(null);
 
   const filteredUsers = useMemo(() => {
     return users.filter((user) => {
@@ -55,62 +60,46 @@ export function UserTable({ initialUsers, currentAdminEmail }: UserTableProps) {
     });
   }, [users, searchTerm, roleFilter]);
 
-  // --------------------------
-  // UPDATE ROLE (promote/demote)
-  // --------------------------
-  const handleUpdateUser = async (
-    user: User,
-    updates: Partial<{ role: "user" | "admin" }>
-  ) => {
-    setLoadingStates((prev) => ({ ...prev, [user.id]: "update" }));
-
-    const result = await updateUserOnServer(user.id, updates);
-
-    if (result.success && result.user) {
-      setUsers((prevUsers) =>
-        prevUsers.map((u) => (u.id === result.user!.id ? result.user! : u))
-      );
-      toast.success("User updated successfully.");
-    } else {
-      toast.error(result.error || "Failed to update user.");
-    }
-
-    setLoadingStates((prev) => ({ ...prev, [user.id]: "" }));
+  const openModal = (user: User, type: ModalType) => {
+    setActiveUser(user);
+    setActiveModalType(type);
+    setConfirmModalOpen(true);
   };
 
-  // --------------------------
-  // DELETE USER
-  // --------------------------
-  const handleDeleteUser = async (user: User) => {
-    setLoadingStates((prev) => ({ ...prev, [user.id]: "delete" }));
+  const handleConfirmAction = async () => {
+    if (!activeUser || !activeModalType) return;
 
-    const result = await deleteUserOnServer(user.id);
+    setLoadingStates((prev) => ({ ...prev, [activeUser.id]: activeModalType }));
 
-    if (result.success) {
-      setUsers((prev) => prev.filter((u) => u.id !== user.id));
-      toast.success("User deleted.");
-    } else {
-      toast.error(result.error || "Failed to delete user.");
+    try {
+      if (activeModalType === "promote") {
+        await updateUserOnServer(activeUser.id, {
+          role: activeUser.role === "admin" ? "user" : "admin",
+        });
+        setUsers((prev) =>
+          prev.map((u) =>
+            u.id === activeUser.id
+              ? { ...u, role: activeUser.role === "admin" ? "user" : "admin" }
+              : u
+          )
+        );
+        toast.success("User role updated successfully.");
+      } else if (activeModalType === "resend") {
+        await resendLoginDetailsOnServer(activeUser.id);
+        toast.success("Login details resent successfully.");
+      } else if (activeModalType === "delete") {
+        await deleteUserOnServer(activeUser.id);
+        setUsers((prev) => prev.filter((u) => u.id !== activeUser.id));
+        toast.success("User deleted.");
+      }
+    } catch (err: any) {
+      toast.error(err.message || "Action failed.");
     }
 
-    setLoadingStates((prev) => ({ ...prev, [user.id]: "" }));
-  };
-
-  // --------------------------
-  // RESEND LOGIN DETAILS
-  // --------------------------
-  const handleResendLogin = async (user: User) => {
-    setLoadingStates((prev) => ({ ...prev, [user.id]: "resend" }));
-
-    const result = await resendLoginDetailsOnServer(user.id);
-
-    if (result.success) {
-      toast.success("Login email resent successfully.");
-    } else {
-      toast.error(result.error || "Failed to resend login email.");
-    }
-
-    setLoadingStates((prev) => ({ ...prev, [user.id]: "" }));
+    setLoadingStates((prev) => ({ ...prev, [activeUser.id]: "" }));
+    setConfirmModalOpen(false);
+    setActiveUser(null);
+    setActiveModalType(null);
   };
 
   return (
@@ -185,57 +174,30 @@ export function UserTable({ initialUsers, currentAdminEmail }: UserTableProps) {
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
                           <DropdownMenuSeparator />
 
-                          {/* Promote/Demote */}
-                          <ConfirmActionModal
-                            title={
-                              user.role === "admin"
-                                ? "Demote this user to User?"
-                                : "Promote this user to Admin?"
-                            }
-                            actionLabel={
-                              user.role === "admin" ? "Demote" : "Promote"
-                            }
-                            onConfirm={() =>
-                              handleUpdateUser(user, {
-                                role: user.role === "admin" ? "user" : "admin",
-                              })
-                            }
+                          <DropdownMenuItem
+                            disabled={isCurrentAdmin}
+                            onSelect={() => openModal(user, "promote")}
                           >
-                            <DropdownMenuItem disabled={isCurrentAdmin}>
-                              {user.role === "admin"
-                                ? "Demote to User"
-                                : "Promote to Admin"}
-                            </DropdownMenuItem>
-                          </ConfirmActionModal>
+                            {user.role === "admin"
+                              ? "Demote to User"
+                              : "Promote to Admin"}
+                          </DropdownMenuItem>
 
-                          {/* Resend Login Email */}
-                          <ConfirmActionModal
-                            title="Resend login details?"
-                            description="This will reset the user's password to the default."
-                            actionLabel="Resend"
-                            onConfirm={() => handleResendLogin(user)}
+                          <DropdownMenuItem
+                            onSelect={() => openModal(user, "resend")}
                           >
-                            <DropdownMenuItem>
-                              <RefreshCcw className="mr-2 h-4 w-4" />
-                              Resend Login Email
-                            </DropdownMenuItem>
-                          </ConfirmActionModal>
+                            <RefreshCcw className="mr-2 h-4 w-4" />
+                            Resend Login Email
+                          </DropdownMenuItem>
 
-                          {/* Delete User */}
-                          <ConfirmActionModal
-                            title={`Delete ${user.name || user.email}?`}
-                            description="This action cannot be undone."
-                            actionLabel="Delete"
-                            onConfirm={() => handleDeleteUser(user)}
+                          <DropdownMenuItem
+                            disabled={isCurrentAdmin}
+                            className="text-red-600"
+                            onSelect={() => openModal(user, "delete")}
                           >
-                            <DropdownMenuItem
-                              disabled={isCurrentAdmin}
-                              className="text-red-600"
-                            >
-                              <Trash className="mr-2 h-4 w-4" />
-                              Delete User
-                            </DropdownMenuItem>
-                          </ConfirmActionModal>
+                            <Trash className="mr-2 h-4 w-4" />
+                            Delete User
+                          </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
                     )}
@@ -252,6 +214,45 @@ export function UserTable({ initialUsers, currentAdminEmail }: UserTableProps) {
           )}
         </TableBody>
       </Table>
+
+      {/* Confirm Modal */}
+      <ConfirmActionModal
+        open={confirmModalOpen}
+        onOpenChange={setConfirmModalOpen}
+        title={
+          activeModalType === "promote"
+            ? activeUser?.role === "admin"
+              ? "Demote this user to User?"
+              : "Promote this user to Admin?"
+            : activeModalType === "resend"
+            ? "Resend login details?"
+            : activeModalType === "delete"
+            ? `Delete ${activeUser?.name || activeUser?.email}?`
+            : ""
+        }
+        description={
+          activeModalType === "resend"
+            ? "This will reset the user's password to the default."
+            : activeModalType === "delete"
+            ? "This action cannot be undone."
+            : undefined
+        }
+        actionLabel={
+          activeModalType === "promote"
+            ? activeUser?.role === "admin"
+              ? "Demote"
+              : "Promote"
+            : activeModalType === "resend"
+            ? "Resend"
+            : activeModalType === "delete"
+            ? "Delete"
+            : ""
+        }
+        onConfirm={handleConfirmAction}
+        loading={
+          !!activeUser && !!activeModalType && !!loadingStates[activeUser.id]
+        }
+      />
     </div>
   );
 }
