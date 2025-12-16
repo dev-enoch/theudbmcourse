@@ -24,6 +24,26 @@ import { useRouter } from "next/navigation";
 import { TopicItem } from "./TopicItem";
 import { toast } from "sonner";
 
+const linkifyText = (text: string): React.ReactNode[] => {
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+
+  return text.split(urlRegex).map((part, index) =>
+    part.startsWith("http") ? (
+      <a
+        key={index}
+        href={part}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-blue-600 underline"
+      >
+        [here]
+      </a>
+    ) : (
+      part
+    )
+  );
+};
+
 function VideoPlayer({ videoId, title }: { videoId: string; title: string }) {
   const videoRef = useRef<HTMLIFrameElement>(null);
 
@@ -260,10 +280,23 @@ export function CourseClientPage({
                   title={selectedTopic.title}
                 />
               </div>
-              <CardDescription>{selectedTopic.description}</CardDescription>
+              <CardDescription>
+                {linkifyText(selectedTopic.description)}
+              </CardDescription>
               <div className="grow" />
               <div className="flex justify-end gap-2 mt-auto pt-4 border-t">
-                {!isLastTopic && (
+                {isLastTopic ? (
+                  <Button
+                    onClick={() =>
+                      window.open(
+                        "https://chat.whatsapp.com/E6a22YQGmtb0ZXX9EqgRPa",
+                        "_blank"
+                      )
+                    }
+                  >
+                    Join Group
+                  </Button>
+                ) : (
                   <Button onClick={() => handleNextTopic(selectedTopic)}>
                     Next Topic
                   </Button>
