@@ -286,16 +286,22 @@ export function CourseClientPage({
               <div className="grow" />
               <div className="flex justify-end gap-2 mt-auto pt-4 border-t">
                 {isLastTopic ? (
-                  <Button
-                    onClick={() =>
-                      window.open(
-                        "https://chat.whatsapp.com/E6a22YQGmtb0ZXX9EqgRPa",
-                        "_blank"
-                      )
-                    }
-                  >
-                    Join Group
-                  </Button>
+                  course.id === "ha-tiktok-ads" ? (
+                    <Button
+                      onClick={() =>
+                        window.open(
+                          "https://chat.whatsapp.com/LCECsTmXq7iIJIlBSoLPaQ",
+                          "_blank"
+                        )
+                      }
+                    >
+                      Join Group
+                    </Button>
+                  ) : (
+                    <Button onClick={() => router.push("/")}>
+                      Back to Home
+                    </Button>
+                  )
                 ) : (
                   <Button onClick={() => handleNextTopic(selectedTopic)}>
                     Next Topic

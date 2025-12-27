@@ -1,10 +1,15 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, CheckCircle } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import type { Course } from "@/lib/types";
 import AppLayout from "@/components/common/AppLayout";
+import { Progress } from "@/components/ui/progress";
+import { getCourseById, getUserProgress } from "@/lib/data";
+import { redirect } from "next/navigation";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth/authOptions";
 
 const hausaCourses: Omit<Course, "modules">[] = [
   {
@@ -26,47 +31,86 @@ const hausaCourses: Omit<Course, "modules">[] = [
 ];
 
 export default async function HomePage() {
+  const session = await getServerSession(authOptions);
+
+  if (!session?.user?.id) redirect("/login");
+  const userId = session.user.id;
+
+  const progress = await getUserProgress(userId);
+
   return (
     <AppLayout>
       <div className="flex-1 flex flex-col">
-        <section id="courses" className="w-full py-8 md:py-18 lg:py-24">
+        <section className="w-full py-8 md:py-18 lg:py-24">
           <div className="container px-4 md:px-6">
             {/* Header */}
-            <div className="flex flex-col items-center justify-center space-y-4 text-center">
-              <div className="space-y-2">
-                <Badge>Our Courses</Badge>
-                <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl">
-                  Start Your Journey
-                </h2>
-                <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                  Our courses are designed to be practical and action-oriented,
-                  giving you the blueprint for success.
-                </p>
-              </div>
+            <div className="flex flex-col items-center text-center space-y-4">
+              <Badge>Our Courses</Badge>
+              <h2 className="text-3xl font-bold sm:text-5xl">
+                Start Your Journey
+              </h2>
+              <p className="text-muted-foreground max-w-[900px]">
+                Practical, action-oriented courses with real results.
+              </p>
             </div>
 
-            {/* Hausa Courses */}
-            <div className="mt-12">
-              <h3 className="text-2xl font-bold tracking-tighter sm:text-3xl text-center mb-8">
-                Hausa Courses
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-12">
-                {hausaCourses.map((course) => (
+            {/* Courses */}
+            <div className="mt-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {hausaCourses.map(async (courseMeta) => {
+                const course = await getCourseById(courseMeta.id);
+                if (!course) return null;
+
+                const allTopicIds = course.modules.flatMap((m) =>
+                  m.topics.map((t) => t.id)
+                );
+
+                const completedCount = allTopicIds.filter(
+                  (id) => progress[id]
+                ).length;
+
+                const percentage =
+                  allTopicIds.length > 0
+                    ? Math.round((completedCount / allTopicIds.length) * 100)
+                    : 0;
+
+                const isCompleted =
+                  completedCount === allTopicIds.length &&
+                  allTopicIds.length > 0;
+
+                return (
                   <Card key={course.id} className="h-full flex flex-col w-full">
-                    <CardHeader>
+                    <CardHeader className="space-y-2">
                       <CardTitle>{course.title}</CardTitle>
+
+                      {isCompleted && (
+                        <Badge className="w-fit flex items-center gap-1">
+                          <CheckCircle className="h-4 w-4" />
+                          Completed
+                        </Badge>
+                      )}
                     </CardHeader>
-                    <CardContent className="flex-1 flex flex-col">
-                      <div className="grow" />
+
+                    <CardContent className="flex flex-col flex-1 space-y-4">
+                      {/* Progress */}
+                      <div>
+                        <div className="flex justify-between text-sm mb-1">
+                          <span>Progress</span>
+                          <span>{percentage}%</span>
+                        </div>
+                        <Progress value={percentage} />
+                      </div>
+
+                      {/* Action */}
                       <Button asChild className="mt-auto w-full">
                         <Link href={`/courses/${course.id}`}>
-                          View Course <ArrowRight className="ml-2 h-4 w-4" />
+                          {isCompleted ? "Review Course" : "Continue Course"}
+                          <ArrowRight className="ml-2 h-4 w-4" />
                         </Link>
                       </Button>
                     </CardContent>
                   </Card>
-                ))}
-              </div>
+                );
+              })}
             </div>
           </div>
         </section>
