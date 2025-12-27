@@ -23,6 +23,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { TopicItem } from "./TopicItem";
 import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 
 const linkifyText = (text: string): React.ReactNode[] => {
   const urlRegex = /(https?:\/\/[^\s]+)/g;
@@ -153,6 +154,8 @@ export function CourseClientPage({
   currentTopicId,
 }: CourseClientPageProps) {
   const [progress, setProgress] = useState<UserProgress>(initialProgress);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const router = useRouter();
 
   const selectedTopic = useMemo(() => {
@@ -222,6 +225,24 @@ export function CourseClientPage({
     }
   };
 
+  const completeTopicIfNeeded = async (topic: Topic) => {
+    if (progress[topic.id]) return;
+
+    try {
+      setIsSubmitting(true);
+
+      setProgress((prev) => ({ ...prev, [topic.id]: true }));
+      await updateUserProgressOnServer(userId, topic.id, true);
+
+      toast.success(`You've completed "${topic.title}".`);
+    } catch {
+      toast.error("Error: Could not save progress.");
+      throw new Error("Progress update failed");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <div className="flex-1 flex flex-col lg:grid lg:grid-cols-3 xl:grid-cols-4 gap-6 p-4 sm:p-6">
       {/* Mobile Video */}
@@ -288,23 +309,60 @@ export function CourseClientPage({
                 {isLastTopic ? (
                   course.id === "ha-tiktok-ads" ? (
                     <Button
-                      onClick={() =>
+                      disabled={isSubmitting}
+                      onClick={async () => {
+                        if (!selectedTopic) return;
+
+                        await completeTopicIfNeeded(selectedTopic);
+
                         window.open(
                           "https://chat.whatsapp.com/LCECsTmXq7iIJIlBSoLPaQ",
                           "_blank"
-                        )
-                      }
+                        );
+                      }}
                     >
-                      Join Group
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Finalizing...
+                        </>
+                      ) : (
+                        "Join Group"
+                      )}
                     </Button>
                   ) : (
-                    <Button onClick={() => router.push("/")}>
-                      Back to Home
+                    <Button
+                      disabled={isSubmitting}
+                      onClick={async () => {
+                        if (!selectedTopic) return;
+
+                        await completeTopicIfNeeded(selectedTopic);
+                        router.push("/");
+                      }}
+                    >
+                      {isSubmitting ? (
+                        <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Finalizing...
+                        </>
+                      ) : (
+                        "Back to Home"
+                      )}
                     </Button>
                   )
                 ) : (
-                  <Button onClick={() => handleNextTopic(selectedTopic)}>
-                    Next Topic
+                  <Button
+                    disabled={isSubmitting}
+                    onClick={() => handleNextTopic(selectedTopic)}
+                  >
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Saving...
+                      </>
+                    ) : (
+                      "Next Topic"
+                    )}
                   </Button>
                 )}
               </div>
