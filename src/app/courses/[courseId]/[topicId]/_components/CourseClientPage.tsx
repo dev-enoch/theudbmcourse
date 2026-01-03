@@ -316,7 +316,7 @@ export function CourseClientPage({
                         await completeTopicIfNeeded(selectedTopic);
 
                         window.open(
-                          "https://chat.whatsapp.com/LCECsTmXq7iIJIlBSoLPaQ",
+                          "https://chat.whatsapp.com/KNX0LPFR4ai0P6AYW5fdzI",
                           "_blank"
                         );
                       }}
