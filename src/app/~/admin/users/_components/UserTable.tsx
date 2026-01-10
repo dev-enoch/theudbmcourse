@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import {
   Table,
   TableBody,
@@ -47,6 +48,8 @@ export function UserTable({
   currentAdminEmail,
   pagination,
 }: UserTableProps) {
+  const router = useRouter();
+  const searchParams = useSearchParams();
   const [users, setUsers] = useState<User[]>(initialUsers);
   const [loadingStates, setLoadingStates] = useState<Record<string, string>>(
     {}
@@ -54,6 +57,11 @@ export function UserTable({
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [activeModalType, setActiveModalType] = useState<ModalType>(null);
   const [activeUser, setActiveUser] = useState<User | null>(null);
+
+  // Sync users when initialUsers changes (after server refresh)
+  useEffect(() => {
+    setUsers(initialUsers);
+  }, [initialUsers]);
 
   const openModal = (user: User, type: ModalType) => {
     setActiveUser(user);
@@ -68,16 +76,54 @@ export function UserTable({
 
     try {
       if (activeModalType === "promote") {
-        await updateUserOnServer(activeUser.id, {
+        const result = await updateUserOnServer(activeUser.id, {
           role: activeUser.role === "admin" ? "user" : "admin",
         });
-        toast.success("User role updated successfully.");
+
+        if (result.error) {
+          toast.error(result.error);
+        } else {
+          toast.success("User role updated successfully.");
+          // Update the user in the local state
+          setUsers((prevUsers) =>
+            prevUsers.map((u) =>
+              u.id === activeUser.id
+                ? { ...u, role: activeUser.role === "admin" ? "user" : "admin" }
+                : u
+            )
+          );
+        }
       } else if (activeModalType === "resend") {
-        await resendLoginDetailsOnServer(activeUser.id);
-        toast.success("Login details resent successfully.");
+        const result = await resendLoginDetailsOnServer(activeUser.id);
+
+        if (result.error) {
+          toast.error(result.error);
+        } else {
+          toast.success("Login details resent successfully.");
+        }
       } else if (activeModalType === "delete") {
-        await deleteUserOnServer(activeUser.id);
-        toast.success("User deleted.");
+        const result = await deleteUserOnServer(activeUser.id);
+
+        if (result.error) {
+          toast.error(result.error);
+        } else {
+          toast.success("User deleted.");
+
+          // Check if this was the last user on the current page
+          const remainingUsers = users.filter((u) => u.id !== activeUser.id);
+
+          // If we're on a page > 1 and this was the last user, go to previous page
+          if (remainingUsers.length === 0 && pagination.page > 1) {
+            const params = new URLSearchParams(searchParams.toString());
+            params.set("page", (pagination.page - 1).toString());
+            router.push(`?${params.toString()}`);
+          } else {
+            // Remove the user from local state
+            setUsers(remainingUsers);
+            // Refresh to get updated pagination info
+            router.refresh();
+          }
+        }
       }
     } catch (err: any) {
       toast.error(err.message || "Action failed.");
@@ -88,14 +134,19 @@ export function UserTable({
     setActiveUser(null);
     setActiveModalType(null);
 
-    // Reload current page to reflect changes
-    window.location.reload();
+    // Only refresh if we didn't already navigate away
+    if (
+      activeModalType !== "delete" ||
+      users.filter((u) => u.id !== activeUser.id).length > 0
+    ) {
+      router.refresh();
+    }
   };
 
   const goToPage = (page: number) => {
-    const url = new URL(window.location.href);
-    url.searchParams.set("page", page.toString());
-    window.location.href = url.toString();
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", page.toString());
+    router.push(`?${params.toString()}`);
   };
 
   return (
