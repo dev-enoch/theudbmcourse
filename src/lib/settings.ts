@@ -16,7 +16,7 @@ export async function getSettings() {
         {
           courseId: "ha-tiktok-ads",
           courseName: "TikTok Ads Course",
-          link: "https://chat.whatsapp.com/KNX0LPFR4ai0P6AYW5fdzI",
+          link: "https://chat.whatsapp.com/C2GTedPcLtzIcDbi5cXHhV",
           enabled: true,
         },
       ],
