@@ -25,19 +25,33 @@ import { TopicItem } from "./TopicItem";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
-const linkifyText = (text: string): React.ReactNode[] => {
+const linkifyText = (
+  text: string,
+  groupLink?: string | null
+): React.ReactNode[] => {
   const urlRegex = /(https?:\/\/[^\s]+)/g;
 
   return text.split(urlRegex).map((part, index) =>
     part.startsWith("http") ? (
       <a
         key={index}
-        href={part}
+        href={
+          (part.includes("chat.whatsapp.com") ||
+            part.includes("wa.me") ||
+            part.includes("t.me")) &&
+          groupLink
+            ? groupLink
+            : part
+        }
         target="_blank"
         rel="noopener noreferrer"
         className="text-blue-600 underline"
       >
-        [here]
+        {part.includes("chat.whatsapp.com") ||
+        part.includes("wa.me") ||
+        part.includes("t.me")
+          ? "[Join Group]"
+          : "[here]"}
       </a>
     ) : (
       part
@@ -304,7 +318,7 @@ export function CourseClientPage({
                 />
               </div>
               <CardDescription>
-                {linkifyText(selectedTopic.description)}
+                {linkifyText(selectedTopic.description, groupLink)}
               </CardDescription>
               <div className="grow" />
               <div className="flex justify-end gap-2 mt-auto pt-4 border-t">
