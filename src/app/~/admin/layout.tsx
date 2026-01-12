@@ -29,6 +29,26 @@ export default async function AdminLayout({
         </div>
       </header>
 
+      {/* Navigation Tabs */}
+      <nav className="border-b bg-background">
+        <div className="max-w-[1440px] mx-auto w-full px-4 lg:px-6">
+          <div className="flex gap-6">
+            <Link
+              href="/~/admin/users"
+              className="py-4 text-sm font-medium border-b-2 border-transparent hover:border-primary transition-colors"
+            >
+              Users
+            </Link>
+            <Link
+              href="/~/admin/settings"
+              className="py-4 text-sm font-medium border-b-2 border-transparent hover:border-primary transition-colors"
+            >
+              Settings
+            </Link>
+          </div>
+        </div>
+      </nav>
+
       {/* Main content */}
       <main className="flex-1 flex flex-col p-4 lg:p-6 bg-background max-w-[1440px] mx-auto w-full">
         {children}

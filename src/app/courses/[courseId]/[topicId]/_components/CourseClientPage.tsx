@@ -144,6 +144,7 @@ interface CourseClientPageProps {
   userId: string;
   allTopicIds: string[];
   currentTopicId: string;
+  groupLink: string | null;
 }
 
 export function CourseClientPage({
@@ -152,6 +153,7 @@ export function CourseClientPage({
   userId,
   allTopicIds,
   currentTopicId,
+  groupLink,
 }: CourseClientPageProps) {
   const [progress, setProgress] = useState<UserProgress>(initialProgress);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -307,7 +309,7 @@ export function CourseClientPage({
               <div className="grow" />
               <div className="flex justify-end gap-2 mt-auto pt-4 border-t">
                 {isLastTopic ? (
-                  course.id === "ha-tiktok-ads" ? (
+                  groupLink ? (
                     <Button
                       disabled={isSubmitting}
                       onClick={async () => {
@@ -315,10 +317,7 @@ export function CourseClientPage({
 
                         await completeTopicIfNeeded(selectedTopic);
 
-                        window.open(
-                          "https://chat.whatsapp.com/KNX0LPFR4ai0P6AYW5fdzI",
-                          "_blank"
-                        );
+                        window.open(groupLink, "_blank");
                       }}
                     >
                       {isSubmitting ? (

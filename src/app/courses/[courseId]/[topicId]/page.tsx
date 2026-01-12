@@ -1,6 +1,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/authOptions";
 import { getCourseById, getUserProgress } from "@/lib/data";
+import { getGroupLinkByCourseId } from "@/lib/settings";
 import { redirect, notFound } from "next/navigation";
 import { CourseClientPage } from "./_components/CourseClientPage";
 import AppLayout from "@/components/common/AppLayout";
@@ -26,6 +27,9 @@ export default async function CoursePlayerPage({
 
   const progress = await getUserProgress(userId);
 
+  // Get the group link for this course from database
+  const groupLink = await getGroupLinkByCourseId(courseId);
+
   const allTopicIds = course.modules.flatMap((m) => m.topics.map((t) => t.id));
   if (!allTopicIds.includes(topicId)) notFound();
 
@@ -37,6 +41,7 @@ export default async function CoursePlayerPage({
         userId={userId}
         allTopicIds={allTopicIds}
         currentTopicId={topicId}
+        groupLink={groupLink}
       />
     </AppLayout>
   );
