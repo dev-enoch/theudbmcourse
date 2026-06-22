@@ -421,7 +421,7 @@ export async function getAdminAnalytics() {
       { $match: { role: "user" } },
       { $group: {
           _id: {
-            active: "$active",
+            active: { $ifNull: ["$active", true] },
             hasRevoked: { $gt: [{ $size: { $ifNull: ["$revokedCourses", []] } }, 0] }
           },
           count: { $sum: 1 }
