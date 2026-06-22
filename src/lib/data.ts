@@ -366,10 +366,27 @@ export async function getCourseById(id: string): Promise<Course | undefined> {
 export async function getAdminAnalytics() {
   await connectDB();
 
-  const [totalUsers, totalAdmins, courses] = await Promise.all([
+  const sevenDaysAgo = new Date();
+  sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+
+  const [totalUsers, totalAdmins, suspendedUsers, deviceLocksCount, courses, signupsResult] = await Promise.all([
     User.countDocuments({ role: "user" }),
     User.countDocuments({ role: "admin" }),
+    User.countDocuments({ role: "user", active: false }),
+    ClaimedOrder.countDocuments(),
     readCoursesFile(),
+    User.aggregate([
+      { $match: { role: "user", createdAt: { $gte: sevenDaysAgo } } },
+      {
+        $group: {
+          _id: {
+            $dateToString: { format: "%Y-%m-%d", date: "$createdAt" }
+          },
+          count: { $sum: 1 }
+        }
+      },
+      { $sort: { _id: 1 } }
+    ])
   ]);
 
   // To calculate total completed lessons, we aggregate across all users
@@ -381,10 +398,26 @@ export async function getAdminAnalytics() {
   
   const totalCompletedLessons = result.length > 0 ? result[0].totalCompletedLessons : 0;
 
+  // Format signups for chart (fill missing dates)
+  const signupsOverTime = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const dateStr = d.toISOString().split("T")[0];
+    const found = signupsResult.find((s: any) => s._id === dateStr);
+    signupsOverTime.push({
+      date: d.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+      signups: found ? found.count : 0
+    });
+  }
+
   return {
     totalUsers,
     totalAdmins,
+    suspendedUsers,
+    deviceLocksCount,
     totalCourses: courses.length,
     totalCompletedLessons,
+    signupsOverTime,
   };
 }
