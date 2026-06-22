@@ -18,8 +18,10 @@ export default async function AppLayout({
   return (
     <div className="flex flex-col min-h-screen">
       {settings?.announcementEnabled && settings?.announcementBanner && (
-        <div className="bg-primary text-primary-foreground py-2 px-4 text-center text-sm font-medium">
-          {settings.announcementBanner}
+        <div className="bg-primary text-primary-foreground py-2 text-sm font-medium overflow-hidden whitespace-nowrap w-full">
+          <div className="animate-marquee">
+            {settings.announcementBanner}
+          </div>
         </div>
       )}
       <header className="sticky top-0 z-10 flex items-center h-16 px-4 border-b bg-background/80 backdrop-blur-sm sm:px-6">
