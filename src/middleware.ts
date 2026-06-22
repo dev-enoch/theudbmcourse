@@ -14,8 +14,11 @@ export function middleware(req: NextRequest) {
   const publicRoutes = ["/login", "/welcome", "/unauthorized"];
 
   if (publicRoutes.includes(pathname)) {
-    // If they already have access, redirect from login/welcome/unauthorized to home page
+    // If they already have access, redirect from login/welcome/unauthorized to appropriate home
     if ((pathname === "/login" || pathname === "/unauthorized") && (session || payonaireToken)) {
+      if (session) {
+        return NextResponse.redirect(new URL("/~/admin/settings", req.url));
+      }
       return NextResponse.redirect(new URL("/", req.url));
     }
     return NextResponse.next();

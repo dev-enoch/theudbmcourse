@@ -50,8 +50,8 @@ export function LoginForm() {
       } else {
         toast.success("Login Successful. Welcome back!");
 
-        // Ensure server session updates
-        window.location.href = "/";
+        // Ensure server session updates and redirect to admin settings
+        window.location.href = "/~/admin/settings";
       }
     });
   }
