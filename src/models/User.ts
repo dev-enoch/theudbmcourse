@@ -11,6 +11,11 @@ export interface IUser extends Document {
   password: string;
   role: "admin" | "user";
   progress: IUserProgress[];
+  active?: boolean;
+  adminNotes?: string;
+  suspensionReason?: string;
+  suspendedUntil?: Date;
+  revokedCourses?: string[];
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -31,6 +36,14 @@ const UserSchema = new Schema<IUser>(
       enum: ["admin", "user"],
       default: "user",
     },
+
+    active: { type: Boolean, default: true },
+
+    // CRM and Suspension Fields
+    adminNotes: { type: String, default: "" },
+    suspensionReason: { type: String, default: "" },
+    suspendedUntil: { type: Date },
+    revokedCourses: { type: [String], default: [] },
 
     // ✔ added progress to the DB schema
     progress: {

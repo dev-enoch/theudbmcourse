@@ -118,6 +118,7 @@ export async function addUser(input: AddUserInput) {
     password: hashedPassword,
     active: true,
     progress: [],
+    revokedCourses: [],
   });
 
   // --- SEND ACTIVATION EMAIL USING TEMPLATE ---
@@ -210,8 +211,27 @@ export async function deleteUser(userId: string) {
 }
 
 // -------------------------------
-// USER PROGRESS
+// USER PROGRESS & PROFILE
 // -------------------------------
+export async function getUserProfile(userId: string) {
+  await connectDB();
+  const user = await User.findById(userId).lean() as any;
+  if (!user) return null;
+
+  const order = await ClaimedOrder.findOne({ email: user.email }).lean() as any;
+
+  return {
+    ...user,
+    id: user._id.toString(),
+    _id: user._id.toString(),
+    claimedOrder: order ? {
+      ...order,
+      id: order._id.toString(),
+      _id: order._id.toString()
+    } : null
+  };
+}
+
 export async function getUserProgress(userId: string) {
   await connectDB();
 

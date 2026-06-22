@@ -216,6 +216,13 @@ export function UserTable({
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
+                            onSelect={() => router.push(`/~/admin/users/${user.id}`)}
+                            className="font-bold text-primary"
+                          >
+                            View User Profile
+                          </DropdownMenuItem>
+                          <DropdownMenuSeparator />
+                          <DropdownMenuItem
                             disabled={isCurrentAdmin}
                             onSelect={() => openModal(user, "promote")}
                           >

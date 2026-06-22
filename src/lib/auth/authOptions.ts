@@ -23,11 +23,23 @@ export const authOptions: NextAuthOptions = {
           throw new Error("Missing credentials.");
         }
 
-        const user = await User.findOne({ email: credentials.email }).lean();
+        const user = await User.findOne({ email: credentials.email }).lean() as any;
         if (!user) throw new Error("Invalid email or password.");
 
-        if (user.role !== "admin") {
-          throw new Error("Access Denied: Only administrators can log in here.");
+        // Enforce suspensions
+        if (user.active === false) {
+          if (user.suspendedUntil) {
+            const now = new Date();
+            if (now < new Date(user.suspendedUntil)) {
+              throw new Error(`Account suspended until ${new Date(user.suspendedUntil).toLocaleDateString()}. Reason: ${user.suspensionReason || 'Violation of terms.'}`);
+            } else {
+              // Suspension has expired, reactivate them
+              await User.findByIdAndUpdate(user._id, { active: true, suspendedUntil: null, suspensionReason: "" });
+            }
+          } else {
+             // Indefinite ban
+             throw new Error(`Account permanently suspended. Reason: ${user.suspensionReason || 'Violation of terms.'}`);
+          }
         }
 
         const isValid = await verifyPassword(
