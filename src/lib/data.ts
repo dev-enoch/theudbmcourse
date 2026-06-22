@@ -369,22 +369,68 @@ export async function getAdminAnalytics() {
   const sevenDaysAgo = new Date();
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
 
-  const [totalUsers, totalAdmins, suspendedUsers, deviceLocksCount, courses, signupsResult] = await Promise.all([
+  const thirtyDaysAgo = new Date();
+  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+  const twelveMonthsAgo = new Date();
+  twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 11);
+  twelveMonthsAgo.setDate(1); // Start of the month 12 months ago
+
+  const [
+    totalUsers,
+    totalAdmins,
+    suspendedUsersCount,
+    deviceLocksCount,
+    courses,
+    signupsResult,
+    monthlyUsersResult,
+    topLessonsResult,
+    accountHealthResult,
+    deviceClaimsResult,
+  ] = await Promise.all([
     User.countDocuments({ role: "user" }),
     User.countDocuments({ role: "admin" }),
     User.countDocuments({ role: "user", active: false }),
     ClaimedOrder.countDocuments(),
     readCoursesFile(),
+    // Old 7-day signups
     User.aggregate([
       { $match: { role: "user", createdAt: { $gte: sevenDaysAgo } } },
-      {
-        $group: {
+      { $group: { _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }, count: { $sum: 1 } } },
+      { $sort: { _id: 1 } }
+    ]),
+    // 1. Monthly Users & Revenue (last 12 months)
+    User.aggregate([
+      { $match: { role: "user", createdAt: { $gte: twelveMonthsAgo } } },
+      { $group: { 
+          _id: { $dateToString: { format: "%Y-%m", date: "$createdAt" } }, 
+          count: { $sum: 1 } 
+      } },
+      { $sort: { _id: 1 } }
+    ]),
+    // 2. Top 5 Most Engaging Lessons
+    User.aggregate([
+      { $unwind: "$progress" },
+      { $match: { "progress.completed": true, role: "user" } },
+      { $group: { _id: "$progress.topicId", completions: { $sum: 1 } } },
+      { $sort: { completions: -1 } },
+      { $limit: 5 }
+    ]),
+    // 3. Account Health
+    User.aggregate([
+      { $match: { role: "user" } },
+      { $group: {
           _id: {
-            $dateToString: { format: "%Y-%m-%d", date: "$createdAt" }
+            active: "$active",
+            hasRevoked: { $gt: [{ $size: { $ifNull: ["$revokedCourses", []] } }, 0] }
           },
           count: { $sum: 1 }
-        }
-      },
+      }}
+    ]),
+    // 4. Device Claims Over Time (30 days)
+    ClaimedOrder.aggregate([
+      { $match: { createdAt: { $gte: thirtyDaysAgo } } },
+      { $group: { _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }, count: { $sum: 1 } } },
       { $sort: { _id: 1 } }
     ])
   ]);
@@ -395,10 +441,9 @@ export async function getAdminAnalytics() {
     { $match: { "progress.completed": true } },
     { $count: "totalCompletedLessons" }
   ]);
-  
   const totalCompletedLessons = result.length > 0 ? result[0].totalCompletedLessons : 0;
 
-  // Format signups for chart (fill missing dates)
+  // Format signups for 7-day chart
   const signupsOverTime = [];
   for (let i = 6; i >= 0; i--) {
     const d = new Date();
@@ -411,13 +456,96 @@ export async function getAdminAnalytics() {
     });
   }
 
+  // Format Monthly Revenue & Users
+  const monthlyRevenue = [];
+  const REVENUE_PER_USER = 15000;
+  for (let i = 11; i >= 0; i--) {
+    const d = new Date();
+    d.setMonth(d.getMonth() - i);
+    const monthStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+    const found = monthlyUsersResult.find((s: any) => s._id === monthStr);
+    const usersCount = found ? found.count : 0;
+    monthlyRevenue.push({
+      month: d.toLocaleDateString("en-US", { month: "short", year: "2-digit" }),
+      users: usersCount,
+      revenue: usersCount * REVENUE_PER_USER
+    });
+  }
+
+  // Map Top Lessons to Titles
+  const topLessons = topLessonsResult.map((t: any) => {
+    let title = t._id;
+    for (const course of courses) {
+      for (const module of course.modules) {
+        const topic = module.topics.find((tp: any) => tp.id === t._id);
+        if (topic) title = topic.title;
+      }
+    }
+    return { name: title.substring(0, 20) + (title.length > 20 ? "..." : ""), completions: t.completions };
+  });
+
+  // Calculate Account Health
+  let activeStatusCount = 0;
+  let suspendedCount = 0;
+  let revokedCount = 0;
+  
+  accountHealthResult.forEach((group: any) => {
+    if (group._id.active && !group._id.hasRevoked) activeStatusCount += group.count;
+    else if (!group._id.active) suspendedCount += group.count;
+    else if (group._id.hasRevoked) revokedCount += group.count;
+  });
+
+  const accountHealth = [
+    { name: "Active", value: activeStatusCount, fill: "#22c55e" },
+    { name: "Suspended", value: suspendedCount, fill: "#f59e0b" },
+    { name: "Revoked", value: revokedCount, fill: "#ef4444" },
+  ];
+
+  // Course Completion Breakdown
+  // (We need to pull all users progress to check if they finished entire courses)
+  const allUsersProgress = await User.find({ role: "user" }, { progress: 1 }).lean();
+  const courseCompletions = courses.map(course => {
+    const allTopicIds = course.modules.flatMap(m => m.topics.map(t => t.id));
+    if (allTopicIds.length === 0) return { course: course.title, completionRate: 0 };
+    
+    let fullyCompletedCount = 0;
+    allUsersProgress.forEach((u: any) => {
+      const userCompletedTopicIds = u.progress?.filter((p: any) => p.completed).map((p: any) => p.topicId) || [];
+      const hasCompletedAll = allTopicIds.every(id => userCompletedTopicIds.includes(id));
+      if (hasCompletedAll) fullyCompletedCount++;
+    });
+
+    return {
+      course: course.title.substring(0, 15) + (course.title.length > 15 ? "..." : ""),
+      completionRate: allUsersProgress.length > 0 ? Math.round((fullyCompletedCount / allUsersProgress.length) * 100) : 0
+    };
+  });
+
+  // Format Device Claims (Piracy Activity)
+  const deviceClaims30Days = [];
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const dateStr = d.toISOString().split("T")[0];
+    const found = deviceClaimsResult.find((s: any) => s._id === dateStr);
+    deviceClaims30Days.push({
+      date: d.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
+      claims: found ? found.count : 0
+    });
+  }
+
   return {
     totalUsers,
     totalAdmins,
-    suspendedUsers,
+    suspendedUsers: suspendedUsersCount,
     deviceLocksCount,
     totalCourses: courses.length,
     totalCompletedLessons,
     signupsOverTime,
+    monthlyRevenue,
+    topLessons,
+    accountHealth,
+    courseCompletions,
+    deviceClaims30Days
   };
 }
