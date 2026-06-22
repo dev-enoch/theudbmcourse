@@ -42,6 +42,12 @@ export default async function AdminLayout({
           <nav className="flex-1 overflow-y-auto py-6 px-4">
             <div className="grid items-start text-sm font-medium gap-2">
               <Link
+                href="/~/admin"
+                className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-muted/50"
+              >
+                Dashboard
+              </Link>
+              <Link
                 href="/~/admin/users"
                 className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-muted/50"
               >
@@ -52,6 +58,12 @@ export default async function AdminLayout({
                 className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-muted/50"
               >
                 Settings
+              </Link>
+              <Link
+                href="/~/admin/marketing"
+                className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-muted/50"
+              >
+                Marketing
               </Link>
             </div>
           </nav>

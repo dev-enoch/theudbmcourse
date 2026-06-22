@@ -237,11 +237,60 @@ export async function updateUserProgress(
   if (!user) throw new Error("User not found.");
 
   const existing = user.progress.find((p: any) => p.topicId === topicId);
+  const isNewlyCompleted = (!existing || !existing.completed) && completed;
 
   if (existing) existing.completed = completed;
   else user.progress.push({ topicId, completed });
 
   await user.save();
+
+  if (isNewlyCompleted) {
+    // Send lesson completion email
+    await resend.emails.send({
+      from: process.env.EMAIL_FROM || "hello@example.com",
+      to: user.email,
+      subject: "Lesson Completed! 🎉",
+      html: `<div style="font-family: sans-serif; padding: 20px;">
+        <h2>Great job, ${user.name || 'Student'}!</h2>
+        <p>You have successfully completed a lesson.</p>
+        <p>Keep up the great work and continue your learning journey!</p>
+        <a href="${process.env.APP_URL}" style="display: inline-block; padding: 10px 20px; background-color: #2563eb; color: white; text-decoration: none; border-radius: 5px;">Continue Course</a>
+      </div>`,
+    }).catch(console.error);
+
+    // Check if course is completed
+    const courses = await readCoursesFile();
+    let courseOfTopic = null;
+    let allTopicIds: string[] = [];
+
+    for (const course of courses) {
+      allTopicIds = course.modules.flatMap(m => m.topics.map(t => t.id));
+      if (allTopicIds.includes(topicId)) {
+        courseOfTopic = course;
+        break;
+      }
+    }
+
+    if (courseOfTopic) {
+      const completedTopicIds = user.progress.filter((p: any) => p.completed).map((p: any) => p.topicId);
+      const isCourseCompleted = allTopicIds.every(id => completedTopicIds.includes(id));
+      
+      if (isCourseCompleted) {
+        await resend.emails.send({
+          from: process.env.EMAIL_FROM || "hello@example.com",
+          to: user.email,
+          subject: "Course Completed! 🏆",
+          html: `<div style="font-family: sans-serif; padding: 20px;">
+            <h2>Congratulations, ${user.name || 'Student'}!</h2>
+            <p>You have successfully completed the entire course: <strong>${courseOfTopic.title}</strong>.</p>
+            <p>Don't forget to join the exclusive group to connect with other students!</p>
+            <a href="${process.env.APP_URL}" style="display: inline-block; padding: 10px 20px; background-color: #16a34a; color: white; text-decoration: none; border-radius: 5px;">Go to Dashboard</a>
+          </div>`,
+        }).catch(console.error);
+      }
+    }
+  }
+
   return getUserProgress(userId);
 }
 
@@ -289,4 +338,33 @@ export async function getCourses(): Promise<Course[]> {
 export async function getCourseById(id: string): Promise<Course | undefined> {
   const courses = await readCoursesFile();
   return courses.find((course) => course.id === id);
+}
+
+// -------------------------------
+// ADMIN ANALYTICS
+// -------------------------------
+export async function getAdminAnalytics() {
+  await connectDB();
+
+  const [totalUsers, totalAdmins, courses] = await Promise.all([
+    User.countDocuments({ role: "user" }),
+    User.countDocuments({ role: "admin" }),
+    readCoursesFile(),
+  ]);
+
+  // To calculate total completed lessons, we aggregate across all users
+  const result = await User.aggregate([
+    { $unwind: "$progress" },
+    { $match: { "progress.completed": true } },
+    { $count: "totalCompletedLessons" }
+  ]);
+  
+  const totalCompletedLessons = result.length > 0 ? result[0].totalCompletedLessons : 0;
+
+  return {
+    totalUsers,
+    totalAdmins,
+    totalCourses: courses.length,
+    totalCompletedLessons,
+  };
 }
