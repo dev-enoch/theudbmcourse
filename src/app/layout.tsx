@@ -2,10 +2,15 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from "sonner";
 
-export const metadata: Metadata = {
-  title: "Blueprint to Automated Gains (BAG)",
-  description: "An affiliate marketing course platform.",
-};
+import { getSettings } from "@/lib/settings";
+
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await getSettings();
+  return {
+    title: settings?.siteTitle || "Blueprint to Automated Gains (BAG)",
+    description: "An affiliate marketing course platform.",
+  };
+}
 
 export default function RootLayout({
   children,

@@ -2,7 +2,10 @@ import { Logo } from "@/components/common/Logo";
 import { LoginForm } from "./_components/login-form";
 import Link from "next/link";
 
-export default function LoginPage() {
+import { getSettings } from "@/lib/settings";
+
+export default async function LoginPage() {
+  const settings = await getSettings();
   return (
     <div className="flex min-h-full flex-col justify-center items-center px-6 py-12 lg:px-8 bg-background">
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
@@ -20,7 +23,7 @@ export default function LoginPage() {
         <p className="mt-10 text-center text-sm text-muted-foreground">
           Need help?{" "}
           <a
-            href="https://wa.me/2349038633816"
+            href={settings?.supportWhatsApp || "https://wa.me/2349038633816"}
             target="_blank"
             rel="noopener noreferrer"
             className="font-semibold leading-6 text-primary hover:text-primary/80"

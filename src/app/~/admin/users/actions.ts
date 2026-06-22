@@ -9,6 +9,8 @@ import {
   updateUser as dbUpdateUser,
   deleteUser as dbDeleteUser,
   resendLoginDetails,
+  resetUserProgress,
+  resetDeviceLock,
 } from "@/lib/data";
 
 type AddUserInput = {
@@ -91,5 +93,41 @@ export async function resendLoginDetailsOnServer(userId: string) {
     return { success: true, message: result.message };
   } catch (err: any) {
     return { error: err.message || "Failed to resend login email." };
+  }
+}
+
+/**
+ * Server action to reset a user's course progress.
+ */
+export async function resetUserProgressOnServer(userId: string) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user || session.user.role !== "admin") {
+    return { error: "Permission denied." };
+  }
+
+  try {
+    const result = await resetUserProgress(userId);
+    revalidatePath("/~/admin/users");
+    return result;
+  } catch (err: any) {
+    return { error: err.message || "Failed to reset progress." };
+  }
+}
+
+/**
+ * Server action to reset a user's device lock.
+ */
+export async function resetDeviceLockOnServer(email: string) {
+  const session = await getServerSession(authOptions);
+  if (!session?.user || session.user.role !== "admin") {
+    return { error: "Permission denied." };
+  }
+
+  try {
+    const result = await resetDeviceLock(email);
+    revalidatePath("/~/admin/users");
+    return result;
+  } catch (err: any) {
+    return { error: err.message || "Failed to reset device lock." };
   }
 }

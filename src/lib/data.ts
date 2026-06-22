@@ -1,6 +1,7 @@
 "use server";
 
 import User from "@/models/User";
+import ClaimedOrder from "@/models/ClaimedOrder";
 import { connectDB } from "./mongoose";
 import { hashPassword } from "./auth/password";
 import path from "path";
@@ -242,6 +243,22 @@ export async function updateUserProgress(
 
   await user.save();
   return getUserProgress(userId);
+}
+
+export async function resetUserProgress(userId: string) {
+  await connectDB();
+  const user = await User.findById(userId);
+  if (!user) throw new Error("User not found.");
+  user.progress = [];
+  await user.save();
+  return { success: true, message: "Progress reset successfully." };
+}
+
+export async function resetDeviceLock(email: string) {
+  await connectDB();
+  const result = await ClaimedOrder.findOneAndDelete({ email });
+  if (!result) throw new Error("No device lock found for this email.");
+  return { success: true, message: "Device lock reset successfully." };
 }
 
 // -------------------------------

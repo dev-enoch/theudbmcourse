@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { MoreHorizontal, Loader2, Trash, RefreshCcw } from "lucide-react";
+import { MoreHorizontal, Loader2, Trash, RefreshCcw, RotateCcw, MonitorSmartphone } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuTrigger,
@@ -27,10 +27,12 @@ import {
   updateUserOnServer,
   deleteUserOnServer,
   resendLoginDetailsOnServer,
+  resetUserProgressOnServer,
+  resetDeviceLockOnServer,
 } from "../actions";
 import { toast } from "sonner";
 
-type ModalType = "promote" | "resend" | "delete" | null;
+type ModalType = "promote" | "resend" | "delete" | "resetProgress" | "resetDeviceLock" | null;
 
 interface UserTableProps {
   initialUsers: User[];
@@ -100,6 +102,20 @@ export function UserTable({
           toast.error(result.error);
         } else {
           toast.success("Login details resent successfully.");
+        }
+      } else if (activeModalType === "resetProgress") {
+        const result = await resetUserProgressOnServer(activeUser.id);
+        if ("error" in result) {
+          toast.error(result.error as string);
+        } else {
+          toast.success("User progress reset successfully.");
+        }
+      } else if (activeModalType === "resetDeviceLock") {
+        const result = await resetDeviceLockOnServer(activeUser.email);
+        if ("error" in result) {
+          toast.error(result.error as string);
+        } else {
+          toast.success("Device lock reset successfully.");
         }
       } else if (activeModalType === "delete") {
         const result = await deleteUserOnServer(activeUser.id);
@@ -213,6 +229,16 @@ export function UserTable({
                             Email
                           </DropdownMenuItem>
                           <DropdownMenuItem
+                            onSelect={() => openModal(user, "resetProgress")}
+                          >
+                            <RotateCcw className="mr-2 h-4 w-4" /> Reset Course Progress
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
+                            onSelect={() => openModal(user, "resetDeviceLock")}
+                          >
+                            <MonitorSmartphone className="mr-2 h-4 w-4" /> Reset Device Lock
+                          </DropdownMenuItem>
+                          <DropdownMenuItem
                             disabled={isCurrentAdmin}
                             className="text-red-600"
                             onSelect={() => openModal(user, "delete")}
@@ -268,6 +294,10 @@ export function UserTable({
               : "Promote this user to Admin?"
             : activeModalType === "resend"
             ? "Resend login details?"
+            : activeModalType === "resetProgress"
+            ? "Reset course progress?"
+            : activeModalType === "resetDeviceLock"
+            ? "Reset device lock?"
             : activeModalType === "delete"
             ? `Delete ${activeUser?.name || activeUser?.email}?`
             : ""
@@ -275,6 +305,10 @@ export function UserTable({
         description={
           activeModalType === "resend"
             ? "This will reset the user's password to the default."
+            : activeModalType === "resetProgress"
+            ? "This will clear the user's course progress."
+            : activeModalType === "resetDeviceLock"
+            ? "This will clear any active device lock for the user's email."
             : activeModalType === "delete"
             ? "This action cannot be undone."
             : undefined
@@ -286,6 +320,10 @@ export function UserTable({
               : "Promote"
             : activeModalType === "resend"
             ? "Resend"
+            : activeModalType === "resetProgress"
+            ? "Reset Progress"
+            : activeModalType === "resetDeviceLock"
+            ? "Reset Lock"
             : activeModalType === "delete"
             ? "Delete"
             : ""

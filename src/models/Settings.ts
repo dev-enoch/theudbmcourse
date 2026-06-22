@@ -10,6 +10,11 @@ export interface IGroupLink {
 export interface ISettings extends Document {
   groupLinks: IGroupLink[];
   payonairePurchaseLink: string;
+  supportWhatsApp: string;
+  supportEmail: string;
+  siteTitle: string;
+  announcementBanner: string;
+  announcementEnabled: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -30,6 +35,26 @@ const SettingsSchema = new Schema<ISettings>(
     payonairePurchaseLink: {
       type: String,
       default: "https://payonaire.com",
+    },
+    supportWhatsApp: {
+      type: String,
+      default: "https://wa.me/2349038633816",
+    },
+    supportEmail: {
+      type: String,
+      default: "support@bag.com",
+    },
+    siteTitle: {
+      type: String,
+      default: "Blueprint to Automated Gains (BAG)",
+    },
+    announcementBanner: {
+      type: String,
+      default: "",
+    },
+    announcementEnabled: {
+      type: Boolean,
+      default: false,
     },
   },
   {

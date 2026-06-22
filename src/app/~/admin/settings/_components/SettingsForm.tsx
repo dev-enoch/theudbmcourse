@@ -28,6 +28,11 @@ interface SettingsFormProps {
     _id: string;
     groupLinks: GroupLink[];
     payonairePurchaseLink?: string;
+    supportWhatsApp?: string;
+    supportEmail?: string;
+    siteTitle?: string;
+    announcementBanner?: string;
+    announcementEnabled?: boolean;
   };
 }
 
@@ -37,6 +42,21 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
   );
   const [payonairePurchaseLink, setPayonairePurchaseLink] = useState<string>(
     initialSettings.payonairePurchaseLink || "https://payonaire.com"
+  );
+  const [supportWhatsApp, setSupportWhatsApp] = useState<string>(
+    initialSettings.supportWhatsApp || "https://wa.me/2349038633816"
+  );
+  const [supportEmail, setSupportEmail] = useState<string>(
+    initialSettings.supportEmail || "support@bag.com"
+  );
+  const [siteTitle, setSiteTitle] = useState<string>(
+    initialSettings.siteTitle || "Blueprint to Automated Gains (BAG)"
+  );
+  const [announcementBanner, setAnnouncementBanner] = useState<string>(
+    initialSettings.announcementBanner || ""
+  );
+  const [announcementEnabled, setAnnouncementEnabled] = useState<boolean>(
+    initialSettings.announcementEnabled || false
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -71,7 +91,15 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
     setIsSubmitting(true);
 
     try {
-      const result = await updateSettingsOnServer(groupLinks, payonairePurchaseLink);
+      const result = await updateSettingsOnServer(
+        groupLinks,
+        payonairePurchaseLink,
+        supportWhatsApp,
+        supportEmail,
+        siteTitle,
+        announcementBanner,
+        announcementEnabled
+      );
 
       if (result.error) {
         toast.error(result.error);
@@ -87,6 +115,82 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Branding & Appearance Card */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Branding & Appearance</CardTitle>
+          <CardDescription>
+            Configure global site title and announcement banner.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="siteTitle">Site Title</Label>
+            <Input
+              id="siteTitle"
+              value={siteTitle}
+              onChange={(e) => setSiteTitle(e.target.value)}
+              placeholder="Blueprint to Automated Gains (BAG)"
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="announcementBanner">Announcement Banner Text</Label>
+            <Input
+              id="announcementBanner"
+              value={announcementBanner}
+              onChange={(e) => setAnnouncementBanner(e.target.value)}
+              placeholder="E.g., Welcome to the new platform!"
+            />
+          </div>
+          <div className="flex items-center space-x-2 pt-2">
+            <input
+              type="checkbox"
+              id="announcementEnabled"
+              checked={announcementEnabled}
+              onChange={(e) => setAnnouncementEnabled(e.target.checked)}
+              className="rounded"
+            />
+            <Label htmlFor="announcementEnabled" className="cursor-pointer">
+              Enable Announcement Banner
+            </Label>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* Support & Contact Channels Card */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Support & Contact Channels</CardTitle>
+          <CardDescription>
+            Configure support links for your users.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="supportWhatsApp">Support WhatsApp Link</Label>
+            <Input
+              id="supportWhatsApp"
+              value={supportWhatsApp}
+              onChange={(e) => setSupportWhatsApp(e.target.value)}
+              placeholder="https://wa.me/..."
+              required
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="supportEmail">Support Email</Label>
+            <Input
+              id="supportEmail"
+              value={supportEmail}
+              onChange={(e) => setSupportEmail(e.target.value)}
+              placeholder="support@bag.com"
+              required
+              type="email"
+            />
+          </div>
+        </CardContent>
+      </Card>
+
       {/* Payonaire Settings Card */}
       <Card>
         <CardHeader>
