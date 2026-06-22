@@ -1,7 +1,6 @@
 "use server";
 
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth/authOptions";
+import { getAuthSession } from "@/lib/auth/getAuthSession";
 import { updateUserProgress } from "@/lib/data";
 import { revalidatePath } from "next/cache";
 
@@ -10,8 +9,8 @@ export async function updateUserProgressOnServer(
   topicId: string,
   completed: boolean
 ) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id || session.user.id !== userId) {
+  const session = await getAuthSession();
+  if (!session || session.userId !== userId) {
     throw new Error("Permission denied.");
   }
 

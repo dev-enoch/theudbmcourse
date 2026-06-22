@@ -9,6 +9,7 @@ export interface IGroupLink {
 
 export interface ISettings extends Document {
   groupLinks: IGroupLink[];
+  payonairePurchaseLink: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -25,6 +26,10 @@ const SettingsSchema = new Schema<ISettings>(
     groupLinks: {
       type: [GroupLinkSchema],
       default: [],
+    },
+    payonairePurchaseLink: {
+      type: String,
+      default: "https://payonaire.com",
     },
   },
   {

@@ -20,7 +20,14 @@ export async function getSettings() {
           enabled: true,
         },
       ],
+      payonairePurchaseLink: "https://payonaire.com",
     });
+  }
+
+  // Ensure default link exists in return object if not already set
+  if (!settings.payonairePurchaseLink) {
+    settings.payonairePurchaseLink = "https://payonaire.com";
+    await settings.save();
   }
 
   return JSON.parse(JSON.stringify(settings));
@@ -39,15 +46,16 @@ export async function getGroupLinkByCourseId(courseId: string) {
   return groupLink ? groupLink.link : null;
 }
 
-export async function updateGroupLinks(groupLinks: IGroupLink[]) {
+export async function updateSettings(groupLinks: IGroupLink[], payonairePurchaseLink: string) {
   await connectDB();
 
   let settings = await Settings.findOne();
 
   if (!settings) {
-    settings = await Settings.create({ groupLinks });
+    settings = await Settings.create({ groupLinks, payonairePurchaseLink });
   } else {
     settings.groupLinks = groupLinks;
+    settings.payonairePurchaseLink = payonairePurchaseLink;
     await settings.save();
   }
 

@@ -27,12 +27,16 @@ interface SettingsFormProps {
   initialSettings: {
     _id: string;
     groupLinks: GroupLink[];
+    payonairePurchaseLink?: string;
   };
 }
 
 export function SettingsForm({ initialSettings }: SettingsFormProps) {
   const [groupLinks, setGroupLinks] = useState<GroupLink[]>(
     initialSettings.groupLinks
+  );
+  const [payonairePurchaseLink, setPayonairePurchaseLink] = useState<string>(
+    initialSettings.payonairePurchaseLink || "https://payonaire.com"
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -67,7 +71,7 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
     setIsSubmitting(true);
 
     try {
-      const result = await updateSettingsOnServer(groupLinks);
+      const result = await updateSettingsOnServer(groupLinks, payonairePurchaseLink);
 
       if (result.error) {
         toast.error(result.error);
@@ -82,7 +86,33 @@ export function SettingsForm({ initialSettings }: SettingsFormProps) {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} className="space-y-6">
+      {/* Payonaire Settings Card */}
+      <Card>
+        <CardHeader>
+          <CardTitle>Payonaire Purchase Settings</CardTitle>
+          <CardDescription>
+            Configure the default redirect checkout URL on Payonaire. Users who have not purchased the course or are unauthorized will be prompted to purchase via this link.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="payonairePurchaseLink">Payonaire Purchase URL</Label>
+            <Input
+              id="payonairePurchaseLink"
+              value={payonairePurchaseLink}
+              onChange={(e) => setPayonairePurchaseLink(e.target.value)}
+              placeholder="https://payonaire.com/checkout/..."
+              required
+              type="url"
+            />
+            <p className="text-xs text-muted-foreground">
+              This URL is used as the link button in the Access Locked page.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+
       <Card>
         <CardHeader>
           <CardTitle>Group Links</CardTitle>

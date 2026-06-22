@@ -3,6 +3,8 @@ import { connectDB } from "@/lib/mongoose";
 import User from "@/models/User";
 import { hashPassword } from "@/lib/auth/password";
 
+export const dynamic = "force-dynamic";
+
 export async function GET() {
   await connectDB();
 

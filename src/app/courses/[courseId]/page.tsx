@@ -1,5 +1,4 @@
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth/authOptions";
+import { getAuthSession } from "@/lib/auth/getAuthSession";
 import { getCourseById, getUserProgress } from "@/lib/data";
 import { redirect, notFound } from "next/navigation";
 import Link from "next/link";
@@ -23,9 +22,9 @@ type CourseLandingPageProps = {
 export default async function CourseLandingPage(props: CourseLandingPageProps) {
   const { courseId } = await props.params;
 
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.id) redirect("/login");
-  const userId = session.user.id;
+  const session = await getAuthSession();
+  if (!session) redirect("/login");
+  const userId = session.userId;
 
   const course = await getCourseById(courseId);
   if (!course) notFound();

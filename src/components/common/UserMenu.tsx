@@ -12,6 +12,7 @@ import {
 import { User, Shield, LogOut } from "lucide-react";
 import Link from "next/link";
 import { signOut } from "next-auth/react";
+import { clearPayonaireCookie } from "@/app/actions";
 
 interface Props {
   email: string;
@@ -40,7 +41,10 @@ export function UserMenu({ email, role }: Props) {
         )}
         <DropdownMenuItem>
           <button
-            onClick={() => signOut({ callbackUrl: "/login" })}
+            onClick={async () => {
+              await clearPayonaireCookie();
+              signOut({ callbackUrl: "/login" });
+            }}
             className="w-full flex items-center gap-2"
           >
             <LogOut className="h-4 w-4" />

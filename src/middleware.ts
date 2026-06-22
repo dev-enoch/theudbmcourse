@@ -9,10 +9,13 @@ export function middleware(req: NextRequest) {
     req.cookies.get("next-auth.session-token")?.value ||
     req.cookies.get("__Secure-next-auth.session-token")?.value;
 
-  const publicRoutes = ["/login"];
+  const payonaireToken = req.cookies.get("payonaire_access_token")?.value;
+
+  const publicRoutes = ["/login", "/welcome", "/unauthorized"];
 
   if (publicRoutes.includes(pathname)) {
-    if (session) {
+    // If they already have access, redirect from login/welcome/unauthorized to home page
+    if ((pathname === "/login" || pathname === "/unauthorized") && (session || payonaireToken)) {
       return NextResponse.redirect(new URL("/", req.url));
     }
     return NextResponse.next();
@@ -35,10 +38,19 @@ export function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  if (!session) {
-    const loginUrl = new URL("/login", req.url);
-    loginUrl.searchParams.set("callbackUrl", pathname);
-    return NextResponse.redirect(loginUrl);
+  // Admin routes require NextAuth session
+  if (pathname.startsWith("/~")) {
+    if (!session) {
+      const loginUrl = new URL("/login", req.url);
+      loginUrl.searchParams.set("callbackUrl", pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+    return NextResponse.next();
+  }
+
+  // All other pages require NextAuth session OR valid Payonaire token cookie
+  if (!session && !payonaireToken) {
+    return NextResponse.redirect(new URL("/unauthorized", req.url));
   }
 
   return NextResponse.next();

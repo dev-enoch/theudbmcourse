@@ -26,6 +26,10 @@ export const authOptions: NextAuthOptions = {
         const user = await User.findOne({ email: credentials.email }).lean();
         if (!user) throw new Error("Invalid email or password.");
 
+        if (user.role !== "admin") {
+          throw new Error("Access Denied: Only administrators can log in here.");
+        }
+
         const isValid = await verifyPassword(
           credentials.password,
           user.password

@@ -8,8 +8,9 @@ import AppLayout from "@/components/common/AppLayout";
 import { Progress } from "@/components/ui/progress";
 import { getCourseById, getUserProgress } from "@/lib/data";
 import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth/authOptions";
+import { getAuthSession } from "@/lib/auth/getAuthSession";
+
+export const dynamic = "force-dynamic";
 
 const hausaCourses: Omit<Course, "modules">[] = [
   {
@@ -31,10 +32,10 @@ const hausaCourses: Omit<Course, "modules">[] = [
 ];
 
 export default async function HomePage() {
-  const session = await getServerSession(authOptions);
+  const session = await getAuthSession();
 
-  if (!session?.user?.id) redirect("/login");
-  const userId = session.user.id;
+  if (!session) redirect("/login");
+  const userId = session.userId;
 
   const progress = await getUserProgress(userId);
 

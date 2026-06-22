@@ -1,5 +1,4 @@
-import { authOptions } from "@/lib/auth/authOptions";
-import { getServerSession } from "next-auth";
+import { getAuthSession } from "@/lib/auth/getAuthSession";
 import { Logo } from "./Logo";
 import Link from "next/link";
 import { redirect } from "next/navigation";
@@ -10,9 +9,9 @@ export default async function AppLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getServerSession(authOptions);
+  const session = await getAuthSession();
 
-  if (!session?.user) redirect("/login");
+  if (!session) redirect("/login");
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -22,7 +21,7 @@ export default async function AppLayout({
           <span className="text-lg">BAG</span>
         </Link>
         <div className="ml-auto">
-          <UserMenu email={session.user.email!} role={session.user.role} />
+          <UserMenu email={session.email} role={session.role} />
         </div>
       </header>
       <main className="flex-1 flex justify-center px-4">
