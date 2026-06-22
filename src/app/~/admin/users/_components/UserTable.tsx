@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { User } from "@/lib/types";
 import { ConfirmActionModal } from "@/components/common/ConfirmActionModal";
+import { PaginationControls } from "./PaginationControls";
 import {
   updateUserOnServer,
   deleteUserOnServer,
@@ -263,25 +264,11 @@ export function UserTable({
       </Table>
 
       {/* Pagination */}
-      {pagination.totalPages > 1 && (
-        <div className="flex justify-between items-center mt-4">
-          <Button
-            disabled={pagination.page === 1}
-            onClick={() => goToPage(pagination.page - 1)}
-          >
-            Previous
-          </Button>
-          <span>
-            Page {pagination.page} of {pagination.totalPages}
-          </span>
-          <Button
-            disabled={pagination.page === pagination.totalPages}
-            onClick={() => goToPage(pagination.page + 1)}
-          >
-            Next
-          </Button>
-        </div>
-      )}
+      <PaginationControls
+        currentPage={pagination.page}
+        totalPages={pagination.totalPages}
+        onPageChange={goToPage}
+      />
 
       {/* Confirm Modal */}
       <ConfirmActionModal
