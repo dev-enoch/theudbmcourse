@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Logo } from "@/components/common/Logo";
 import { UserMenu } from "./UserMenu";
+import { SidebarNav } from "./_components/SidebarNav";
 
 export default async function AdminLayout({
   children,
@@ -39,34 +40,7 @@ export default async function AdminLayout({
           className="fixed top-14 left-0 z-30 hidden w-64 shrink-0 border-r bg-muted/20 md:block" 
           style={{ height: 'calc(100vh - 3.5rem)' }}
         >
-          <nav className="flex-1 overflow-y-auto py-6 px-4">
-            <div className="grid items-start text-sm font-medium gap-2">
-              <Link
-                href="/~/admin"
-                className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-muted/50"
-              >
-                Dashboard
-              </Link>
-              <Link
-                href="/~/admin/users"
-                className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-muted/50"
-              >
-                Users
-              </Link>
-              <Link
-                href="/~/admin/settings"
-                className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-muted/50"
-              >
-                Settings
-              </Link>
-              <Link
-                href="/~/admin/marketing"
-                className="flex items-center gap-3 rounded-lg px-3 py-2 text-muted-foreground transition-all hover:text-primary hover:bg-muted/50"
-              >
-                Marketing
-              </Link>
-            </div>
-          </nav>
+          <SidebarNav />
         </aside>
         
         {/* Main Content */}
