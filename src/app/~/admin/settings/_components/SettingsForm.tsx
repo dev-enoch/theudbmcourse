@@ -136,7 +136,7 @@ function BrandingSection({ initialSettings }: { initialSettings: SettingsFormPro
             </Label>
           </div>
         </CardContent>
-        <CardFooter className="bg-muted/30 border-t py-4 flex justify-between items-center">
+        <CardFooter className="bg-muted/30 border-t mt-6 py-4 flex justify-between items-center">
           <span className="text-sm text-muted-foreground">Keep the site title concise for better SEO.</span>
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save"}
@@ -201,7 +201,7 @@ function SupportSection({ initialSettings }: { initialSettings: SettingsFormProp
             />
           </div>
         </CardContent>
-        <CardFooter className="bg-muted/30 border-t py-4 flex justify-between items-center">
+        <CardFooter className="bg-muted/30 border-t mt-6 py-4 flex justify-between items-center">
           <span className="text-sm text-muted-foreground">Used on login pages and support interfaces.</span>
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save"}
@@ -257,7 +257,7 @@ function PayonaireSection({ initialSettings }: { initialSettings: SettingsFormPr
             />
           </div>
         </CardContent>
-        <CardFooter className="bg-muted/30 border-t py-4 flex justify-between items-center">
+        <CardFooter className="bg-muted/30 border-t mt-6 py-4 flex justify-between items-center">
           <span className="text-sm text-muted-foreground">Make sure this points to your active checkout page.</span>
           <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Save"}
