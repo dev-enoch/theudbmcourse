@@ -99,7 +99,7 @@ function BrandingSection({ initialSettings }: { initialSettings: SettingsFormPro
             Configure global site title and announcement banner across the entire platform.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 pb-8">
           <div className="space-y-2">
             <Label htmlFor="siteTitle">
               Site Title <TooltipInfo content="This appears in the browser tab and meta tags for SEO." />
@@ -178,7 +178,7 @@ function SupportSection({ initialSettings }: { initialSettings: SettingsFormProp
             Configure support links for users needing help or reporting issues.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 pb-8">
           <div className="space-y-2">
             <Label htmlFor="supportWhatsApp">Support WhatsApp Link</Label>
             <Input
@@ -242,7 +242,7 @@ function PayonaireSection({ initialSettings }: { initialSettings: SettingsFormPr
             Configure the default redirect checkout URL on Payonaire.
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 pb-8">
           <div className="space-y-2">
             <Label htmlFor="payonairePurchaseLink">
               Payonaire Purchase URL <TooltipInfo content="Unauthorized users trying to access locked courses are sent here." />
@@ -315,7 +315,7 @@ function GroupsSection({ initialSettings }: { initialSettings: SettingsFormProps
             Manage WhatsApp/Telegram group links for courses. <TooltipInfo content="When a user completes a course with an enabled group link, they'll see a 'Join Group' button on their dashboard." />
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-6 pb-8">
           {groupLinks.length === 0 ? (
             <p className="text-sm text-muted-foreground border border-dashed rounded-lg p-8 text-center bg-muted/20">
               No group links configured yet.
