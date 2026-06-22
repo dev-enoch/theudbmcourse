@@ -1,4 +1,4 @@
-import { getUserProfile } from "@/lib/data";
+import { getUserProfile, readCoursesFile } from "@/lib/data";
 import { notFound, redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/authOptions";
@@ -16,6 +16,7 @@ export default async function UserProfilePage({
 
   const resolvedParams = await params;
   const user = await getUserProfile(resolvedParams.userId);
+  const courses = await readCoursesFile();
 
   if (!user) {
     return notFound();
@@ -41,7 +42,7 @@ export default async function UserProfilePage({
         </div>
       </div>
 
-      <UserProfileClient user={user} />
+      <UserProfileClient user={user} courses={courses} />
     </div>
   );
 }

@@ -335,7 +335,7 @@ export async function resetDeviceLock(email: string) {
 // -------------------------------
 const coursesFilePath = path.join(process.cwd(), "src", "lib", "courses.json");
 
-async function readCoursesFile(): Promise<Course[]> {
+export async function readCoursesFile(): Promise<Course[]> {
   try {
     const fileContent = await fs.readFile(coursesFilePath, "utf-8");
     return JSON.parse(fileContent);

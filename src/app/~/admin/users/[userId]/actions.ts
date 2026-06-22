@@ -121,3 +121,23 @@ export async function clearUserDeviceLock(email: string) {
     return { success: false, error: err.message };
   }
 }
+
+export async function toggleLessonProgress(userId: string, topicId: string, completed: boolean) {
+  try {
+    await connectDB();
+    const user = await User.findById(userId);
+    if (!user) throw new Error("User not found");
+
+    const existing = user.progress.find((p: any) => p.topicId === topicId);
+    if (existing) {
+      existing.completed = completed;
+    } else {
+      user.progress.push({ topicId, completed });
+    }
+
+    await user.save();
+    return { success: true };
+  } catch (err: any) {
+    return { success: false, error: err.message };
+  }
+}

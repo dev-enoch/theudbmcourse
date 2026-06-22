@@ -18,10 +18,12 @@ import {
   forcePasswordReset,
   updateAdminNotes,
   sendDirectUserEmail,
-  clearUserDeviceLock
+  clearUserDeviceLock,
+  toggleLessonProgress
 } from "../actions";
+import { deleteUserOnServer } from "../../actions";
 
-export function UserProfileClient({ user }: { user: any }) {
+export function UserProfileClient({ user, courses }: { user: any, courses: any[] }) {
   const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
 
@@ -123,10 +125,36 @@ export function UserProfileClient({ user }: { user: any }) {
     setLoading(null);
   };
 
+  const handleDeleteUser = async () => {
+    if (!confirm("WARNING: This will permanently delete this user. Are you absolutely sure?")) return;
+    setLoading("delete");
+    const result = await deleteUserOnServer(user.id);
+    if (result.error) {
+      toast.error(result.error);
+      setLoading(null);
+    } else {
+      toast.success("User deleted.");
+      router.push("/~/admin/users");
+    }
+  };
+
+  const handleToggleLesson = async (topicId: string, completed: boolean) => {
+    setLoading(`lesson-${topicId}`);
+    const result = await toggleLessonProgress(user.id, topicId, completed);
+    if (result.success) {
+      toast.success("Lesson progress updated.");
+      router.refresh();
+    } else {
+      toast.error(result.error);
+    }
+    setLoading(null);
+  };
+
   return (
     <Tabs defaultValue="overview" className="w-full">
-      <TabsList className="grid w-full grid-cols-4 lg:w-[600px]">
+      <TabsList className="grid w-full grid-cols-5 lg:w-[700px]">
         <TabsTrigger value="overview">Overview</TabsTrigger>
+        <TabsTrigger value="progress">Progress</TabsTrigger>
         <TabsTrigger value="security">Security & Access</TabsTrigger>
         <TabsTrigger value="communication">Communication</TabsTrigger>
         <TabsTrigger value="notes">Admin Notes</TabsTrigger>
@@ -184,6 +212,77 @@ export function UserProfileClient({ user }: { user: any }) {
             <p className="text-xs text-muted-foreground mt-2">
               * Requires setting an impersonation token. Coming soon!
             </p>
+          </CardContent>
+        </Card>
+        <Card className="border-red-200 mt-6">
+          <CardHeader className="bg-red-50/50">
+            <CardTitle className="text-red-600 flex items-center">
+              <ShieldAlert className="w-5 h-5 mr-2" />
+              Delete User
+            </CardTitle>
+            <CardDescription>Permanently remove this user from the system.</CardDescription>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <Button variant="destructive" onClick={handleDeleteUser} disabled={loading === "delete"}>
+              {loading === "delete" && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+              Delete Account
+            </Button>
+          </CardContent>
+        </Card>
+      </TabsContent>
+
+      {/* PROGRESS TAB */}
+      <TabsContent value="progress" className="space-y-6 mt-6">
+        <Card>
+          <CardHeader>
+            <CardTitle>Course Progress</CardTitle>
+            <CardDescription>Manually override lesson completions.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            {courses.map((course) => {
+              const allTopicIds = course.modules.flatMap((m: any) => m.topics.map((t: any) => t.id));
+              const completedTopicIds = user.progress?.filter((p: any) => p.completed).map((p: any) => p.topicId) || [];
+              const courseProgress = allTopicIds.length > 0 
+                ? Math.round((completedTopicIds.filter((id: string) => allTopicIds.includes(id)).length / allTopicIds.length) * 100) 
+                : 0;
+
+              return (
+                <div key={course.id} className="border rounded-md p-4 space-y-4">
+                  <div className="flex justify-between items-center border-b pb-2">
+                    <h3 className="font-semibold text-lg">{course.title}</h3>
+                    <span className="text-sm font-medium bg-muted px-2 py-1 rounded">{courseProgress}% Complete</span>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    {course.modules.map((module: any) => (
+                      <div key={module.id} className="pl-4 border-l-2 border-muted">
+                        <h4 className="font-medium text-sm text-muted-foreground mb-2">{module.title}</h4>
+                        <div className="space-y-2">
+                          {module.topics.map((topic: any) => {
+                            const isCompleted = completedTopicIds.includes(topic.id);
+                            const isLoading = loading === `lesson-${topic.id}`;
+                            return (
+                              <div key={topic.id} className="flex items-center justify-between bg-muted/30 p-2 rounded text-sm">
+                                <span>{topic.title}</span>
+                                <div className="flex items-center space-x-2">
+                                  <Label htmlFor={`topic-${topic.id}`} className="text-xs text-muted-foreground">Completed</Label>
+                                  <Switch 
+                                    id={`topic-${topic.id}`} 
+                                    checked={isCompleted} 
+                                    disabled={isLoading}
+                                    onCheckedChange={(checked) => handleToggleLesson(topic.id, checked)}
+                                  />
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
           </CardContent>
         </Card>
       </TabsContent>

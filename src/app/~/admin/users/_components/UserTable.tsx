@@ -203,59 +203,13 @@ export function UserTable({
                     </Badge>
                   </TableCell>
                   <TableCell>
-                    {isLoading ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button size="icon" variant="ghost">
-                            <MoreHorizontal className="h-4 w-4" />
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            onSelect={() => router.push(`/~/admin/users/${user.id}`)}
-                            className="font-bold text-primary"
-                          >
-                            View User Profile
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            disabled={isCurrentAdmin}
-                            onSelect={() => openModal(user, "promote")}
-                          >
-                            {user.role === "admin"
-                              ? "Demote to User"
-                              : "Promote to Admin"}
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onSelect={() => openModal(user, "resend")}
-                          >
-                            <RefreshCcw className="mr-2 h-4 w-4" /> Resend Login
-                            Email
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onSelect={() => openModal(user, "resetProgress")}
-                          >
-                            <RotateCcw className="mr-2 h-4 w-4" /> Reset Course Progress
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            onSelect={() => openModal(user, "resetDeviceLock")}
-                          >
-                            <MonitorSmartphone className="mr-2 h-4 w-4" /> Reset Device Lock
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            disabled={isCurrentAdmin}
-                            className="text-red-600"
-                            onSelect={() => openModal(user, "delete")}
-                          >
-                            <Trash className="mr-2 h-4 w-4" /> Delete User
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    )}
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => router.push(`/~/admin/users/${user.id}`)}
+                    >
+                      Manage
+                    </Button>
                   </TableCell>
                 </TableRow>
               );
