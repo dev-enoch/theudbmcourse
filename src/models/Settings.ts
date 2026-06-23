@@ -15,6 +15,9 @@ export interface ISettings extends Document {
   siteTitle: string;
   announcementBanner: string;
   announcementEnabled: boolean;
+  // Marketing & Automated Triggers
+  lessonCompletionEmailsEnabled: boolean;
+  courseCompletionEmailsEnabled: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -53,6 +56,14 @@ const SettingsSchema = new Schema<ISettings>(
       default: "",
     },
     announcementEnabled: {
+      type: Boolean,
+      default: false,
+    },
+    lessonCompletionEmailsEnabled: {
+      type: Boolean,
+      default: false,
+    },
+    courseCompletionEmailsEnabled: {
       type: Boolean,
       default: false,
     },

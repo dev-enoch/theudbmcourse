@@ -7,9 +7,8 @@ import { hashPassword } from "./auth/password";
 import path from "path";
 import { Course } from "./types";
 import fs from "fs/promises";
-import { Resend } from "resend";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import Settings from "@/models/Settings";
+import { sendEmail, getEmailHtml } from "@/lib/email";
 
 // -------------------------------
 // USER FETCH
@@ -265,18 +264,18 @@ export async function updateUserProgress(
   await user.save();
 
   if (isNewlyCompleted) {
+    const settings = await Settings.findOne().lean();
+
     // Send lesson completion email
-    await resend.emails.send({
-      from: process.env.EMAIL_FROM || "hello@example.com",
-      to: user.email,
-      subject: "Lesson Completed! 🎉",
-      html: `<div style="font-family: sans-serif; padding: 20px;">
-        <h2>Great job, ${user.name || 'Student'}!</h2>
+    if (settings?.lessonCompletionEmailsEnabled) {
+      const htmlBody = `
+        <p>Great job, ${user.name || 'Student'}!</p>
         <p>You have successfully completed a lesson.</p>
         <p>Keep up the great work and continue your learning journey!</p>
-        <a href="${process.env.APP_URL}" style="display: inline-block; padding: 10px 20px; background-color: #2563eb; color: white; text-decoration: none; border-radius: 5px;">Continue Course</a>
-      </div>`,
-    }).catch(console.error);
+        <a href="${process.env.APP_URL}" class="button">Continue Course</a>
+      `;
+      await sendEmail(user.email, "Lesson Completed! 🎉", getEmailHtml("Lesson Completed!", htmlBody)).catch(console.error);
+    }
 
     // Check if course is completed
     const courses = await readCoursesFile();
@@ -295,18 +294,14 @@ export async function updateUserProgress(
       const completedTopicIds = user.progress.filter((p: any) => p.completed).map((p: any) => p.topicId);
       const isCourseCompleted = allTopicIds.every(id => completedTopicIds.includes(id));
       
-      if (isCourseCompleted) {
-        await resend.emails.send({
-          from: process.env.EMAIL_FROM || "hello@example.com",
-          to: user.email,
-          subject: "Course Completed! 🏆",
-          html: `<div style="font-family: sans-serif; padding: 20px;">
-            <h2>Congratulations, ${user.name || 'Student'}!</h2>
-            <p>You have successfully completed the entire course: <strong>${courseOfTopic.title}</strong>.</p>
-            <p>Don't forget to join the exclusive group to connect with other students!</p>
-            <a href="${process.env.APP_URL}" style="display: inline-block; padding: 10px 20px; background-color: #16a34a; color: white; text-decoration: none; border-radius: 5px;">Go to Dashboard</a>
-          </div>`,
-        }).catch(console.error);
+      if (isCourseCompleted && settings?.courseCompletionEmailsEnabled) {
+        const htmlBody = `
+          <p>Congratulations, ${user.name || 'Student'}!</p>
+          <p>You have successfully completed the entire course: <strong>${courseOfTopic.title}</strong>.</p>
+          <p>Don't forget to join the exclusive group to connect with other students!</p>
+          <a href="${process.env.APP_URL}" class="button" style="background-color: #16a34a;">Go to Dashboard</a>
+        `;
+        await sendEmail(user.email, "Course Completed! 🏆", getEmailHtml("Course Completed!", htmlBody)).catch(console.error);
       }
     }
   }
