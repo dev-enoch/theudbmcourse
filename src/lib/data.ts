@@ -8,7 +8,7 @@ import path from "path";
 import { Course } from "./types";
 import fs from "fs/promises";
 import Settings from "@/models/Settings";
-import { sendEmail, getEmailHtml } from "@/lib/email";
+import { sendEmail, getEmailHtml, resend } from "@/lib/email";
 
 // -------------------------------
 // USER FETCH

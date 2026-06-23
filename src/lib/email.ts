@@ -1,6 +1,6 @@
 import { Resend } from 'resend';
 
-const resend = new Resend(process.env.RESEND_API_KEY || 're_dummy');
+export const resend = new Resend(process.env.RESEND_API_KEY || 're_dummy');
 
 /**
  * Clean, white-background newsletter style email wrapper
