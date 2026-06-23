@@ -30,6 +30,8 @@ export async function getCampaigns() {
   }));
 }
 
+import { executeCampaignWorkflow } from "@/app/workflows";
+
 export async function createCampaign({ subject, body, audience, scheduledAt }: { subject: string, body: string, audience: "all" | "active" | "inactive", scheduledAt?: string }) {
   await requireAdmin();
   await connectDB();
@@ -42,6 +44,11 @@ export async function createCampaign({ subject, body, audience, scheduledAt }: {
     scheduledAt: scheduledAt ? new Date(scheduledAt) : undefined
   });
 
+  if (scheduledAt) {
+    // Fire the workflow immediately; it will sleep until the scheduled date
+    await executeCampaignWorkflow(campaign._id.toString());
+  }
+
   return { success: true, id: campaign._id.toString() };
 }
 
@@ -49,52 +56,10 @@ export async function sendCampaignNow(campaignId: string) {
   await requireAdmin();
   await connectDB();
 
-  const campaign = await Campaign.findById(campaignId);
-  if (!campaign) throw new Error("Campaign not found");
+  // Fire the workflow! No cron required.
+  await executeCampaignWorkflow(campaignId);
 
-  let query: any = { role: "user" };
-  if (campaign.audience === "active") {
-    query.active = true;
-  } else if (campaign.audience === "inactive") {
-    query = { role: "user", "progress.0": { $exists: false } };
-  }
-
-  const users = await User.find(query, { email: 1 }).lean();
-  const emails = users.map(u => u.email).filter(Boolean);
-
-  if (emails.length === 0) {
-    campaign.status = "failed";
-    await campaign.save();
-    throw new Error("No users found matching this audience.");
-  }
-
-  const htmlBody = campaign.body.split('\n').map((p: string) => `<p>${p}</p>`).join('');
-  const emailHtml = getEmailHtml(campaign.subject, htmlBody);
-
-  try {
-    await sendEmail(emails, campaign.subject, emailHtml);
-    
-    campaign.status = "sent";
-    campaign.sentAt = new Date();
-    campaign.sentCount = emails.length;
-    await campaign.save();
-
-    // Log the emails
-    const logs = emails.map(email => ({
-      campaignId: campaign._id,
-      type: "campaign",
-      recipientEmail: email,
-      subject: campaign.subject,
-      status: "sent"
-    }));
-    await EmailLog.insertMany(logs);
-
-    return { success: true, count: emails.length };
-  } catch (error: any) {
-    campaign.status = "failed";
-    await campaign.save();
-    throw new Error("Failed to send campaign: " + error.message);
-  }
+  return { success: true };
 }
 
 // -------------------------------
