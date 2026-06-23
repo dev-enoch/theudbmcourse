@@ -4,9 +4,8 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth/authOptions";
 import { connectDB } from "@/lib/mongoose";
 import User from "@/models/User";
-import Settings from "@/models/Settings";
 import Campaign from "@/models/Campaign";
-import PromoCode from "@/models/PromoCode";
+import AutomationRule from "@/models/AutomationRule";
 import EmailLog from "@/models/EmailLog";
 import { sendEmail, getEmailHtml } from "@/lib/email";
 
@@ -15,35 +14,6 @@ async function requireAdmin() {
   if (!session?.user || session.user.role !== "admin") {
     throw new Error("Unauthorized");
   }
-}
-
-// -------------------------------
-// SETTINGS
-// -------------------------------
-export async function saveAutomatedTriggers(lessonTrigger: boolean, courseTrigger: boolean) {
-  await requireAdmin();
-  await connectDB();
-
-  let settings = await Settings.findOne();
-  if (!settings) {
-    settings = new Settings();
-  }
-
-  settings.lessonCompletionEmailsEnabled = lessonTrigger;
-  settings.courseCompletionEmailsEnabled = courseTrigger;
-  await settings.save();
-
-  return { success: true };
-}
-
-export async function getMarketingSettings() {
-  await requireAdmin();
-  await connectDB();
-  const settings = await Settings.findOne().lean();
-  return {
-    lessonTrigger: !!settings?.lessonCompletionEmailsEnabled,
-    courseTrigger: !!settings?.courseCompletionEmailsEnabled
-  };
 }
 
 // -------------------------------
@@ -128,68 +98,47 @@ export async function sendCampaignNow(campaignId: string) {
 }
 
 // -------------------------------
-// RETENTION
+// AUTOMATION RULES
 // -------------------------------
-export async function getRetentionUsers() {
+export async function getAutomationRules() {
   await requireAdmin();
   await connectDB();
-  // Find users who have some progress but maybe stopped
-  const users = await User.find({ role: "user", active: true }, { email: 1, name: 1, progress: 1 }).limit(50).lean();
-  return users.map(u => ({ ...u, _id: u._id.toString() }));
+  const rules = await AutomationRule.find().sort({ createdAt: -1 }).lean();
+  return rules.map(r => ({
+    ...r,
+    _id: r._id.toString(),
+    id: r._id.toString()
+  }));
 }
 
-export async function sendReengagementEmail(email: string, name?: string) {
+export async function createAutomationRule({ name, trigger, subject, htmlBody, isActive }: { name: string, trigger: string, subject: string, htmlBody: string, isActive: boolean }) {
   await requireAdmin();
   await connectDB();
 
-  const subject = "We miss you at BAG! Let's get back to building 🚀";
-  const htmlBody = `
-    <p>Hi ${name || 'there'},</p>
-    <p>We noticed you haven't completed a lesson recently. Consistency is the key to unlocking your automated gains!</p>
-    <p>Log back in today to pick up right where you left off.</p>
-    <a href="${process.env.APP_URL}/login" class="button">Resume Course</a>
-  `;
-  const emailHtml = getEmailHtml("We Miss You!", htmlBody);
-
-  await sendEmail(email, subject, emailHtml);
-
-  await EmailLog.create({
-    type: "reengagement",
-    recipientEmail: email,
-    subject: subject,
-    status: "sent"
+  await AutomationRule.create({
+    name,
+    trigger,
+    subject,
+    htmlBody,
+    isActive
   });
 
   return { success: true };
 }
 
-// -------------------------------
-// PROMO CODES
-// -------------------------------
-export async function getPromoCodes() {
+export async function toggleAutomationRule(ruleId: string, isActive: boolean) {
   await requireAdmin();
   await connectDB();
-  const codes = await PromoCode.find().sort({ createdAt: -1 }).lean();
-  return codes.map(c => ({
-    ...c,
-    _id: c._id.toString(),
-    id: c._id.toString()
-  }));
+
+  await AutomationRule.findByIdAndUpdate(ruleId, { isActive });
+  return { success: true };
 }
 
-export async function createPromoCode({ code, discountPercentage, maxUses }: { code: string, discountPercentage: number, maxUses: number }) {
+export async function deleteAutomationRule(ruleId: string) {
   await requireAdmin();
   await connectDB();
 
-  const existing = await PromoCode.findOne({ code: code.toUpperCase() });
-  if (existing) throw new Error("Promo code already exists");
-
-  await PromoCode.create({
-    code: code.toUpperCase(),
-    discountPercentage,
-    maxUses
-  });
-
+  await AutomationRule.findByIdAndDelete(ruleId);
   return { success: true };
 }
 

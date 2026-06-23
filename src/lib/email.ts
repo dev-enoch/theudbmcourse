@@ -50,14 +50,20 @@ export async function sendEmail(to: string | string[], subject: string, htmlCont
 
   try {
     const data = await resend.emails.send({
-      from: 'BAG Support <support@automatedgains.com>',
+      from: 'BAG Support <support@blueprinttoautomatedgains.online>',
       to: Array.isArray(to) ? to : [to],
       subject,
       html: htmlContent,
     });
+    
+    if (data.error) {
+      console.error("Resend returned an error:", data.error);
+      throw new Error(data.error.message);
+    }
+    
     return { success: true, data };
-  } catch (error) {
+  } catch (error: any) {
     console.error("Failed to send email:", error);
-    throw error;
+    throw new Error(error.message || "Failed to send email through Resend API.");
   }
 }

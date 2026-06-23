@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createCampaign, sendCampaignNow } from "../actions";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 
 export default function CampaignManager() {
   const [subject, setSubject] = useState("");
@@ -37,20 +38,22 @@ export default function CampaignManager() {
   }
 
   return (
-    <div className="bg-gray-800 border border-gray-700 p-6 rounded-lg mb-6">
-      <h2 className="text-xl font-semibold text-white mb-4">Daily Ping Campaign Manager</h2>
-      <p className="text-gray-400 mb-6 text-sm">
-        Send custom, styled HTML emails to your users. Use basic Markdown/text here.
-      </p>
-
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-300 mb-1">Subject</label>
-          <input
-            type="text"
-            value={subject}
-            onChange={e => setSubject(e.target.value)}
-            className="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-indigo-500"
+    <Card className="mb-6">
+      <CardHeader>
+        <CardTitle>Daily Ping Campaign Manager</CardTitle>
+        <CardDescription>
+          Send custom, styled HTML emails to your users. Use basic Markdown/text here.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium mb-1">Subject</label>
+            <input
+              type="text"
+              value={subject}
+              onChange={e => setSubject(e.target.value)}
+              className="w-full bg-background border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring"
             placeholder="E.g. Your Weekly Gains Update!"
             required
           />
@@ -61,7 +64,7 @@ export default function CampaignManager() {
           <select
             value={audience}
             onChange={e => setAudience(e.target.value as any)}
-            className="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-indigo-500"
+            className="w-full bg-background border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring"
           >
             <option value="all">All Users</option>
             <option value="active">Active Users Only</option>
@@ -75,7 +78,7 @@ export default function CampaignManager() {
             value={body}
             onChange={e => setBody(e.target.value)}
             rows={5}
-            className="w-full bg-gray-900 border border-gray-700 rounded px-3 py-2 text-white focus:outline-none focus:border-indigo-500"
+            className="w-full bg-background border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-ring"
             placeholder="Type your message here. Separate paragraphs with new lines."
             required
           />
@@ -113,6 +116,7 @@ export default function CampaignManager() {
           {loading ? "Processing..." : mode === "now" ? "Send Campaign Now" : "Schedule Campaign"}
         </button>
       </form>
-    </div>
+      </CardContent>
+    </Card>
   );
 }

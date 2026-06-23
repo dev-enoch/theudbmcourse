@@ -18,7 +18,9 @@ export function SidebarNav() {
     <nav className="flex-1 overflow-y-auto py-6 px-4">
       <div className="grid items-start text-sm font-medium gap-2">
         {links.map((link) => {
-          const isActive = pathname === link.href || pathname.startsWith(link.href + "/");
+          const isActive = link.href === "/~/admin" 
+            ? pathname === link.href 
+            : pathname === link.href || pathname.startsWith(link.href + "/");
           const Icon = link.icon;
           
           return (
