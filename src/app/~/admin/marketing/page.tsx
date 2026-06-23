@@ -2,17 +2,27 @@ import {
   getCampaigns,
   getAutomationRules,
   getEmailLogs,
+  getMarketingStats,
+  getEnrollmentChartData,
+  getAudienceSegmentsData
 } from "./actions";
 
 import CampaignManager from "./_components/CampaignManager";
 import AutomationsPanel from "./_components/AutomationsPanel";
 import MarketingAnalytics from "./_components/MarketingAnalytics";
+import KpiCards from "./_components/KpiCards";
+import EnrollmentChart from "./_components/EnrollmentChart";
+import AudienceDonutChart from "./_components/AudienceDonutChart";
+import CampaignPerformanceTable from "./_components/CampaignPerformanceTable";
 
 export default async function MarketingPage() {
-  const [campaigns, rules, logs] = await Promise.all([
+  const [campaigns, rules, logs, stats, enrollmentData, audienceData] = await Promise.all([
     getCampaigns(),
     getAutomationRules(),
     getEmailLogs(),
+    getMarketingStats(),
+    getEnrollmentChartData(),
+    getAudienceSegmentsData()
   ]);
 
   return (
@@ -34,17 +44,28 @@ export default async function MarketingPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Left Column */}
-        <div className="space-y-6">
-          <AutomationsPanel rules={rules} />
-        </div>
+      {/* Row 1: KPI Cards */}
+      <KpiCards stats={stats} />
 
-        {/* Right Column */}
-        <div className="space-y-6">
-          <CampaignManager />
+      {/* Row 2: Charts */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <EnrollmentChart data={enrollmentData} />
+        <AudienceDonutChart data={audienceData} />
+      </div>
+
+      {/* Row 3: Campaign Performance and Logs */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <CampaignPerformanceTable campaigns={campaigns} />
+        
+        <div className="col-span-1 flex flex-col gap-6">
+          <AutomationsPanel rules={rules} />
           <MarketingAnalytics logs={logs} />
         </div>
+      </div>
+      
+      {/* Row 4: Campaign Management */}
+      <div className="mt-6">
+        <CampaignManager />
       </div>
     </div>
   );

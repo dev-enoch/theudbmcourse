@@ -16,6 +16,7 @@ export interface IUser extends Document {
   suspensionReason?: string;
   suspendedUntil?: Date;
   revokedCourses?: string[];
+  utmSource?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -50,6 +51,7 @@ const UserSchema = new Schema<IUser>(
       type: [ProgressSchema],
       default: [],
     },
+    utmSource: { type: String, default: "Direct" },
   },
   {
     timestamps: true,
