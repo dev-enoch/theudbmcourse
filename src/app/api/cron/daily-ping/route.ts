@@ -6,7 +6,7 @@ import User from "@/models/User";
 // Secure the cron route using a secret key
 export async function GET(req: Request) {
   const authHeader = req.headers.get("authorization");
-  if (authHeader !== \`Bearer \${process.env.CRON_SECRET}\`) {
+  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
     return new NextResponse("Unauthorized", { status: 401 });
   }
 
