@@ -8,6 +8,7 @@ import User from "@/models/User";
 import { hashPassword } from "@/lib/auth/password";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { ShieldAlert, AlertTriangle } from "lucide-react";
+import AutoActivate from "./AutoActivate";
 
 type WelcomePageProps = {
   searchParams: Promise<{
@@ -91,55 +92,5 @@ export default async function WelcomePage({ searchParams }: WelcomePageProps) {
   }
 
   // --- NEW ACTIVATION (FIRST TIME OR RESET) ---
-  // 1. Find or create the user record
-  let user = await User.findOne({ email }).lean();
-  if (!user) {
-    const defaultPassword = crypto.randomBytes(16).toString("hex");
-    const hashedPassword = await hashPassword(defaultPassword);
-    
-    user = await User.create({
-      name: name || email.split("@")[0],
-      email: email,
-      role: "user",
-      password: hashedPassword,
-      progress: [],
-    });
-  }
-
-  // 2. Generate new device identifier & save to DB
-  const newDeviceKey = crypto.randomUUID();
-
-  await ClaimedOrder.findOneAndUpdate(
-    { orderId },
-    {
-      orderId,
-      email,
-      deviceKey: newDeviceKey,
-    },
-    { upsert: true }
-  );
-
-  // 3. Create a JWT containing the authorization payloads
-  const token = jwt.sign(
-    {
-      userId: user._id.toString(),
-      email: user.email,
-      orderId,
-      deviceKey: newDeviceKey,
-    },
-    process.env.JWT_SECRET!,
-    { expiresIn: "365d" } // 1 year access
-  );
-
-  // 4. Store the JWT in an HTTP-Only Secure Cookie
-  cookieStore.set("payonaire_access_token", token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "strict",
-    maxAge: 60 * 60 * 24 * 365, // 1 year
-    path: "/",
-  });
-
-  // 5. Redirect to Dashboard
-  redirect("/");
+  return <AutoActivate orderId={orderId} email={email} name={name} />;
 }
