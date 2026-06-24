@@ -43,8 +43,7 @@ export default async function WelcomePage({ searchParams }: WelcomePageProps) {
 
   await connectDB();
 
-  // Find if this order ID has already been claimed
-  let claimedOrder = await ClaimedOrder.findOne({ orderId }).lean();
+  // The order ID will be checked within the global fetch later
   const cookieStore = await cookies();
   const existingCookie = cookieStore.get("payonaire_access_token")?.value;
 
