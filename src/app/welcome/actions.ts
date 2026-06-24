@@ -26,14 +26,22 @@ export async function processActivation(orderId: string, email: string, name?: s
     });
   }
 
-  const newDeviceKey = crypto.randomUUID();
+  // Determine which deviceKey to use
+  let deviceKeyToUse = crypto.randomUUID();
+  const existingOrders = await ClaimedOrder.find({ email }).lean();
+  const activeOrder = existingOrders.find((o: any) => o.deviceKey !== "reset-by-admin" && o.deviceKey !== "reset-by-logout");
+  
+  if (activeOrder) {
+    // Re-use the existing active device lock so all orders share the same fingerprint
+    deviceKeyToUse = activeOrder.deviceKey;
+  }
 
   await ClaimedOrder.findOneAndUpdate(
     { orderId },
     {
       orderId,
       email,
-      deviceKey: newDeviceKey,
+      deviceKey: deviceKeyToUse,
     },
     { upsert: true }
   );
@@ -43,7 +51,7 @@ export async function processActivation(orderId: string, email: string, name?: s
       userId: user._id.toString(),
       email: user.email,
       orderId,
-      deviceKey: newDeviceKey,
+      deviceKey: deviceKeyToUse,
     },
     process.env.JWT_SECRET!,
     { expiresIn: "365d" }

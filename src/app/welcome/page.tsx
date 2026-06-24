@@ -60,13 +60,19 @@ export default async function WelcomePage({ searchParams }: WelcomePageProps) {
     }
   }
 
-  // --- ORDER ALREADY CLAIMED ---
-  if (claimedOrder) {
-    if (claimedOrder.deviceKey === currentDeviceKey) {
-      // Same browser/device that claimed it first. Grant access!
-      redirect("/");
-    } else if (claimedOrder.deviceKey !== "reset-by-admin" && claimedOrder.deviceKey !== "reset-by-logout") {
-      // Different browser/device. Block access!
+  // --- GLOBAL EMAIL DEVICE LOCK CHECK ---
+  // Find all orders for this email
+  const allUserOrders = await ClaimedOrder.find({ email }).lean();
+  const claimedOrder = allUserOrders.find((o: any) => o.orderId === orderId);
+
+  // Check if there is ANY active lock for this user
+  const activeLockOrder = allUserOrders.find(
+    (o: any) => o.deviceKey !== "reset-by-admin" && o.deviceKey !== "reset-by-logout"
+  );
+
+  if (activeLockOrder) {
+    if (activeLockOrder.deviceKey !== currentDeviceKey) {
+      // User has an active lock on ANOTHER device. Block access completely!
       return (
         <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-background text-foreground text-center max-w-md mx-auto">
           <Card className="w-full border-destructive shadow-xl">
@@ -78,17 +84,22 @@ export default async function WelcomePage({ searchParams }: WelcomePageProps) {
             </CardHeader>
             <CardContent className="space-y-4">
               <p className="text-muted-foreground text-sm leading-relaxed">
-                This purchase link (Order ID: <span className="font-mono bg-muted px-1.5 py-0.5 rounded text-xs font-semibold text-foreground">{orderId}</span>) has already been activated on another device or browser.
+                Your account has already been activated and locked to another device or browser.
               </p>
               <div className="p-3 bg-muted rounded-lg text-left text-xs space-y-2 text-muted-foreground">
-                <p>⚠️ For security, course access is restricted to a single browser activation.</p>
-                <p>🔧 If you cleared your browser cookies or need to switch to another device, please contact support to reset your activation.</p>
+                <p>⚠️ For security, course access is restricted to a single browser activation across all your purchases.</p>
+                <p>🔧 If you cleared your browser cookies or need to switch to another device, please ask support to reset your activation.</p>
               </div>
             </CardContent>
           </Card>
         </div>
       );
     }
+  }
+
+  // If this specific order is already active on this device, just redirect
+  if (claimedOrder && claimedOrder.deviceKey === currentDeviceKey) {
+    redirect("/");
   }
 
   // --- NEW ACTIVATION (FIRST TIME OR RESET) ---
