@@ -101,7 +101,7 @@ export async function sendDirectUserEmail(userId: string, subject: string, htmlC
   }
 }
 
-export async function clearUserDeviceLock(email: string) {
+export async function clearUserDeviceLock(email: string, resetAction: string = "reset-by-admin") {
   try {
     await connectDB();
     const orders = await ClaimedOrder.find({ email });
@@ -114,7 +114,7 @@ export async function clearUserDeviceLock(email: string) {
         previousDeviceKey: order.deviceKey
       });
       
-      order.deviceKey = "reset-by-admin";
+      order.deviceKey = resetAction;
       await order.save();
     }
     

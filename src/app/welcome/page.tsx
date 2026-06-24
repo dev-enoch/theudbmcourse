@@ -65,7 +65,7 @@ export default async function WelcomePage({ searchParams }: WelcomePageProps) {
     if (claimedOrder.deviceKey === currentDeviceKey) {
       // Same browser/device that claimed it first. Grant access!
       redirect("/");
-    } else if (claimedOrder.deviceKey !== "reset-by-admin") {
+    } else if (claimedOrder.deviceKey !== "reset-by-admin" && claimedOrder.deviceKey !== "reset-by-logout") {
       // Different browser/device. Block access!
       return (
         <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-background text-foreground text-center max-w-md mx-auto">
