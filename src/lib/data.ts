@@ -320,8 +320,8 @@ export async function resetUserProgress(userId: string) {
 
 export async function resetDeviceLock(email: string) {
   await connectDB();
-  const result = await ClaimedOrder.findOneAndDelete({ email });
-  if (!result) throw new Error("No device lock found for this email.");
+  const result = await ClaimedOrder.deleteMany({ email });
+  if (result.deletedCount === 0) throw new Error("No device lock found for this email.");
   return { success: true, message: "Device lock reset successfully." };
 }
 

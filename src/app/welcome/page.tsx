@@ -64,7 +64,7 @@ export default async function WelcomePage({ searchParams }: WelcomePageProps) {
     if (claimedOrder.deviceKey === currentDeviceKey) {
       // Same browser/device that claimed it first. Grant access!
       redirect("/");
-    } else {
+    } else if (claimedOrder.deviceKey !== "reset-by-admin") {
       // Different browser/device. Block access!
       return (
         <div className="flex flex-col items-center justify-center min-h-screen p-6 bg-background text-foreground text-center max-w-md mx-auto">
@@ -90,7 +90,7 @@ export default async function WelcomePage({ searchParams }: WelcomePageProps) {
     }
   }
 
-  // --- NEW ACTIVATION (FIRST TIME) ---
+  // --- NEW ACTIVATION (FIRST TIME OR RESET) ---
   // 1. Find or create the user record
   let user = await User.findOne({ email }).lean();
   if (!user) {
@@ -108,11 +108,16 @@ export default async function WelcomePage({ searchParams }: WelcomePageProps) {
 
   // 2. Generate new device identifier & save to DB
   const newDeviceKey = crypto.randomUUID();
-  await ClaimedOrder.create({
-    orderId,
-    email,
-    deviceKey: newDeviceKey,
-  });
+
+  await ClaimedOrder.findOneAndUpdate(
+    { orderId },
+    {
+      orderId,
+      email,
+      deviceKey: newDeviceKey,
+    },
+    { upsert: true }
+  );
 
   // 3. Create a JWT containing the authorization payloads
   const token = jwt.sign(

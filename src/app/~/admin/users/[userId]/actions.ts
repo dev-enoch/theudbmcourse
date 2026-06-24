@@ -104,17 +104,19 @@ export async function sendDirectUserEmail(userId: string, subject: string, htmlC
 export async function clearUserDeviceLock(email: string) {
   try {
     await connectDB();
-    const order = await ClaimedOrder.findOne({ email });
-    if (!order) throw new Error("No claimed order found for this user");
+    const orders = await ClaimedOrder.find({ email });
+    if (!orders || orders.length === 0) throw new Error("No claimed order found for this user");
 
-    // Add to reset history
-    order.resetHistory.push({
-      timestamp: new Date(),
-      previousDeviceKey: order.deviceKey
-    });
-    
-    order.deviceKey = "reset-by-admin";
-    await order.save();
+    for (const order of orders) {
+      // Add to reset history
+      order.resetHistory.push({
+        timestamp: new Date(),
+        previousDeviceKey: order.deviceKey
+      });
+      
+      order.deviceKey = "reset-by-admin";
+      await order.save();
+    }
     
     return { success: true };
   } catch (err: any) {
