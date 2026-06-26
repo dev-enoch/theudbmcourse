@@ -34,8 +34,8 @@ const AccessRecordSchema = new Schema<IAccessRecord>({
 
 const ClaimedOrderSchema = new Schema<IClaimedOrder>(
   {
-    orderId: { type: String, unique: true, required: true },
-    email: { type: String, required: true },
+    orderId: { type: String, required: true },
+    email: { type: String, unique: true, required: true },
     deviceKey: { type: String, required: true },
     resetHistory: { type: [ResetRecordSchema], default: [] },
     accessHistory: { type: [AccessRecordSchema], default: [] },

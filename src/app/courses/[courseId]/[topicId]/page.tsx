@@ -18,7 +18,7 @@ export default async function CoursePlayerPage({
   const { courseId, topicId } = await params;
 
   const session = await getAuthSession();
-  if (!session) redirect("/login");
+  if (!session) redirect("/unauthorized");
   const userId = session.userId;
 
   const course = await getCourseById(courseId);

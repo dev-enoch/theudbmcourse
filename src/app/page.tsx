@@ -34,7 +34,7 @@ const hausaCourses: Omit<Course, "modules">[] = [
 export default async function HomePage() {
   const session = await getAuthSession();
 
-  if (!session) redirect("/login");
+  if (!session) redirect("/unauthorized");
   const userId = session.userId;
 
   const progress = await getUserProgress(userId);

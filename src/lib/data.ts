@@ -218,7 +218,13 @@ export async function getUserProfile(userId: string) {
   if (!user) return null;
 
   const normalizedEmail = user.email.trim().toLowerCase();
-  const order = await ClaimedOrder.findOne({ email: new RegExp(`^${normalizedEmail}$`, "i") }).lean() as any;
+  const allOrders = await ClaimedOrder.find({ email: new RegExp(`^${normalizedEmail}$`, "i") }).sort({ updatedAt: -1 }).lean() as any[];
+  
+  // Find the active order if it exists, otherwise use the most recent one
+  const activeOrder = allOrders.find(
+    (o) => !["reset-by-admin", "reset-by-logout", "webhook-auto-enroll"].includes(o.deviceKey)
+  );
+  const order = activeOrder || (allOrders.length > 0 ? allOrders[0] : null);
 
   return {
     ...user,

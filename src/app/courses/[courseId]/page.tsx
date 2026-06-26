@@ -23,7 +23,7 @@ export default async function CourseLandingPage(props: CourseLandingPageProps) {
   const { courseId } = await props.params;
 
   const session = await getAuthSession();
-  if (!session) redirect("/login");
+  if (!session) redirect("/unauthorized");
   const userId = session.userId;
 
   const course = await getCourseById(courseId);

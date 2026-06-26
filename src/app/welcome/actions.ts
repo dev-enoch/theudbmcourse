@@ -30,10 +30,9 @@ export async function processActivation(orderId: string, email: string, name?: s
 
   // Determine which deviceKey to use
   let deviceKeyToUse = crypto.randomUUID();
-  const existingOrders = await ClaimedOrder.find({ email: new RegExp(`^${normalizedEmail}$`, "i") }).lean();
-  const activeOrder = existingOrders.find((o: any) => o.deviceKey !== "reset-by-admin" && o.deviceKey !== "reset-by-logout");
+  const activeOrder = await ClaimedOrder.findOne({ email: new RegExp(`^${normalizedEmail}$`, "i") }).lean() as any;
   
-  if (activeOrder) {
+  if (activeOrder && activeOrder.deviceKey !== "reset-by-admin" && activeOrder.deviceKey !== "reset-by-logout") {
     // If an active lock exists, verify the caller is actually on the locked device!
     const cookieStore = await cookies();
     const existingCookie = cookieStore.get("payonaire_access_token")?.value;
@@ -57,13 +56,11 @@ export async function processActivation(orderId: string, email: string, name?: s
   }
 
   await ClaimedOrder.findOneAndUpdate(
-    { orderId },
+    { email: normalizedEmail },
     {
-      orderId,
-      email: normalizedEmail,
-      deviceKey: deviceKeyToUse,
+      $set: { orderId, email: normalizedEmail, deviceKey: deviceKeyToUse }
     },
-    { upsert: true }
+    { upsert: true, new: true, setDefaultsOnInsert: true }
   );
 
   const token = jwt.sign(

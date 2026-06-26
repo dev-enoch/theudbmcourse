@@ -109,11 +109,14 @@ export async function clearUserDeviceLock(email: string, resetAction: string = "
     if (!orders || orders.length === 0) throw new Error("No claimed order found for this user");
 
     for (const order of orders) {
-      // Add to reset history
-      order.resetHistory.push({
-        timestamp: new Date(),
-        previousDeviceKey: order.deviceKey
-      });
+      // Add to reset history only if it's a real device key
+      if (!["reset-by-admin", "reset-by-logout", "webhook-auto-enroll"].includes(order.deviceKey)) {
+        order.resetHistory.push({
+          timestamp: new Date(),
+          previousDeviceKey: order.deviceKey
+        });
+      }
+
       
       order.deviceKey = resetAction;
       await order.save();

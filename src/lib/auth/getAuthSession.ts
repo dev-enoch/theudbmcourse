@@ -36,15 +36,27 @@ export async function getAuthSession(): Promise<UnifiedSession | null> {
         deviceKey: string;
       };
 
-      // Verify the user exists in DB
+      // Verify the user exists in DB and is active
       const user = await User.findById(decoded.userId).lean();
-      if (user) {
-        return {
-          userId: user._id.toString(),
-          email: user.email,
-          role: user.role as "admin" | "user",
-        };
+      if (!user || user.active === false) {
+        return null;
       }
+
+      // Verify the device lock matches the current ClaimedOrder
+      const { default: ClaimedOrder } = await import("@/models/ClaimedOrder");
+      const normalizedEmail = decoded.email.trim().toLowerCase();
+      const order = await ClaimedOrder.findOne({ email: normalizedEmail }).lean();
+
+      if (!order || order.deviceKey !== decoded.deviceKey) {
+        // Device lock has been reset or changed
+        return null;
+      }
+
+      return {
+        userId: user._id.toString(),
+        email: user.email,
+        role: user.role as "admin" | "user",
+      };
     } catch (err) {
       console.error("Payonaire Token verification failed:", err);
     }

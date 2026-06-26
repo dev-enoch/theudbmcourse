@@ -26,6 +26,8 @@ export async function POST(req: Request) {
 
     await connectDB();
 
+    const normalizedEmail = email.trim().toLowerCase();
+
     // 1. Check if the order was already processed
     const existingOrder = await ClaimedOrder.findOne({ orderId });
     if (existingOrder) {
@@ -35,12 +37,15 @@ export async function POST(req: Request) {
       );
     }
 
-    // 2. Log the claimed order
-    await ClaimedOrder.create({
-      orderId,
-      email,
-      deviceKey: "webhook-auto-enroll", // Placeholder since there's no device
-    });
+    // 2. Log the claimed order or update existing one to preserve device lock if exists
+    await ClaimedOrder.findOneAndUpdate(
+      { email: normalizedEmail },
+      { 
+        $set: { orderId, email: normalizedEmail },
+        $setOnInsert: { deviceKey: "webhook-auto-enroll" } 
+      },
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    );
 
     // 3. Create or update the user
     let user = await User.findOne({ email });
