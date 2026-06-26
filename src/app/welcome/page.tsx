@@ -60,8 +60,10 @@ export default async function WelcomePage({ searchParams }: WelcomePageProps) {
   }
 
   // --- GLOBAL EMAIL DEVICE LOCK CHECK ---
-  // Find all orders for this email
-  const allUserOrders = await ClaimedOrder.find({ email }).lean();
+  const normalizedEmail = email.trim().toLowerCase();
+  
+  // Find all orders for this email case-insensitively
+  const allUserOrders = await ClaimedOrder.find({ email: new RegExp(`^${normalizedEmail}$`, "i") }).lean();
   const claimedOrder = allUserOrders.find((o: any) => o.orderId === orderId);
 
   // Check if there is ANY active lock for this user
@@ -102,5 +104,5 @@ export default async function WelcomePage({ searchParams }: WelcomePageProps) {
   }
 
   // --- NEW ACTIVATION (FIRST TIME OR RESET) ---
-  return <AutoActivate orderId={orderId} email={email} name={name} />;
+  return <AutoActivate orderId={orderId} email={normalizedEmail} name={name} />;
 }

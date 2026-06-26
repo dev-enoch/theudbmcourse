@@ -217,7 +217,8 @@ export async function getUserProfile(userId: string) {
   const user = await User.findById(userId).lean() as any;
   if (!user) return null;
 
-  const order = await ClaimedOrder.findOne({ email: user.email }).lean() as any;
+  const normalizedEmail = user.email.trim().toLowerCase();
+  const order = await ClaimedOrder.findOne({ email: new RegExp(`^${normalizedEmail}$`, "i") }).lean() as any;
 
   return {
     ...user,

@@ -104,7 +104,8 @@ export async function sendDirectUserEmail(userId: string, subject: string, htmlC
 export async function clearUserDeviceLock(email: string, resetAction: string = "reset-by-admin") {
   try {
     await connectDB();
-    const orders = await ClaimedOrder.find({ email });
+    const normalizedEmail = email.trim().toLowerCase();
+    const orders = await ClaimedOrder.find({ email: new RegExp(`^${normalizedEmail}$`, "i") });
     if (!orders || orders.length === 0) throw new Error("No claimed order found for this user");
 
     for (const order of orders) {
