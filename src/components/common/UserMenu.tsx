@@ -43,7 +43,7 @@ export function UserMenu({ email, role }: Props) {
           <button
             onClick={async () => {
               await clearPayonaireCookie();
-              signOut({ callbackUrl: "/login" });
+              signOut({ callbackUrl: role === "admin" ? "/login" : "/" });
             }}
             className="w-full flex items-center gap-2"
           >

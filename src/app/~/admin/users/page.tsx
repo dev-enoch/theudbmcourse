@@ -6,12 +6,10 @@ import { authOptions } from "@/lib/auth/authOptions";
 import { redirect } from "next/navigation";
 
 interface AdminUsersPageProps {
-  searchParams?: { page?: string; limit?: string };
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
-export default async function AdminUsersPage({
-  searchParams,
-}: AdminUsersPageProps) {
+export default async function AdminUsersPage(props: AdminUsersPageProps) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.email) {
@@ -20,8 +18,9 @@ export default async function AdminUsersPage({
 
   const currentAdminEmail = session.user.email;
 
-  const page = searchParams?.page ? parseInt(searchParams.page, 10) : 1;
-  const limit = searchParams?.limit ? parseInt(searchParams.limit, 10) : 10;
+  const searchParams = await props.searchParams;
+  const page = searchParams?.page ? parseInt(searchParams.page as string, 10) : 1;
+  const limit = searchParams?.limit ? parseInt(searchParams.limit as string, 10) : 10;
 
   const { users, pagination } = await getUsers({ page, limit });
 

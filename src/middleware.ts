@@ -17,7 +17,7 @@ export function middleware(req: NextRequest) {
     // If they already have access, redirect from login/welcome/unauthorized to appropriate home
     if ((pathname === "/login" || pathname === "/unauthorized") && (session || payonaireToken)) {
       if (session) {
-        return NextResponse.redirect(new URL("/~/admin/settings", req.url));
+        return NextResponse.redirect(new URL("/~/admin", req.url));
       }
       return NextResponse.redirect(new URL("/", req.url));
     }
