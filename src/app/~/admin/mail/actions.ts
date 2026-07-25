@@ -16,6 +16,7 @@ export async function getReceivedEmails() {
   await requireAdmin();
   // Usually returns { data: { data: [] } } or { data: [] }
   const response = await resend.emails.receiving.list();
+  // console.log(response);
   if (response.error) throw new Error(response.error.message);
   return (response.data as any)?.data || [];
 }
@@ -23,6 +24,7 @@ export async function getReceivedEmails() {
 export async function getSentEmails() {
   await requireAdmin();
   const response = await resend.emails.list();
+  // console.log(response);
   if (response.error) throw new Error(response.error.message);
   return (response.data as any)?.data || [];
 }

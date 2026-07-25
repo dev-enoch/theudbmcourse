@@ -18,18 +18,14 @@ import { ResendEmail } from "../types";
 export function ComposeModal({
   onClose,
   replyToEmail,
-  activeTab,
 }: {
   onClose: () => void;
   replyToEmail?: ResendEmail | null;
-  activeTab: "inbox" | "sent";
 }) {
   const [to, setTo] = useState(() => {
     if (!replyToEmail) return "";
-    // If we're replying to an email in our inbox, we send it to the 'from' address
-    // If we're replying to a sent email, we probably want to send it to the 'to' address
-    if (activeTab === "inbox") {
-      // Extract email from "Name <email@domain.com>" if formatted that way
+    
+    if (replyToEmail.folder === "inbox") {
       const match = replyToEmail.from.match(/<([^>]+)>/);
       return match ? match[1] : replyToEmail.from;
     }
@@ -57,7 +53,7 @@ export function ComposeModal({
         to,
         subject,
         htmlBody: body,
-        inReplyTo: replyToEmail?.id, // Useful for threading if the email client supports it
+        inReplyTo: replyToEmail?.id,
       });
       toast.success("Email sent successfully!");
       onClose();
@@ -70,12 +66,12 @@ export function ComposeModal({
 
   return (
     <Dialog open onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl h-[80vh] flex flex-col">
+      <DialogContent className="max-w-2xl h-[80vh] flex flex-col p-4 md:p-6">
         <DialogHeader>
           <DialogTitle>{replyToEmail ? "Reply" : "New Message"}</DialogTitle>
         </DialogHeader>
         
-        <div className="flex flex-col gap-4 flex-1 mt-4 overflow-y-auto pr-2">
+        <div className="flex flex-col gap-4 flex-1 mt-2 overflow-y-auto pr-2">
           <div className="grid gap-2">
             <label className="text-sm font-medium">To:</label>
             <Input
@@ -106,7 +102,7 @@ export function ComposeModal({
           </div>
         </div>
 
-        <DialogFooter className="mt-4">
+        <DialogFooter className="mt-4 gap-2">
           <Button variant="outline" onClick={onClose} disabled={isSending}>
             Cancel
           </Button>

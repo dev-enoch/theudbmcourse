@@ -11,12 +11,10 @@ import { ResendEmail } from "../types";
 export function MailViewer({
   email,
   onReply,
-  activeTab,
   onBack,
 }: {
   email: ResendEmail;
   onReply: () => void;
-  activeTab: "inbox" | "sent";
   onBack: () => void;
 }) {
   const [fullEmail, setFullEmail] = useState<ResendEmail | null>(null);
@@ -31,7 +29,7 @@ export function MailViewer({
       setLoading(true);
       try {
         const data =
-          activeTab === "inbox"
+          email.folder === "inbox"
             ? await getReceivedEmail(email.id)
             : await getSentEmail(email.id);
         if (isMounted) {
@@ -51,32 +49,30 @@ export function MailViewer({
     return () => {
       isMounted = false;
     };
-  }, [email.id, activeTab]);
+  }, [email.id, email.folder]);
 
   return (
     <div className="flex flex-col h-full w-full">
-      <div className="flex items-center justify-between p-4 border-b">
-        <div className="flex items-center gap-2">
-          <Button variant="ghost" size="icon" onClick={onBack} className="md:hidden">
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <h2 className="text-xl font-semibold truncate">{email.subject}</h2>
-        </div>
-        <Button onClick={onReply} variant="outline" size="sm" className="gap-2">
+      <div className="flex items-center gap-3 p-4 border-b">
+        <Button variant="ghost" size="icon" onClick={onBack} className="md:hidden shrink-0">
+          <ArrowLeft className="h-5 w-5" />
+        </Button>
+        <h2 className="text-xl font-semibold truncate flex-1">{email.subject}</h2>
+        <Button onClick={onReply} variant="outline" size="sm" className="gap-2 shrink-0 rounded-full px-4">
           <Reply className="h-4 w-4" />
-          Reply
+          <span className="hidden sm:inline">Reply</span>
         </Button>
       </div>
 
-      <div className="p-4 border-b bg-muted/10">
-        <div className="grid gap-1 text-sm">
+      <div className="p-4 border-b bg-muted/5">
+        <div className="grid gap-1.5 text-sm">
           <div className="flex gap-2">
             <span className="font-semibold text-muted-foreground w-12">From:</span>
             <span>{fullEmail?.from || email.from}</span>
           </div>
           <div className="flex gap-2">
             <span className="font-semibold text-muted-foreground w-12">To:</span>
-            <span>{(fullEmail?.to || email.to)?.join(", ")}</span>
+            <span className="truncate">{(fullEmail?.to || email.to)?.join(", ")}</span>
           </div>
           <div className="flex gap-2">
             <span className="font-semibold text-muted-foreground w-12">Date:</span>
@@ -89,7 +85,7 @@ export function MailViewer({
         </div>
       </div>
 
-      <div className="flex-1 overflow-y-auto p-6 bg-white relative">
+      <div className="flex-1 overflow-y-auto p-4 md:p-6 bg-white relative">
         {loading ? (
           <div className="flex items-center justify-center h-full">
             <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -100,7 +96,7 @@ export function MailViewer({
             dangerouslySetInnerHTML={{ __html: fullEmail.html || `<p>${fullEmail.text || "No content."}</p>` }}
           />
         ) : (
-          <div className="text-center text-muted-foreground">
+          <div className="text-center text-muted-foreground pt-10">
             Could not load the email content.
           </div>
         )}

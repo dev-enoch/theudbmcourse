@@ -6,4 +6,5 @@ export interface ResendEmail {
   subject: string;
   html?: string | null;
   text?: string | null;
+  folder?: "inbox" | "sent";
 }

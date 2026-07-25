@@ -1,21 +1,33 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { MailList } from "./MailList";
 import { MailViewer } from "./MailViewer";
 import { ComposeModal } from "./ComposeModal";
-import { Inbox, Send, PenSquare } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { ResendEmail } from "../types";
 
 export function MailClient({ initialReceived, initialSent, emailFrom }: { initialReceived: ResendEmail[], initialSent: ResendEmail[], emailFrom: string }) {
-  const [activeTab, setActiveTab] = useState<"inbox" | "sent">("inbox");
+  const [filter, setFilter] = useState<"all" | "inbox" | "sent">("all");
   const [selectedEmail, setSelectedEmail] = useState<ResendEmail | null>(null);
   const [isComposing, setIsComposing] = useState(false);
   const [replyToEmail, setReplyToEmail] = useState<ResendEmail | null>(null);
 
-  // Fallback to empty array just in case data comes back as null/undefined
-  const emails = activeTab === "inbox" ? (initialReceived || []) : (initialSent || []);
+  // Combine and sort emails
+  const allEmails = useMemo(() => {
+    const received = (initialReceived || []).map(e => ({ ...e, folder: "inbox" as const }));
+    const sent = (initialSent || []).map(e => ({ ...e, folder: "sent" as const }));
+    
+    return [...received, ...sent].sort((a, b) => {
+      const dateA = new Date(a.created_at || 0).getTime();
+      const dateB = new Date(b.created_at || 0).getTime();
+      return dateB - dateA;
+    });
+  }, [initialReceived, initialSent]);
+
+  const filteredEmails = useMemo(() => {
+    if (filter === "all") return allEmails;
+    return allEmails.filter(e => e.folder === filter);
+  }, [allEmails, filter]);
 
   const handleCompose = () => {
     setReplyToEmail(null);
@@ -29,45 +41,15 @@ export function MailClient({ initialReceived, initialSent, emailFrom }: { initia
 
   return (
     <div className="flex flex-1 h-full overflow-hidden">
-      {/* Mail Sidebar */}
-      <div className="hidden md:flex w-64 border-r bg-muted/20 flex-col p-4 shrink-0">
-        <Button onClick={handleCompose} className="w-full justify-start gap-2 mb-6">
-          <PenSquare className="h-4 w-4" />
-          Compose
-        </Button>
-        <nav className="flex flex-col gap-2">
-          <Button
-            variant={activeTab === "inbox" ? "secondary" : "ghost"}
-            className="justify-start gap-2"
-            onClick={() => { setActiveTab("inbox"); setSelectedEmail(null); }}
-          >
-            <Inbox className="h-4 w-4" />
-            Inbox
-            <span className="ml-auto text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
-              {initialReceived?.length || 0}
-            </span>
-          </Button>
-          <Button
-            variant={activeTab === "sent" ? "secondary" : "ghost"}
-            className="justify-start gap-2"
-            onClick={() => { setActiveTab("sent"); setSelectedEmail(null); }}
-          >
-            <Send className="h-4 w-4" />
-            Sent
-            <span className="ml-auto text-xs bg-muted text-muted-foreground px-2 py-0.5 rounded-full">
-              {initialSent?.length || 0}
-            </span>
-          </Button>
-        </nav>
-      </div>
-
       {/* Mail List */}
-      <div className={`w-full md:w-80 border-r flex flex-col bg-background h-full shrink-0 ${selectedEmail ? 'hidden md:flex' : 'flex'}`}>
+      <div className={`w-full md:w-[350px] border-r flex flex-col bg-background h-full shrink-0 ${selectedEmail ? 'hidden md:flex' : 'flex'}`}>
         <MailList
-          emails={emails}
-          activeTab={activeTab}
+          emails={filteredEmails}
+          filter={filter}
+          onFilterChange={setFilter}
           selectedEmail={selectedEmail}
           onSelectEmail={setSelectedEmail}
+          onCompose={handleCompose}
         />
       </div>
 
@@ -77,7 +59,6 @@ export function MailClient({ initialReceived, initialSent, emailFrom }: { initia
           <MailViewer
             email={selectedEmail}
             onReply={() => handleReply(selectedEmail)}
-            activeTab={activeTab}
             onBack={() => setSelectedEmail(null)}
           />
         ) : (
@@ -91,7 +72,6 @@ export function MailClient({ initialReceived, initialSent, emailFrom }: { initia
         <ComposeModal
           onClose={() => setIsComposing(false)}
           replyToEmail={replyToEmail}
-          activeTab={activeTab}
         />
       )}
     </div>
