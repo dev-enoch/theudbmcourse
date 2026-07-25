@@ -3,6 +3,7 @@
 import { connectDB } from "./mongoose";
 import Settings from "@/models/Settings";
 import { IGroupLink, ISettings } from "@/models/Settings";
+import { AppConfig } from "@/app.config";
 
 export async function getSettings() {
   try {
@@ -13,18 +14,11 @@ export async function getSettings() {
     // Create default settings if none exist
     if (!settings) {
       settings = await Settings.create({
-        groupLinks: [
-          {
-            courseId: "ha-tiktok-ads",
-            courseName: "TikTok Ads Course",
-            link: "https://chat.whatsapp.com/C2GTedPcLtzIcDbi5cXHhV",
-            enabled: true,
-          },
-        ],
-        payonairePurchaseLink: "https://payonaire.com",
-        supportWhatsApp: "https://wa.me/2349038633816",
-        supportEmail: "support@bag.com",
-        siteTitle: "Blueprint to Automated Gains (BAG)",
+        groupLinks: AppConfig.defaultGroupLinks,
+        payonairePurchaseLink: AppConfig.payonairePurchaseLink,
+        supportWhatsApp: AppConfig.supportWhatsApp,
+        supportEmail: AppConfig.supportEmail,
+        siteTitle: AppConfig.siteTitle,
         announcementBanner: "",
         announcementEnabled: false,
       });
@@ -32,7 +26,7 @@ export async function getSettings() {
 
     // Ensure default link exists in return object if not already set
     if (!settings.payonairePurchaseLink) {
-      settings.payonairePurchaseLink = "https://payonaire.com";
+      settings.payonairePurchaseLink = AppConfig.payonairePurchaseLink;
       await settings.save();
     }
 
@@ -41,10 +35,10 @@ export async function getSettings() {
     console.warn("Could not connect to DB for settings, returning defaults:", error);
     return {
       groupLinks: [],
-      payonairePurchaseLink: "https://payonaire.com",
-      supportWhatsApp: "https://wa.me/2349038633816",
-      supportEmail: "support@bag.com",
-      siteTitle: "Blueprint to Automated Gains (BAG)",
+      payonairePurchaseLink: AppConfig.payonairePurchaseLink,
+      supportWhatsApp: AppConfig.supportWhatsApp,
+      supportEmail: AppConfig.supportEmail,
+      siteTitle: AppConfig.siteTitle,
       announcementBanner: "",
       announcementEnabled: false,
     };
@@ -72,10 +66,10 @@ export async function updateSettings(updates: Partial<ISettings>) {
   if (!settings) {
     settings = await Settings.create({
       groupLinks: updates.groupLinks || [],
-      payonairePurchaseLink: updates.payonairePurchaseLink || "https://payonaire.com",
-      supportWhatsApp: updates.supportWhatsApp || "https://wa.me/2349038633816",
-      supportEmail: updates.supportEmail || "support@bag.com",
-      siteTitle: updates.siteTitle || "Blueprint to Automated Gains (BAG)",
+      payonairePurchaseLink: updates.payonairePurchaseLink || AppConfig.payonairePurchaseLink,
+      supportWhatsApp: updates.supportWhatsApp || AppConfig.supportWhatsApp,
+      supportEmail: updates.supportEmail || AppConfig.supportEmail,
+      siteTitle: updates.siteTitle || AppConfig.siteTitle,
       announcementBanner: updates.announcementBanner || "",
       announcementEnabled: updates.announcementEnabled || false,
     });

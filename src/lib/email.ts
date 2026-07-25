@@ -1,4 +1,5 @@
 import { Resend } from 'resend';
+import { AppConfig } from "@/app.config";
 
 export const resend = new Resend(process.env.RESEND_API_KEY || 're_dummy');
 
@@ -31,7 +32,7 @@ export function getEmailHtml(title: string, bodyHtml: string) {
             ${bodyHtml}
           </div>
           <div class="footer">
-            <p>Automated Gains Blueprint (BAG)</p>
+            <p>The UBDM Course</p>
             <p><small>You are receiving this email because you are a registered student.</small></p>
           </div>
         </div>
@@ -50,7 +51,7 @@ export async function sendEmail(to: string | string[], subject: string, htmlCont
 
   try {
     const data = await resend.emails.send({
-      from: 'BAG Support <support@blueprinttoautomatedgains.online>',
+      from: AppConfig.emailFrom,
       to: Array.isArray(to) ? to : [to],
       subject,
       html: htmlContent,

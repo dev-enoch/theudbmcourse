@@ -17,6 +17,7 @@ import { Loader2 } from "lucide-react";
 import { signIn } from "next-auth/react";
 import { useTransition } from "react";
 import { toast } from "sonner";
+import { AppConfig } from "@/app.config";
 
 const formSchema = z.object({
   email: z
@@ -67,7 +68,7 @@ export function LoginForm() {
               <FormLabel>Email Address</FormLabel>
               <FormControl>
                 <Input
-                  placeholder="e.g., admin@bag.com"
+                  placeholder={`e.g., ${AppConfig.adminEmailPlaceholder}`}
                   {...field}
                   type="email"
                   autoComplete="email"

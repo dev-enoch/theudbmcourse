@@ -6,6 +6,7 @@ import {
   getEnrollmentChartData,
   getAudienceSegmentsData
 } from "./actions";
+import { AppConfig } from "@/app.config";
 
 import CampaignManager from "./_components/CampaignManager";
 import AutomationsPanel from "./_components/AutomationsPanel";
@@ -39,7 +40,7 @@ export default async function MarketingPage() {
           <p className="font-semibold">⚠️ Resend Configuration Missing</p>
           <p className="text-sm mt-1">
             You have not set a <code>RESEND_API_KEY</code> in your environment variables. Emails will not actually send.
-            Once you add it, ensure your domain <b>blueprinttoautomatedgains.online</b> is verified in Resend.
+            Once you add it, ensure your domain <b>{AppConfig.emailDomain}</b> is verified in Resend.
           </p>
         </div>
       )}

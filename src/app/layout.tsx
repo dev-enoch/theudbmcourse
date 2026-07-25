@@ -3,12 +3,13 @@ import "./globals.css";
 import { Toaster } from "sonner";
 
 import { getSettings } from "@/lib/settings";
+import { AppConfig } from "@/app.config";
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettings();
   return {
-    title: settings?.siteTitle || "Blueprint to Automated Gains (BAG)",
-    description: "An affiliate marketing course platform.",
+    title: settings?.siteTitle || AppConfig.siteTitle,
+    description: AppConfig.description,
   };
 }
 

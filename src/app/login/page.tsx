@@ -11,7 +11,7 @@ export default async function LoginPage() {
       <div className="sm:mx-auto sm:w-full sm:max-w-sm">
         <Logo className="h-12 w-auto mx-auto" />
         <h1 className="mt-6 text-center text-3xl font-bold leading-9 tracking-tight text-foreground">
-          Blueprint to Automated Gains
+          The UBDM Course
         </h1>
         <h2 className="mt-2 text-center text-xl leading-9 tracking-tight text-muted-foreground">
           Sign in to your account

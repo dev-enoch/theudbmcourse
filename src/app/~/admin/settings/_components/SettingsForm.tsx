@@ -22,6 +22,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { AppConfig } from "@/app.config";
 
 interface GroupLink {
   courseId: string;
@@ -108,7 +109,7 @@ function BrandingSection({ initialSettings }: { initialSettings: SettingsFormPro
               id="siteTitle"
               value={siteTitle}
               onChange={(e) => setSiteTitle(e.target.value)}
-              placeholder="Blueprint to Automated Gains (BAG)"
+              placeholder={AppConfig.siteTitle}
               required
             />
           </div>
@@ -195,7 +196,7 @@ function SupportSection({ initialSettings }: { initialSettings: SettingsFormProp
               id="supportEmail"
               value={supportEmail}
               onChange={(e) => setSupportEmail(e.target.value)}
-              placeholder="support@bag.com"
+              placeholder={AppConfig.supportEmail}
               required
               type="email"
             />

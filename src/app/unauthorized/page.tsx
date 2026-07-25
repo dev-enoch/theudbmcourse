@@ -32,7 +32,7 @@ export default async function UnauthorizedPage() {
         </CardHeader>
         <CardContent className="space-y-4 px-6 pb-6">
           <p className="text-muted-foreground text-sm leading-relaxed">
-            Welcome to the <strong className="font-semibold text-foreground">Blueprint Automated Gains</strong> course. It looks like you do not have permission to view this content yet.
+            Welcome to <strong className="font-semibold text-foreground">The UBDM Course</strong>. It looks like you do not have permission to view this content yet.
           </p>
           <p className="text-muted-foreground text-sm leading-relaxed">
             To unlock lifetime access to all course blueprints, video guides, and exclusive resources, please complete your purchase.

@@ -1,4 +1,5 @@
 import mongoose, { Schema, Document } from "mongoose";
+import { AppConfig } from "@/app.config";
 
 export interface IGroupLink {
   courseId: string;
@@ -37,19 +38,19 @@ const SettingsSchema = new Schema<ISettings>(
     },
     payonairePurchaseLink: {
       type: String,
-      default: "https://payonaire.com",
+      default: AppConfig.payonairePurchaseLink,
     },
     supportWhatsApp: {
       type: String,
-      default: "https://wa.me/2349038633816",
+      default: AppConfig.supportWhatsApp,
     },
     supportEmail: {
       type: String,
-      default: "support@bag.com",
+      default: AppConfig.supportEmail,
     },
     siteTitle: {
       type: String,
-      default: "Blueprint to Automated Gains (BAG)",
+      default: AppConfig.siteTitle,
     },
     announcementBanner: {
       type: String,
