@@ -12,7 +12,11 @@ export function middleware(req: NextRequest) {
     pathname.startsWith("/favicon.ico") ||
     pathname.startsWith("/robots.txt") ||
     pathname.startsWith("/sitemap.xml") ||
-    pathname.match(/\.(png|jpg|jpeg|gif|svg|ico|webp|mp4|pdf)$/i);
+    pathname.startsWith("/site.webmanifest") ||
+    pathname.startsWith("/sw.js") ||
+    pathname.startsWith("/sw.js.map") ||
+    pathname.startsWith("/workbox-") ||
+    pathname.match(/\.(png|jpg|jpeg|gif|svg|ico|webp|mp4|pdf|webmanifest)$/i);
 
   if (isStatic) {
     return NextResponse.next();
@@ -73,5 +77,5 @@ export function middleware(req: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next|static|public|favicon.ico|robots.txt|sitemap.xml).*)"],
+  matcher: ["/((?!_next|static|public|favicon.ico|robots.txt|sitemap.xml|site.webmanifest|sw.js|workbox-).*)"],
 };
