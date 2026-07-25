@@ -29,7 +29,7 @@ export default function MaintenancePage() {
               placeholder="Enter Your Email" 
               className="h-14 w-full bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-base"
             />
-            <Button className="h-14 w-full sm:w-auto px-8 bg-[#1f1a38] hover:bg-[#151128] text-white text-base">
+            <Button className="h-14 w-full sm:w-auto px-8 bg-primary hover:bg-primary/90 text-primary-foreground text-base">
               Notify Me
             </Button>
           </div>
