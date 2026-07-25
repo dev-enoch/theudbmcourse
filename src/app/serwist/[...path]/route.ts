@@ -11,6 +11,7 @@ export const GET = async (req: any, ctx: any) => {
   }
   return handler.GET(req, resolvedCtx);
 };
+
 export const dynamic = "force-static";
 export const dynamicParams = false;
 export const revalidate = false;

@@ -3397,6 +3397,11 @@ es-toolkit@^1.39.3:
   resolved "https://registry.npmjs.org/es-toolkit/-/es-toolkit-1.48.1.tgz"
   integrity sha512-wfnXlwd5I75eXRtdD2vuEs50xHHESECDsGD7yiQnfFVNoa5522NwXEbmgo98LfiukSQHs+mBM7/YG3qKJB9/mQ==
 
+esbuild-wasm@^0.28.1, "esbuild-wasm@>=0.25.0 <1.0.0":
+  version "0.28.1"
+  resolved "https://registry.npmjs.org/esbuild-wasm/-/esbuild-wasm-0.28.1.tgz"
+  integrity sha512-p/GD4E8oYRjg3kjdKrnMb0s4PzXgJF42e0MF4H0+ACyK/kIlFRp3e0fzOleIG+wBBm6MM3XQrbpe7soEA+vJIA==
+
 esbuild@^0.28.1, "esbuild@>=0.25.0 <1.0.0":
   version "0.28.1"
   resolved "https://registry.npmjs.org/esbuild/-/esbuild-0.28.1.tgz"
