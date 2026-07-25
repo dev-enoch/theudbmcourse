@@ -42,7 +42,7 @@ export default function MaintenancePage() {
             alt="Maintenance in progress"
             width={700}
             height={600}
-            className="w-full max-w-[600px] h-auto object-contain drop-shadow-sm"
+            className="w-full max-w-[600px] h-auto object-contain drop-shadow-sm hue-rotate-[-150deg] saturate-150"
             priority
           />
         </div>
