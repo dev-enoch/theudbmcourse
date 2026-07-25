@@ -52,7 +52,7 @@
   --card-foreground: hsl(252 20% 15%);
   --popover: hsl(0 0% 100%);
   --popover-foreground: hsl(252 20% 15%);
-  --primary: hsl(252 100% 75%);
+  --primary: hsl(129 53% 27%);
   --primary-foreground: hsl(0 0% 100%);
   --secondary: hsl(252 50% 95%);
   --secondary-foreground: hsl(252 20% 15%);
@@ -63,7 +63,7 @@
   --destructive: hsl(0 84.2% 60.2%);
   --border: hsl(252 50% 90%);
   --input: hsl(252 50% 90%);
-  --ring: hsl(252 100% 75%);
+  --ring: hsl(129 53% 27%);
   --chart-1: hsl(12 76% 61%);
   --chart-2: hsl(173 58% 39%);
   --chart-3: hsl(197 37% 24%);
@@ -71,12 +71,12 @@
   --chart-5: hsl(27 87% 67%);
   --sidebar: hsl(252 50% 98%);
   --sidebar-foreground: hsl(252 20% 15%);
-  --sidebar-primary: hsl(252 100% 75%);
+  --sidebar-primary: hsl(129 53% 27%);
   --sidebar-primary-foreground: hsl(0 0% 100%);
   --sidebar-accent: hsl(252 100% 88%);
   --sidebar-accent-foreground: hsl(252 20% 15%);
   --sidebar-border: hsl(252 100% 90%);
-  --sidebar-ring: hsl(252 100% 75%);
+  --sidebar-ring: hsl(129 53% 27%);
 }
 
 .dark {
@@ -86,7 +86,7 @@
   --card-foreground: hsl(0 0% 100%);
   --popover: hsl(252 20% 10%);
   --popover-foreground: hsl(0 0% 100%);
-  --primary: hsl(252 100% 75%);
+  --primary: hsl(129 53% 27%);
   --primary-foreground: hsl(0 0% 100%);
   --secondary: hsl(252 20% 15%);
   --secondary-foreground: hsl(0 0% 100%);
@@ -97,7 +97,7 @@
   --destructive: hsl(0 62.8% 30.6%);
   --border: hsl(252 20% 25%);
   --input: hsl(252 20% 25%);
-  --ring: hsl(252 100% 75%);
+  --ring: hsl(129 53% 27%);
   --chart-1: hsl(220 70% 50%);
   --chart-2: hsl(160 60% 45%);
   --chart-3: hsl(30 80% 55%);
@@ -105,12 +105,12 @@
   --chart-5: hsl(340 75% 55%);
   --sidebar: hsl(252 20% 12%);
   --sidebar-foreground: hsl(0 0% 100%);
-  --sidebar-primary: hsl(252 100% 75%);
+  --sidebar-primary: hsl(129 53% 27%);
   --sidebar-primary-foreground: hsl(0 0% 100%);
   --sidebar-accent: hsl(252 100% 88%);
   --sidebar-accent-foreground: hsl(252 20% 10%);
   --sidebar-border: hsl(252 20% 25%);
-  --sidebar-ring: hsl(252 100% 75%);
+  --sidebar-ring: hsl(129 53% 27%);
 }
 
 @layer base {
