@@ -146,24 +146,46 @@ export async function getEnrollmentChartData() {
   await requireAdmin();
   await connectDB();
 
-  // Mocking 12 months of historical data to populate the stacked bar chart visually.
-  // In a real scenario, we'd aggregate Users by createdAt month and utmSource.
-  const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  const data = months.map(month => ({
-    name: month,
-    Organic: Math.floor(Math.random() * 200) + 100,
-    Paid: Math.floor(Math.random() * 150) + 50,
-    Email: Math.floor(Math.random() * 100) + 20,
-  }));
+  const twelveMonthsAgo = new Date();
+  twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 11);
+  twelveMonthsAgo.setDate(1);
+  twelveMonthsAgo.setHours(0, 0, 0, 0);
 
-  return data;
+  const users = await User.find({ role: "user", createdAt: { $gte: twelveMonthsAgo } }).lean();
+
+  const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const dataMap = new Map<string, any>();
+
+  for (let i = 11; i >= 0; i--) {
+    const d = new Date();
+    d.setMonth(d.getMonth() - i);
+    const m = monthNames[d.getMonth()];
+    const key = `${d.getFullYear()}-${m}`;
+    dataMap.set(key, { name: m, Organic: 0, Paid: 0, Email: 0, Direct: 0 });
+  }
+
+  users.forEach((u) => {
+    const d = new Date(u.createdAt as any);
+    const m = monthNames[d.getMonth()];
+    const key = `${d.getFullYear()}-${m}`;
+    
+    if (dataMap.has(key)) {
+      const entry = dataMap.get(key);
+      const source = (u.utmSource || "Direct").toLowerCase();
+      if (source.includes("organic")) entry.Organic++;
+      else if (source.includes("paid") || source.includes("ads")) entry.Paid++;
+      else if (source.includes("email")) entry.Email++;
+      else entry.Direct++;
+    }
+  });
+
+  return Array.from(dataMap.values());
 }
 
 export async function getAudienceSegmentsData() {
   await requireAdmin();
   await connectDB();
 
-  // Segment based on utmSource if available, else fallback to mock distribution
   const users = await User.find({ role: "user" }, { utmSource: 1 }).lean();
   
   let organic = 0;
@@ -178,17 +200,6 @@ export async function getAudienceSegmentsData() {
     else if (source.includes("email")) email++;
     else direct++;
   });
-
-  // If no users have utm data yet, return a mock segment for the visuals
-  if (users.length < 5) {
-    return [
-      { name: "Organic Search", value: 4210, fill: "#4F46E5" },
-      { name: "Paid Social", value: 3180, fill: "#F97316" },
-      { name: "Email Subscribers", value: 2640, fill: "#10B981" },
-      { name: "Direct", value: 1560, fill: "#8B5CF6" },
-      { name: "Referral", value: 1252, fill: "#22C55E" },
-    ];
-  }
 
   return [
     { name: "Organic", value: organic, fill: "#4F46E5" },

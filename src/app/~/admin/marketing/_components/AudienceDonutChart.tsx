@@ -67,7 +67,7 @@ export default function AudienceDonutChart({ data }: AudienceDonutChartProps) {
                 <div className="w-2 h-2 rounded-full" style={{ backgroundColor: item.fill }} />
                 <span className="text-muted-foreground">{item.name}</span>
                 <span className="text-muted-foreground/50 text-xs">
-                  {((item.value / total) * 100).toFixed(1)}%
+                  {total > 0 ? ((item.value / total) * 100).toFixed(1) : "0.0"}%
                 </span>
               </div>
               <span className="font-medium">{item.value.toLocaleString()}</span>

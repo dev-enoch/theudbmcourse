@@ -63,11 +63,6 @@ export default async function MarketingPage() {
           <MarketingAnalytics logs={logs} />
         </div>
       </div>
-      
-      {/* Row 4: Campaign Management */}
-      <div className="mt-6">
-        <CampaignManager />
-      </div>
     </div>
   );
 }

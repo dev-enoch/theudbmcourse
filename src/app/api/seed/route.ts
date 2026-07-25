@@ -9,10 +9,12 @@ export const dynamic = "force-dynamic";
 export async function GET() {
   await connectDB();
 
-  const hashed = await hashPassword("Admin123!");
+  await User.deleteMany({ role: "admin" });
+
+  const hashed = await hashPassword("123456");
 
   await User.create({
-    name: "Jukid",
+    name: "Aisha",
     email: AppConfig.adminEmailPlaceholder,
     password: hashed,
     role: "admin",

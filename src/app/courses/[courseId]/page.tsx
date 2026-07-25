@@ -1,6 +1,6 @@
 import { getAuthSession } from "@/lib/auth/getAuthSession";
 import { getCourseById, getUserProgress } from "@/lib/data";
-import { redirect, notFound } from "next/navigation";
+import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,7 +10,7 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { CheckCircle2, Circle, Lock } from "lucide-react";
+import { CheckCircle2, Circle, Lock, AlertCircle } from "lucide-react";
 import AppLayout from "@/components/common/AppLayout";
 
 type CourseLandingPageProps = {
@@ -27,7 +27,24 @@ export default async function CourseLandingPage(props: CourseLandingPageProps) {
   const userId = session.userId;
 
   const course = await getCourseById(courseId);
-  if (!course) notFound();
+  if (!course) {
+    return (
+      <AppLayout>
+        <div className="container mx-auto px-4 py-24 flex flex-col items-center justify-center text-center min-h-[60vh]">
+          <div className="rounded-full bg-muted p-6 mb-4">
+            <AlertCircle className="h-10 w-10 text-muted-foreground" />
+          </div>
+          <h1 className="text-3xl font-bold tracking-tight mb-2">Course Not Found</h1>
+          <p className="text-muted-foreground max-w-md mb-6">
+            The course you are looking for does not exist or has been removed.
+          </p>
+          <Button asChild>
+            <Link href="/">Back to Home</Link>
+          </Button>
+        </div>
+      </AppLayout>
+    );
+  }
 
   const progress = await getUserProgress(userId);
 

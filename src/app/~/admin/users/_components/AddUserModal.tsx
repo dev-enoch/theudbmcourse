@@ -64,7 +64,7 @@ export function AddUserModal({}: AddUserModalProps) {
         </DialogHeader>
         <div className="grid gap-4 py-2">
           <Input
-            placeholder="Full Name"
+            placeholder="Full Name (Optional)"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />

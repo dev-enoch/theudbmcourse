@@ -14,7 +14,7 @@ import {
 } from "@/lib/data";
 
 type AddUserInput = {
-  name: string;
+  name?: string;
   email: string;
   role: "user" | "admin";
 };

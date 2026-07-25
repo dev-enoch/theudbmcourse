@@ -1,11 +1,6 @@
 import type { NextConfig } from "next";
 import { withWorkflow } from "workflow/next";
-import withSerwistInit from "@serwist/next";
-
-const withSerwist = withSerwistInit({
-  swSrc: "src/app/sw.ts",
-  swDest: "public/sw.js",
-});
+import { withSerwist } from "@serwist/turbopack";
 
 const nextConfig: NextConfig = {
   /* config options here */

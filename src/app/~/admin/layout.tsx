@@ -5,6 +5,7 @@ import Link from "next/link";
 import { Logo } from "@/components/common/Logo";
 import { UserMenu } from "./UserMenu";
 import { SidebarNav } from "./_components/SidebarNav";
+import { MobileNav } from "./_components/MobileNav";
 
 export default async function AdminLayout({
   children,
@@ -25,14 +26,12 @@ export default async function AdminLayout({
           <span>BAG Admin</span>
         </Link>
         <div className="flex items-center gap-4">
-          {/* Mobile navigation links (hidden on desktop) */}
-          <div className="flex gap-4 sm:hidden text-sm font-medium text-muted-foreground">
-            <Link href="/~/admin/users" className="hover:text-primary">Users</Link>
-            <Link href="/~/admin/settings" className="hover:text-primary">Settings</Link>
-          </div>
           <UserMenu email={session.user.email!} role={session.user.role} />
         </div>
       </header>
+      
+      {/* Mobile Tabbed Navigation */}
+      <MobileNav />
 
       <div className="flex flex-1">
         {/* Sidebar */}
@@ -44,7 +43,7 @@ export default async function AdminLayout({
         </aside>
         
         {/* Main Content */}
-        <main className="flex-1 md:ml-64 p-4 lg:p-8 bg-background">
+        <main className="flex-1 md:ml-64 p-4 pb-24 md:pb-4 lg:p-8 bg-background">
           <div className="max-w-[1440px] mx-auto w-full">
             {children}
           </div>

@@ -96,7 +96,7 @@ export async function updateUser(userId: string, updates: UpdateUserInput) {
 // ADD USER + SEND LOGIN EMAIL
 // -------------------------------
 type AddUserInput = {
-  name: string;
+  name?: string;
   email: string;
   role: "user" | "admin";
 };
@@ -111,7 +111,7 @@ export async function addUser(input: AddUserInput) {
   const hashedPassword = await hashPassword(defaultPassword);
 
   const newUser = await User.create({
-    name: input.name,
+    name: input.name || "Student",
     email: input.email,
     role: input.role,
     password: hashedPassword,
@@ -122,16 +122,12 @@ export async function addUser(input: AddUserInput) {
 
   // --- SEND ACTIVATION EMAIL USING TEMPLATE ---
   await resend.emails.send({
-    from: process.env.EMAIL_FROM!,
     to: input.email,
-    subject: "Your Account Has Been Successfully Activated",
     template: {
       id: process.env.RESEND_ACTIVATION_TEMPLATE_ID!,
       variables: {
-        name: input.name,
         email: input.email,
-        password: defaultPassword,
-        login_url: `${process.env.APP_URL}/login`,
+        login_url: `${process.env.APP_URL}`,
       },
     },
   });
@@ -163,15 +159,11 @@ export async function resendLoginDetails(userId: string) {
 
   // --- SEND RESEND LOGIN EMAIL USING TEMPLATE ---
   await resend.emails.send({
-    from: process.env.EMAIL_FROM!,
     to: user.email,
-    subject: "Your Login Details Have Been Reset",
     template: {
       id: process.env.RESEND_RESEND_TEMPLATE_ID!,
       variables: {
-        name: user.name,
         email: user.email,
-        password: defaultPassword,
         login_url: `${process.env.APP_URL}`,
       },
     },
@@ -219,7 +211,7 @@ export async function getUserProfile(userId: string) {
 
   const normalizedEmail = user.email.trim().toLowerCase();
   const allOrders = await ClaimedOrder.find({ email: new RegExp(`^${normalizedEmail}$`, "i") }).sort({ updatedAt: -1 }).lean() as any[];
-  
+
   // Find the active order if it exists, otherwise use the most recent one
   const activeOrder = allOrders.find(
     (o) => !["reset-by-admin", "reset-by-logout", "webhook-auto-enroll"].includes(o.deviceKey)
@@ -245,9 +237,11 @@ export async function getUserProgress(userId: string) {
   if (!user) throw new Error("User not found.");
 
   const progress: Record<string, boolean> = {};
-  user.progress.forEach((p: any) => {
-    progress[p.topicId] = p.completed;
-  });
+  if (user.progress) {
+    user.progress.forEach((p: any) => {
+      progress[p.topicId] = p.completed;
+    });
+  }
 
   return progress;
 }
@@ -261,6 +255,8 @@ export async function updateUserProgress(
 
   const user = await User.findById(userId);
   if (!user) throw new Error("User not found.");
+
+  if (!user.progress) user.progress = [];
 
   const existing = user.progress.find((p: any) => p.topicId === topicId);
   const isNewlyCompleted = (!existing || !existing.completed) && completed;
@@ -300,7 +296,7 @@ export async function updateUserProgress(
     if (courseOfTopic) {
       const completedTopicIds = user.progress.filter((p: any) => p.completed).map((p: any) => p.topicId);
       const isCourseCompleted = allTopicIds.every(id => completedTopicIds.includes(id));
-      
+
       if (isCourseCompleted && settings?.courseCompletionEmailsEnabled) {
         const htmlBody = `
           <p>Congratulations, ${user.name || 'Student'}!</p>
@@ -404,10 +400,12 @@ export async function getAdminAnalytics() {
     // 1. Monthly Users & Revenue (last 12 months)
     User.aggregate([
       { $match: { role: "user", createdAt: { $gte: twelveMonthsAgo } } },
-      { $group: { 
-          _id: { $dateToString: { format: "%Y-%m", date: "$createdAt" } }, 
-          count: { $sum: 1 } 
-      } },
+      {
+        $group: {
+          _id: { $dateToString: { format: "%Y-%m", date: "$createdAt" } },
+          count: { $sum: 1 }
+        }
+      },
       { $sort: { _id: 1 } }
     ]),
     // 2. Top 5 Most Engaging Lessons
@@ -421,13 +419,15 @@ export async function getAdminAnalytics() {
     // 3. Account Health
     User.aggregate([
       { $match: { role: "user" } },
-      { $group: {
+      {
+        $group: {
           _id: {
             active: { $ifNull: ["$active", true] },
             hasRevoked: { $gt: [{ $size: { $ifNull: ["$revokedCourses", []] } }, 0] }
           },
           count: { $sum: 1 }
-      }}
+        }
+      }
     ]),
     // 4. Device Claims Over Time (30 days)
     ClaimedOrder.aggregate([
@@ -490,7 +490,7 @@ export async function getAdminAnalytics() {
   let activeStatusCount = 0;
   let suspendedCount = 0;
   let revokedCount = 0;
-  
+
   accountHealthResult.forEach((group: any) => {
     if (group._id.active && !group._id.hasRevoked) activeStatusCount += group.count;
     else if (!group._id.active) suspendedCount += group.count;
@@ -509,7 +509,7 @@ export async function getAdminAnalytics() {
   const courseCompletions = courses.map(course => {
     const allTopicIds = course.modules.flatMap(m => m.topics.map(t => t.id));
     if (allTopicIds.length === 0) return { course: course.title, completionRate: 0 };
-    
+
     let fullyCompletedCount = 0;
     allUsersProgress.forEach((u: any) => {
       const userCompletedTopicIds = u.progress?.filter((p: any) => p.completed).map((p: any) => p.topicId) || [];
