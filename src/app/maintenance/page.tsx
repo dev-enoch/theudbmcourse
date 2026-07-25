@@ -1,6 +1,4 @@
 import Image from "next/image";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 
 export default function MaintenancePage() {
   return (
@@ -19,20 +17,9 @@ export default function MaintenancePage() {
           </div>
           
           <p className="text-muted-foreground text-base md:text-lg leading-relaxed max-w-md mx-auto lg:mx-0">
-            Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. 
-            Velit officia consequat duis enim velit mollit.
+            We are currently performing some scheduled maintenance to improve our platform. 
+            Please check back shortly. Thank you for your patience!
           </p>
-          
-          <div className="flex flex-col sm:flex-row items-center gap-3 pt-6 w-full max-w-md mx-auto lg:mx-0">
-            <Input 
-              type="email" 
-              placeholder="Enter Your Email" 
-              className="h-14 w-full bg-slate-50 dark:bg-slate-900 border-slate-200 dark:border-slate-800 text-base"
-            />
-            <Button className="h-14 w-full sm:w-auto px-8 bg-primary hover:bg-primary/90 text-primary-foreground text-base">
-              Notify Me
-            </Button>
-          </div>
         </div>
 
         {/* Right Illustration */}
