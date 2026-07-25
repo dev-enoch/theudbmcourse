@@ -1,15 +1,30 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Toaster } from "sonner";
 
 import { getSettings } from "@/lib/settings";
 import { AppConfig } from "@/app.config";
 
+export const viewport: Viewport = {
+  themeColor: "#ffffff",
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+};
+
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettings();
   return {
     title: settings?.siteTitle || AppConfig.siteTitle,
     description: AppConfig.description,
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: "default",
+      title: settings?.siteTitle || AppConfig.siteTitle,
+    },
+    formatDetection: {
+      telephone: false,
+    },
     icons: {
       icon: [
         { url: '/favicon.ico' },
