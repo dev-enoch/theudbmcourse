@@ -28,7 +28,7 @@ export default async function AppLayout({
       <header className="sticky top-0 z-10 flex items-center h-16 px-4 border-b bg-background/80 backdrop-blur-sm sm:px-6">
         <Link href="/" className="flex items-center gap-2 font-semibold">
           <Logo />
-          <span className="text-lg hidden sm:inline-block">BAG</span>
+          <span className="text-lg hidden sm:inline-block">The UBDM Course</span>
         </Link>
         <div className="ml-auto">
           <UserMenu email={session.email} role={session.role} />
