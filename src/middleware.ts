@@ -5,13 +5,39 @@ export function middleware(req: NextRequest) {
   const { nextUrl } = req;
   const pathname = nextUrl.pathname;
 
+  const isStatic =
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/static") ||
+    pathname.startsWith("/public") ||
+    pathname.startsWith("/favicon.ico") ||
+    pathname.startsWith("/robots.txt") ||
+    pathname.startsWith("/sitemap.xml") ||
+    pathname.match(/\.(png|jpg|jpeg|gif|svg|ico|webp|mp4|pdf)$/i);
+
+  if (isStatic) {
+    return NextResponse.next();
+  }
+
+  const isMaintenanceMode = process.env.MAINTENANCE_MODE === "true";
+
+  if (isMaintenanceMode && pathname !== "/maintenance") {
+    if (pathname.startsWith("/api")) {
+      return NextResponse.json({ error: "Maintenance mode" }, { status: 503 });
+    }
+    return NextResponse.rewrite(new URL("/maintenance", req.url));
+  }
+
+  if (pathname === "/maintenance" && !isMaintenanceMode) {
+    return NextResponse.redirect(new URL("/", req.url));
+  }
+
   const session =
     req.cookies.get("next-auth.session-token")?.value ||
     req.cookies.get("__Secure-next-auth.session-token")?.value;
 
   const payonaireToken = req.cookies.get("payonaire_access_token")?.value;
 
-  const publicRoutes = ["/login", "/welcome", "/unauthorized"];
+  const publicRoutes = ["/login", "/welcome", "/unauthorized", "/maintenance"];
 
   if (publicRoutes.includes(pathname)) {
     // If they already have access, redirect from login/welcome/unauthorized to appropriate home
@@ -25,19 +51,6 @@ export function middleware(req: NextRequest) {
   }
 
   if (pathname.startsWith("/api/auth")) {
-    return NextResponse.next();
-  }
-
-  const isStatic =
-    pathname.startsWith("/_next") ||
-    pathname.startsWith("/static") ||
-    pathname.startsWith("/public") ||
-    pathname.startsWith("/favicon.ico") ||
-    pathname.startsWith("/robots.txt") ||
-    pathname.startsWith("/sitemap.xml") ||
-    pathname.match(/\.(png|jpg|jpeg|gif|svg|ico|webp|mp4|pdf)$/i);
-
-  if (isStatic) {
     return NextResponse.next();
   }
 

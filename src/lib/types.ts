@@ -20,6 +20,7 @@ export interface Course {
   image?: string;
   title: string;
   description?: string;
+  language?: string;
   modules: Module[];
 }
 
