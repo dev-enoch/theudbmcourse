@@ -12,6 +12,9 @@ import {
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { CheckCircle2, Circle, Lock, AlertCircle } from "lucide-react";
 import AppLayout from "@/components/common/AppLayout";
+import { dictionaries } from "@/lib/i18n/dictionaries";
+import { connectDB } from "@/lib/mongoose";
+import User from "@/models/User";
 
 type CourseLandingPageProps = {
   params: {
@@ -26,20 +29,25 @@ export default async function CourseLandingPage(props: CourseLandingPageProps) {
   if (!session) redirect("/unauthorized");
   const userId = session.userId;
 
+  await connectDB();
+  const user = await User.findById(userId).lean();
+  const languagePreference = user?.languagePreference as "ha" | "en" | undefined;
+  const dict = dictionaries[languagePreference || "en"];
+
   const course = await getCourseById(courseId);
   if (!course) {
     return (
-      <AppLayout>
+      <AppLayout dict={dict}>
         <div className="container mx-auto px-4 py-24 flex flex-col items-center justify-center text-center min-h-[60vh]">
           <div className="rounded-full bg-muted p-6 mb-4">
             <AlertCircle className="h-10 w-10 text-muted-foreground" />
           </div>
-          <h1 className="text-3xl font-bold tracking-tight mb-2">Course Not Found</h1>
+          <h1 className="text-3xl font-bold tracking-tight mb-2">{dict.courseOverview.courseNotFound}</h1>
           <p className="text-muted-foreground max-w-md mb-6">
-            The course you are looking for does not exist or has been removed.
+            {dict.courseOverview.courseNotFoundDesc}
           </p>
           <Button asChild>
-            <Link href="/">Back to Home</Link>
+            <Link href="/">{dict.courseOverview.backToHome}</Link>
           </Button>
         </div>
       </AppLayout>
@@ -62,7 +70,7 @@ export default async function CourseLandingPage(props: CourseLandingPageProps) {
   }
 
   return (
-    <AppLayout>
+    <AppLayout dict={dict}>
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-3xl mx-auto">
           {/* Course Info */}
@@ -82,7 +90,7 @@ export default async function CourseLandingPage(props: CourseLandingPageProps) {
           {nextAvailableTopicId && (
             <Button asChild size="lg" className="mt-6">
               <Link href={`/courses/${course.id}/${nextAvailableTopicId}`}>
-                {allTopicsCompleted ? "Review Course" : "Start Course"}
+                {allTopicsCompleted ? dict.courseOverview.reviewCourse : dict.courseOverview.startCourse}
               </Link>
             </Button>
           )}
@@ -90,7 +98,7 @@ export default async function CourseLandingPage(props: CourseLandingPageProps) {
           {/* Course Content Accordion */}
           <Card className="mt-10">
             <CardHeader>
-              <CardTitle>Course Content</CardTitle>
+              <CardTitle>{dict.courseOverview.courseContent}</CardTitle>
             </CardHeader>
             <CardContent>
               <Accordion

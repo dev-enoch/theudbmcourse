@@ -13,6 +13,7 @@ import { connectDB } from "@/lib/mongoose";
 import User from "@/models/User";
 import ClaimedOrder from "@/models/ClaimedOrder";
 import { LanguageModal } from "./_components/LanguageModal";
+import { dictionaries } from "@/lib/i18n/dictionaries";
 
 export const dynamic = "force-dynamic";
 
@@ -36,20 +37,22 @@ export default async function HomePage() {
       c.language === languagePreference
   );
 
+  const dict = dictionaries[languagePreference || "en"];
+
   return (
-    <AppLayout>
+    <AppLayout dict={dict}>
       {!languagePreference && <LanguageModal />}
       <div className="flex-1 flex flex-col">
         <section className="w-full py-8 md:py-18 lg:py-24">
           <div className="container px-4 md:px-6">
             {/* Header */}
             <div className="flex flex-col items-center text-center space-y-4">
-              <Badge>Our Courses</Badge>
+              <Badge>{dict.dashboard.ourCourses}</Badge>
               <h2 className="text-3xl font-bold sm:text-5xl">
-                Start Your Journey
+                {dict.dashboard.title}
               </h2>
               <p className="text-muted-foreground max-w-[900px]">
-                Practical, action-oriented courses with real results.
+                {dict.dashboard.subtitle}
               </p>
             </div>
 
@@ -61,9 +64,9 @@ export default async function HomePage() {
                     <div className="rounded-full bg-muted p-4">
                       <CheckCircle className="h-8 w-8 text-muted-foreground" />
                     </div>
-                    <h3 className="text-xl font-semibold">No Courses Available</h3>
+                    <h3 className="text-xl font-semibold">{dict.dashboard.noCourses}</h3>
                     <p className="text-muted-foreground max-w-sm">
-                      There are currently no courses available on the platform. Please check back later!
+                      {dict.dashboard.noCoursesDesc}
                     </p>
                   </CardContent>
                 </Card>
@@ -96,7 +99,7 @@ export default async function HomePage() {
                         {isCompleted && (
                           <Badge className="w-fit flex items-center gap-1">
                             <CheckCircle className="h-4 w-4" />
-                            Completed
+                            {dict.dashboard.completed}
                           </Badge>
                         )}
                       </CardHeader>
@@ -105,7 +108,7 @@ export default async function HomePage() {
                         {/* Progress */}
                         <div>
                           <div className="flex justify-between text-sm mb-1">
-                            <span>Progress</span>
+                            <span>{dict.dashboard.progress}</span>
                             <span>{percentage}%</span>
                           </div>
                           <Progress value={percentage} />
@@ -114,7 +117,7 @@ export default async function HomePage() {
                         {/* Action */}
                         <Button asChild className="mt-auto w-full">
                           <Link href={`/courses/${course.id}`}>
-                            {isCompleted ? "Review Course" : "Continue Course"}
+                            {isCompleted ? dict.dashboard.reviewCourse : dict.dashboard.continueCourse}
                             <ArrowRight className="ml-2 h-4 w-4" />
                           </Link>
                         </Button>

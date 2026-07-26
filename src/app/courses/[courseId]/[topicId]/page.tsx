@@ -4,6 +4,9 @@ import { getGroupLinkByCourseId } from "@/lib/settings";
 import { redirect, notFound } from "next/navigation";
 import { CourseClientPage } from "./_components/CourseClientPage";
 import AppLayout from "@/components/common/AppLayout";
+import { connectDB } from "@/lib/mongoose";
+import User from "@/models/User";
+import { dictionaries } from "@/lib/i18n/dictionaries";
 
 type CoursePlayerPageProps = {
   params: {
@@ -26,6 +29,11 @@ export default async function CoursePlayerPage({
 
   const progress = await getUserProgress(userId);
 
+  await connectDB();
+  const user = await User.findById(userId).lean();
+  const languagePreference = user?.languagePreference as "ha" | "en" | undefined;
+  const dict = dictionaries[languagePreference || "en"];
+
   // Get the group link for this course from database
   const groupLink = await getGroupLinkByCourseId(courseId);
 
@@ -33,7 +41,7 @@ export default async function CoursePlayerPage({
   if (!allTopicIds.includes(topicId)) notFound();
 
   return (
-    <AppLayout>
+    <AppLayout dict={dict}>
       <CourseClientPage
         course={course}
         initialProgress={progress}
@@ -41,6 +49,7 @@ export default async function CoursePlayerPage({
         allTopicIds={allTopicIds}
         currentTopicId={topicId}
         groupLink={groupLink}
+        dict={dict}
       />
     </AppLayout>
   );

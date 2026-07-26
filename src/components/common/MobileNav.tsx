@@ -5,17 +5,19 @@ import { usePathname } from "next/navigation";
 import { Home, Shield, User } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export function MobileNav({ role }: { role?: "user" | "admin" }) {
+import type { Dictionary } from "@/lib/i18n/dictionaries";
+
+export function MobileNav({ role, dict }: { role?: "user" | "admin", dict?: Dictionary }) {
   const pathname = usePathname();
 
   const navItems = [
     {
-      label: "Home",
+      label: dict?.nav.dashboard || "Home",
       href: "/",
       icon: Home,
     },
     {
-      label: "Settings",
+      label: dict?.nav.profile || "Profile",
       href: "/~/admin/settings",
       icon: User,
     }

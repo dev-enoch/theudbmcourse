@@ -5,11 +5,14 @@ import { redirect } from "next/navigation";
 import { UserMenu } from "./UserMenu";
 import { getSettings } from "@/lib/settings";
 import { MobileNav } from "./MobileNav";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 
 export default async function AppLayout({
   children,
+  dict,
 }: {
   children: React.ReactNode;
+  dict?: Dictionary;
 }) {
   const session = await getAuthSession();
   const settings = await getSettings();
@@ -31,13 +34,13 @@ export default async function AppLayout({
           <span className="text-lg hidden sm:inline-block">The UBDM Course</span>
         </Link>
         <div className="ml-auto">
-          <UserMenu email={session.email} role={session.role} />
+          <UserMenu email={session.email} role={session.role} dict={dict} />
         </div>
       </header>
       <main className="flex-1 flex justify-center px-4 pb-24 sm:pb-4">
         <div className="w-full max-w-[1440px]">{children}</div>
       </main>
-      <MobileNav role={session.role} />
+      <MobileNav role={session.role} dict={dict} />
     </div>
   );
 }

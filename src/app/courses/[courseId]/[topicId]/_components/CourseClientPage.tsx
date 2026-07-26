@@ -24,6 +24,7 @@ import { useRouter } from "next/navigation";
 import { TopicItem } from "./TopicItem";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import type { Dictionary } from "@/lib/i18n/dictionaries";
 
 const linkifyText = (
   text: string,
@@ -159,6 +160,7 @@ interface CourseClientPageProps {
   allTopicIds: string[];
   currentTopicId: string;
   groupLink: string | null;
+  dict?: Dictionary;
 }
 
 export function CourseClientPage({
@@ -168,6 +170,7 @@ export function CourseClientPage({
   allTopicIds,
   currentTopicId,
   groupLink,
+  dict,
 }: CourseClientPageProps) {
   const [progress, setProgress] = useState<UserProgress>(initialProgress);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -283,7 +286,7 @@ export function CourseClientPage({
           </CardHeader>
           <CardContent>
             <div className="space-y-2">
-              <p className="text-sm text-muted-foreground">Overall Progress</p>
+              <p className="text-sm text-muted-foreground">{dict?.dashboard.progress || "Overall Progress"}</p>
               <Progress value={progressPercentage} />
               <p className="text-right text-sm font-medium text-primary">
                 {Math.round(progressPercentage)}%
@@ -359,7 +362,7 @@ export function CourseClientPage({
                           Finalizing...
                         </>
                       ) : (
-                        "Back to Home"
+                        dict?.courseOverview.backToHome || "Back to Home"
                       )}
                     </Button>
                   )
@@ -374,7 +377,7 @@ export function CourseClientPage({
                         Saving...
                       </>
                     ) : (
-                      "Next Topic"
+                      dict?.topic.next || "Next Topic"
                     )}
                   </Button>
                 )}
