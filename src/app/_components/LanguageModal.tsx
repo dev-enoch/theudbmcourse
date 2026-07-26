@@ -24,7 +24,7 @@ export function LanguageModal() {
     
     if (res.success) {
       toast.success("Language preference saved!");
-      router.refresh(); // Refresh to trigger server-side re-render with new preference
+      window.location.reload();
     } else {
       toast.error("Failed to save preference.");
       setIsSubmitting(false);
