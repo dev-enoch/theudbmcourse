@@ -34,19 +34,19 @@ export function LanguageModal() {
   return (
     <Dialog defaultOpen={true} open={true} onOpenChange={() => {}}>
       {/* onOpenChange={() => {}} prevents dismissing by clicking outside or pressing escape */}
-      <DialogContent className="w-screen h-screen max-w-none border-none !rounded-none flex flex-col items-center justify-center p-6 [&>button:last-child]:hidden bg-background">
+      <DialogContent className="sm:max-w-xl [&>button:last-child]:hidden">
         {/* [&>button:last-child]:hidden hides the default Dialog close (X) button */}
-        <DialogHeader className="flex flex-col items-center text-center space-y-4 mb-8">
-          <div className="p-4 bg-primary/10 text-primary rounded-full">
-            <Globe className="w-12 h-12 md:w-16 md:h-16" />
+        <DialogHeader className="flex flex-col items-center text-center space-y-3 mb-4">
+          <div className="p-3 bg-primary/10 text-primary rounded-full">
+            <Globe className="w-8 h-8 md:w-10 md:h-10" />
           </div>
-          <DialogTitle className="text-3xl md:text-5xl font-bold">Choose Your Language</DialogTitle>
-          <DialogDescription className="text-lg md:text-xl max-w-lg mx-auto mt-2">
+          <DialogTitle className="text-2xl md:text-3xl font-bold">Choose Your Language</DialogTitle>
+          <DialogDescription className="text-base max-w-sm mx-auto">
             Please select your preferred language for the courses. Universal courses will always be available.
           </DialogDescription>
         </DialogHeader>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full max-w-2xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Button
             size="lg"
             variant="outline"
