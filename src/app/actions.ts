@@ -36,16 +36,12 @@ export async function saveLanguagePreference(language: "ha" | "en") {
 
     await connectDB();
 
-    const updatedUser = await User.findByIdAndUpdate(
-      session.userId, 
-      { languagePreference: language }, 
-      { new: true }
-    );
+    await User.findByIdAndUpdate(session.userId, { languagePreference: language });
 
     revalidatePath("/", "layout");
-    return { success: true, updatedLanguage: updatedUser?.languagePreference, userId: session.userId };
-  } catch (error: any) {
+    return { success: true };
+  } catch (error) {
     console.error("Error saving language preference:", error);
-    return { success: false, error: error.message };
+    return { success: false, error: "Internal Server Error" };
   }
 }

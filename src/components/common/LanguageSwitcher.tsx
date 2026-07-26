@@ -26,10 +26,10 @@ export function LanguageSwitcher({ currentLanguage = "en" }: Props) {
     const res = await saveLanguagePreference(lang);
     
     if (res.success) {
-      toast.success(`Language updated to ${res.updatedLanguage} for user ${res.userId}`);
-      setTimeout(() => window.location.reload(), 2000); // Wait 2s to see toast
+      toast.success("Language preference updated!");
+      window.location.reload();
     } else {
-      toast.error(`Failed to update language: ${res.error}`);
+      toast.error("Failed to update language.");
       setIsSwitching(false);
     }
   };
