@@ -14,13 +14,40 @@ export const viewport: Viewport = {
 
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await getSettings();
+  const title = settings?.siteTitle || AppConfig.siteTitle;
+  const description = AppConfig.description;
+  const imageUrl = "/images/Promotional_header_for_UBDM_Course_202607262117.jpeg";
+
   return {
-    title: settings?.siteTitle || AppConfig.siteTitle,
-    description: AppConfig.description,
+    metadataBase: new URL(process.env.APP_URL || "https://theubdmcourse.online"),
+    title: title,
+    description: description,
+    openGraph: {
+      title: title,
+      description: description,
+      url: "/",
+      siteName: title,
+      images: [
+        {
+          url: imageUrl,
+          width: 1200,
+          height: 630,
+          alt: title,
+        },
+      ],
+      locale: "en_US",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: title,
+      description: description,
+      images: [imageUrl],
+    },
     appleWebApp: {
       capable: true,
       statusBarStyle: "default",
-      title: settings?.siteTitle || AppConfig.siteTitle,
+      title: title,
     },
     formatDetection: {
       telephone: false,

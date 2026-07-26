@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { getAuthSession } from "@/lib/auth/getAuthSession";
 import { getCourseById, getUserProgress } from "@/lib/data";
 import { redirect } from "next/navigation";
@@ -21,6 +22,38 @@ type CourseLandingPageProps = {
     courseId: string;
   };
 };
+
+export async function generateMetadata({ params }: CourseLandingPageProps): Promise<Metadata> {
+  const { courseId } = await params;
+  const course = await getCourseById(courseId);
+  const imageUrl = course?.image || "/images/Promotional_header_for_UBDM_Course_202607262117.jpeg";
+  const title = course ? `${course.title} | The UBDM Course` : "Course | The UBDM Course";
+  const description = course?.description || "An affiliate marketing course platform.";
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      images: [
+        {
+          url: imageUrl,
+          width: 1200,
+          height: 630,
+          alt: title,
+        },
+      ],
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [imageUrl],
+    },
+  };
+}
 
 export default async function CourseLandingPage(props: CourseLandingPageProps) {
   const { courseId } = await props.params;
