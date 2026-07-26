@@ -6,30 +6,11 @@ import { Badge } from "@/components/ui/badge";
 import type { Course } from "@/lib/types";
 import AppLayout from "@/components/common/AppLayout";
 import { Progress } from "@/components/ui/progress";
-import { getCourseById, getUserProgress } from "@/lib/data";
+import { readCoursesFile, getUserProgress } from "@/lib/data";
 import { redirect } from "next/navigation";
 import { getAuthSession } from "@/lib/auth/getAuthSession";
 
 export const dynamic = "force-dynamic";
-
-const hausaCourses: Omit<Course, "modules">[] = [
-  {
-    id: "ha-affiliate-marketing",
-    title: "Affiliate Marketing (Hausa)",
-  },
-  {
-    id: "ha-whatsapp-marketing",
-    title: "WhatsApp Marketing (Hausa)",
-  },
-  {
-    id: "ha-facebook-instagram-ads",
-    title: "Facebook & Instagram Ads (Hausa)",
-  },
-  {
-    id: "ha-tiktok-ads",
-    title: "TikTok Ads / Marketing (Hausa)",
-  },
-];
 
 export default async function HomePage() {
   const session = await getAuthSession();
@@ -39,9 +20,7 @@ export default async function HomePage() {
 
   const progress = await getUserProgress(userId);
 
-  const resolvedCourses = (
-    await Promise.all(hausaCourses.map((c) => getCourseById(c.id)))
-  ).filter(Boolean) as Course[];
+  const resolvedCourses = await readCoursesFile();
 
   return (
     <AppLayout>

@@ -39,8 +39,8 @@ export const AppConfig: AppConfigType = {
   // Default Group Links (for Database Seeding)
   defaultGroupLinks: [
     {
-      courseId: "ha-tiktok-ads",
-      courseName: "TikTok Ads Course",
+      courseId: "the-ubdm-course",
+      courseName: "The UBDM Course",
       link: "https://chat.whatsapp.com/C2GTedPcLtzIcDbi5cXHhV",
       enabled: true,
     },
