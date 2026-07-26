@@ -412,7 +412,7 @@
     "image": "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=2074&auto=format&fit=crop",
     "title": "TIKTOK MARKETING",
     "description": "Comprehensive lessons for TIKTOK MARKETING",
-    "language": "en",
+    "language": "both",
     "modules": [
       {
         "id": "tiktok-marketing-lessons",
@@ -751,7 +751,7 @@
     "image": "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=2074&auto=format&fit=crop",
     "title": "BUSINESS STRATEGIES",
     "description": "Comprehensive lessons for BUSINESS STRATEGIES",
-    "language": "en",
+    "language": "both",
     "modules": [
       {
         "id": "business-strategies-lessons",

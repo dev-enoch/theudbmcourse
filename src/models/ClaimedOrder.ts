@@ -15,6 +15,7 @@ export interface IClaimedOrder extends Document {
   orderId: string;
   email: string;
   deviceKey: string;
+  languagePreference?: "ha" | "en";
   resetHistory: IResetRecord[];
   accessHistory: IAccessRecord[];
   createdAt?: Date;
@@ -37,6 +38,10 @@ const ClaimedOrderSchema = new Schema<IClaimedOrder>(
     orderId: { type: String, required: true },
     email: { type: String, unique: true, required: true },
     deviceKey: { type: String, required: true },
+    languagePreference: {
+      type: String,
+      enum: ["ha", "en"],
+    },
     resetHistory: { type: [ResetRecordSchema], default: [] },
     accessHistory: { type: [AccessRecordSchema], default: [] },
   },

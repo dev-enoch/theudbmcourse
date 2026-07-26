@@ -17,6 +17,7 @@ export interface IUser extends Document {
   suspendedUntil?: Date;
   revokedCourses?: string[];
   utmSource?: string;
+  languagePreference?: "ha" | "en";
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -52,6 +53,10 @@ const UserSchema = new Schema<IUser>(
       default: [],
     },
     utmSource: { type: String, default: "Direct" },
+    languagePreference: {
+      type: String,
+      enum: ["ha", "en"],
+    },
   },
   {
     timestamps: true,

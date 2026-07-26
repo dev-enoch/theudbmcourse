@@ -9,6 +9,10 @@ import { Progress } from "@/components/ui/progress";
 import { readCoursesFile, getUserProgress } from "@/lib/data";
 import { redirect } from "next/navigation";
 import { getAuthSession } from "@/lib/auth/getAuthSession";
+import { connectDB } from "@/lib/mongoose";
+import User from "@/models/User";
+import ClaimedOrder from "@/models/ClaimedOrder";
+import { LanguageModal } from "./_components/LanguageModal";
 
 export const dynamic = "force-dynamic";
 
@@ -20,10 +24,21 @@ export default async function HomePage() {
 
   const progress = await getUserProgress(userId);
 
-  const resolvedCourses = await readCoursesFile();
+  await connectDB();
+  const user = await User.findById(userId).lean();
+  const languagePreference = user?.languagePreference as "ha" | "en" | undefined;
+
+  const allCourses = await readCoursesFile();
+  const resolvedCourses = allCourses.filter(
+    (c) =>
+      !languagePreference ||
+      c.language === "both" ||
+      c.language === languagePreference
+  );
 
   return (
     <AppLayout>
+      {!languagePreference && <LanguageModal />}
       <div className="flex-1 flex flex-col">
         <section className="w-full py-8 md:py-18 lg:py-24">
           <div className="container px-4 md:px-6">
