@@ -5,14 +5,17 @@ import { redirect } from "next/navigation";
 import { UserMenu } from "./UserMenu";
 import { getSettings } from "@/lib/settings";
 import { MobileNav } from "./MobileNav";
+import { LanguageSwitcher } from "./LanguageSwitcher";
 import type { Dictionary } from "@/lib/i18n/dictionaries";
 
 export default async function AppLayout({
   children,
   dict,
+  currentLanguage,
 }: {
   children: React.ReactNode;
   dict?: Dictionary;
+  currentLanguage?: "en" | "ha";
 }) {
   const session = await getAuthSession();
   const settings = await getSettings();
@@ -33,7 +36,8 @@ export default async function AppLayout({
           <Logo />
           <span className="text-lg hidden sm:inline-block">The UBDM Course</span>
         </Link>
-        <div className="ml-auto">
+        <div className="ml-auto flex items-center gap-4">
+          <LanguageSwitcher currentLanguage={currentLanguage} />
           <UserMenu email={session.email} role={session.role} dict={dict} />
         </div>
       </header>

@@ -41,7 +41,7 @@ export default async function CoursePlayerPage({
   if (!allTopicIds.includes(topicId)) notFound();
 
   return (
-    <AppLayout dict={dict}>
+    <AppLayout dict={dict} currentLanguage={languagePreference || "en"}>
       <CourseClientPage
         course={course}
         initialProgress={progress}

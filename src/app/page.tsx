@@ -40,7 +40,7 @@ export default async function HomePage() {
   const dict = dictionaries[languagePreference || "en"];
 
   return (
-    <AppLayout dict={dict}>
+    <AppLayout dict={dict} currentLanguage={languagePreference || "en"}>
       {!languagePreference && <LanguageModal />}
       <div className="flex-1 flex flex-col">
         <section className="w-full py-8 md:py-18 lg:py-24">

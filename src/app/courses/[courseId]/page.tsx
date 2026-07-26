@@ -37,7 +37,7 @@ export default async function CourseLandingPage(props: CourseLandingPageProps) {
   const course = await getCourseById(courseId);
   if (!course) {
     return (
-      <AppLayout dict={dict}>
+      <AppLayout dict={dict} currentLanguage={languagePreference || "en"}>
         <div className="container mx-auto px-4 py-24 flex flex-col items-center justify-center text-center min-h-[60vh]">
           <div className="rounded-full bg-muted p-6 mb-4">
             <AlertCircle className="h-10 w-10 text-muted-foreground" />
@@ -70,7 +70,7 @@ export default async function CourseLandingPage(props: CourseLandingPageProps) {
   }
 
   return (
-    <AppLayout dict={dict}>
+    <AppLayout dict={dict} currentLanguage={languagePreference || "en"}>
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-3xl mx-auto">
           {/* Course Info */}
