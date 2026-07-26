@@ -11,6 +11,7 @@ export const dictionaries = {
       progress: "Progress",
       reviewCourse: "Review Course",
       continueCourse: "Continue Course",
+      startCourse: "Start Course",
       completed: "Completed"
     },
     nav: {
@@ -49,6 +50,7 @@ export const dictionaries = {
       progress: "Ci Gaba",
       reviewCourse: "Koma Kan Course",
       continueCourse: "Ci Gaba",
+      startCourse: "Fara Course",
       completed: "An Gama"
     },
     nav: {

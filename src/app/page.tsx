@@ -117,7 +117,11 @@ export default async function HomePage() {
                         {/* Action */}
                         <Button asChild className="mt-auto w-full">
                           <Link href={`/courses/${course.id}`}>
-                            {isCompleted ? dict.dashboard.reviewCourse : dict.dashboard.continueCourse}
+                            {isCompleted 
+                              ? dict.dashboard.reviewCourse 
+                              : percentage === 0 
+                                ? dict.dashboard.startCourse 
+                                : dict.dashboard.continueCourse}
                             <ArrowRight className="ml-2 h-4 w-4" />
                           </Link>
                         </Button>
