@@ -38,7 +38,7 @@ export async function saveLanguagePreference(language: "ha" | "en") {
 
     await User.findByIdAndUpdate(session.userId, { languagePreference: language });
 
-    revalidatePath("/");
+    revalidatePath("/", "layout");
     return { success: true };
   } catch (error) {
     console.error("Error saving language preference:", error);
