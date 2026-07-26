@@ -1,1 +1,207 @@
-[]
+[
+  {
+    "id": "the-ubdm-course",
+    "image": "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=2074&auto=format&fit=crop",
+    "title": "The UBDM Course",
+    "description": "Comprehensive course for Affiliate Marketing, Facebook Ads, Sales Closing, TikTok Marketing, Video Editing, Graphic Design, and Content Creation.",
+    "language": "en",
+    "modules": [
+      {
+        "id": "affiliate-marketing-hausa",
+        "title": "AFFILIATE MARKETING (Hausa)",
+        "topics": [
+          { "id": "am-h-1", "title": "Bayanin farko akan affiliate marketing", "description": "Video 1", "videoId": "nopIZEQPoso" },
+          { "id": "am-h-2", "title": "Abunda yakamata asani kafin fara affiliate marketing", "description": "Video 2", "videoId": "AnYdjANEmu8" },
+          { "id": "am-h-3", "title": "Yadda zaa fara", "description": "Video 3", "videoId": "Lo1sTDAfk6I" },
+          { "id": "am-h-4", "title": "Bayan fara Affiliate marketing sai me", "description": "Video 4", "videoId": "MRlQRAIVpis" },
+          { "id": "am-h-5", "title": "Yadda zaa fara nemo mutane", "description": "Video 5", "videoId": "HMwnJDQkyUM" },
+          { "id": "am-h-6", "title": "Yadda zakasa mutane su fara sayen kayanka", "description": "Video 6", "videoId": "Gc2f3gsegw8" },
+          { "id": "am-h-7", "title": "Abunda ko wani affiliate marketer yakamata ya sani", "description": "Video 7", "videoId": "xEmzLDPMEUk" },
+          { "id": "am-h-8", "title": "Yanzun ka/ki zama affiliate marketer", "description": "Video 8", "videoId": "_Zgshtb6LFg" },
+          { "id": "am-h-9", "title": "Bonus kyauta", "description": "Video 9", "videoId": "srnTANJ5ATo" },
+          { "id": "am-h-10", "title": "Yadda zaa bude selar affiliate marketing platform", "description": "Video 10", "videoId": "_yMV4MDHaLo" }
+        ]
+      },
+      {
+        "id": "affiliate-marketing-english",
+        "title": "AFFILIATE MARKETING (English)",
+        "topics": [
+          { "id": "am-e-1", "title": "Introduction to Affiliate Marketing", "description": "Video 1", "videoId": "nopIZEQPoso" },
+          { "id": "am-e-2", "title": "Things you should know before starting affiliate marketing", "description": "Video 2", "videoId": "_pbd-V2Hw28" },
+          { "id": "am-e-3", "title": "How to become affiliate marketer in Nigeria", "description": "Video 3", "videoId": "u2lwgxrl4S8" },
+          { "id": "am-e-4", "title": "After starting affiliate marketing what next", "description": "Video 4", "videoId": "rY7Q6cI6_Z0" },
+          { "id": "am-e-5", "title": "How to get people to buy your product", "description": "Video 5", "videoId": "KQifwtOfgBo" },
+          { "id": "am-e-6", "title": "How to make them buy your product", "description": "Video 6", "videoId": "jOqIQgh81-Q" },
+          { "id": "am-e-7", "title": "What every affiliate marketing need to know", "description": "Video 7", "videoId": "0MIeT9yi0b0" },
+          { "id": "am-e-8", "title": "You are now an affiliate marketer get to work", "description": "Video 8", "videoId": "jIIuVlmRnZo" },
+          { "id": "am-e-9", "title": "Bonus section", "description": "Video 9", "videoId": "HVR69wRM_Kg" },
+          { "id": "am-e-10", "title": "How to register in selar", "description": "Video 10", "videoId": "YsP9lcIkwEg" },
+          { "id": "am-e-11", "title": "How to register free WhatsApp link", "description": "Video 11", "videoId": "yPJsCVNXUwc" }
+        ]
+      },
+      {
+        "id": "facebook-instagram-hausa",
+        "title": "FACEBOOK AND INSTAGRAM (Hausa)",
+        "topics": [
+          { "id": "fb-h-1", "title": "Bayani akan facebook ads", "description": "Video 1", "videoId": "2Ka8PTJN3uY" },
+          { "id": "fb-h-2", "title": "Yadda zaa bude business facebook account", "description": "Video 2", "videoId": "0szJt6Wp_EE" },
+          { "id": "fb-h-3", "title": "Cigaban video 2 (Part 1)", "description": "Video 3", "videoId": "Po47XOVFp0E" },
+          { "id": "fb-h-4", "title": "Cigaban video 2 (Part 2)", "description": "Video 4", "videoId": "yluhQpleniU" },
+          { "id": "fb-h-5", "title": "Yadda zaayi amfani da meta ads app", "description": "Video 5", "videoId": "CBjyT_Ul8KI" },
+          { "id": "fb-h-6", "title": "Yadda zaa saka kudi a meta ads app", "description": "Video 6", "videoId": "YO7dN4S-JwM" },
+          { "id": "fb-h-7", "title": "Yadda zaayi targeting audience", "description": "Video 7", "videoId": "yOhOC8Tlesg" },
+          { "id": "fb-h-8", "title": "Yadda zaayi ads research", "description": "Video 8", "videoId": "uKPhrAL5Beo" },
+          { "id": "fb-h-9", "title": "Yadda zaayi setting ads account", "description": "Video 9", "videoId": "J1-OZE6huIE" },
+          { "id": "fb-h-10", "title": "Yadda zaa fara gwada advert", "description": "Video 10", "videoId": "WjVqUKPm35Q" },
+          { "id": "fb-h-11", "title": "Yadda zaayi facebook and instagram ads", "description": "Video 11", "videoId": "uXt6B4yLaA8" },
+          { "id": "fb-h-12", "title": "Yadda zaayi instagram ads", "description": "Video 12", "videoId": "MGhCwzwpYpY" },
+          { "id": "fb-h-13", "title": "Bonus kyauta", "description": "Video 13", "videoId": "KJdmQ0TZ0Cw" }
+        ]
+      },
+      {
+        "id": "facebook-instagram-english",
+        "title": "FACEBOOK AND INSTAGRAM (English)",
+        "topics": [
+          { "id": "fb-e-1", "title": "Introduction to facebook ads", "description": "Video 1", "videoId": "qGEzEEJWPB0" },
+          { "id": "fb-e-2", "title": "How to start facebook business account", "description": "Video 2", "videoId": "tro4la4ynAw" },
+          { "id": "fb-e-3", "title": "Continuation of video 2", "description": "Video 3", "videoId": "Sdbu5Tj-zZU" },
+          { "id": "fb-e-4", "title": "Getting started with meta ads app", "description": "Video 4", "videoId": "1TdMpiGRQi0" },
+          { "id": "fb-e-5", "title": "How to funds your ads account", "description": "Video 5", "videoId": "U0_HwMIFw7E" },
+          { "id": "fb-e-6", "title": "Target audience", "description": "Video 6", "videoId": "Lz4ZnFzUm0c" },
+          { "id": "fb-e-7", "title": "Ads objectives", "description": "Video 7", "videoId": "Emg6SkhUCcI" },
+          { "id": "fb-e-8", "title": "Setting up your ads account", "description": "Video 8", "videoId": "jWHV9ZcvIUk" },
+          { "id": "fb-e-9", "title": "Warming up your ads account", "description": "Video 9", "videoId": "-bAEGtmWAIE" },
+          { "id": "fb-e-10", "title": "How to run a successful facebook ads", "description": "Video 10", "videoId": "HSi4X8yfflA" },
+          { "id": "fb-e-11", "title": "How to run instagram ads", "description": "Video 11", "videoId": "VLcuiTlJjB4" },
+          { "id": "fb-e-12", "title": "Bonus section", "description": "Video 12", "videoId": "jrfhygC_k-s" }
+        ]
+      },
+      {
+        "id": "sales-closing-hausa",
+        "title": "SALES CLOSING (Hausa)",
+        "topics": [
+          { "id": "sc-h-1", "title": "Bayanin farko akan sales closing", "description": "Video 1", "videoId": "rVKhNEA8W4U" },
+          { "id": "sc-h-2", "title": "Ya zaayi sales closing", "description": "Video 2", "videoId": "g6rrGEe1F-c" },
+          { "id": "sc-h-3", "title": "Yadda zaayi sales closing", "description": "Video 3", "videoId": "U2zgVAW25R0" },
+          { "id": "sc-h-4", "title": "Bayani na biyu akan sales closing", "description": "Video 4", "videoId": "QcgzEKBgoHI" }
+        ]
+      },
+      {
+        "id": "sales-closing-english",
+        "title": "SALES CLOSING (English)",
+        "topics": [
+          { "id": "sc-e-1", "title": "Sales closing 1", "description": "Video 1", "videoId": "agsGNmTxzDI" },
+          { "id": "sc-e-2", "title": "Sales closing 3", "description": "Video 2", "videoId": "fLAlXINyACA" },
+          { "id": "sc-e-3", "title": "Sales closing 4", "description": "Video 3", "videoId": "K6C0yU1lXq8" }
+        ]
+      },
+      {
+        "id": "tiktok-marketing",
+        "title": "TIKTOK MARKETING",
+        "topics": [
+          { "id": "tm-1", "title": "TikTok Marketing Video 1", "description": "Video 1", "videoId": "yFkCHAevxT4" },
+          { "id": "tm-3", "title": "TikTok Marketing Video 3", "description": "Video 3", "videoId": "Q03PdqeQHyY" },
+          { "id": "tm-4", "title": "TikTok Marketing Video 4", "description": "Video 4", "videoId": "bfzFBZmnaWY" },
+          { "id": "tm-5", "title": "TikTok Marketing Video 5", "description": "Video 5", "videoId": "WKCaeplHE8o" },
+          { "id": "tm-6", "title": "TikTok Marketing Video 6", "description": "Video 6", "videoId": "J06GJL00Fi0" },
+          { "id": "tm-7", "title": "TikTok Marketing Video 7", "description": "Video 7", "videoId": "grxLpPLSsRU" },
+          { "id": "tm-8", "title": "TikTok Marketing Video 8", "description": "Video 8", "videoId": "YYyVs_EGqEY" },
+          { "id": "tm-9", "title": "TikTok Marketing Video 9", "description": "Video 9", "videoId": "MTdkiimTyOM" },
+          { "id": "tm-10", "title": "TikTok Marketing Video 10", "description": "Video 10", "videoId": "8o0Gw2NnLu4" }
+        ]
+      },
+      {
+        "id": "video-editing-hausa",
+        "title": "VIDEO EDITING (Hausa)",
+        "topics": [
+          { "id": "ve-h-1", "title": "Bayanin farko akan video editing", "description": "Video 1", "videoId": "j39yGNMLM44" },
+          { "id": "ve-h-2", "title": "Yadda ake editing video a capcut", "description": "Video 2", "videoId": "PWzizUpSa0E" },
+          { "id": "ve-h-3", "title": "Yadda ake editing video a inshot", "description": "Video 3", "videoId": "4LgCIdloVBY" },
+          { "id": "ve-h-4", "title": "Yadda ake editing video a VN", "description": "Video 4", "videoId": "ng5wNqF7Hv4" },
+          { "id": "ve-h-5", "title": "Bayanin karshe akan video editing", "description": "Video 5", "videoId": "e9cMsN3INeU" }
+        ]
+      },
+      {
+        "id": "video-editing-english",
+        "title": "VIDEO EDITING (English)",
+        "topics": [
+          { "id": "ve-e-1", "title": "Introduction to video editing", "description": "Video 1", "videoId": "0ZBK97YhbLg" },
+          { "id": "ve-e-2", "title": "Capcut video editing", "description": "Video 2", "videoId": "ugob_VW6oQE" },
+          { "id": "ve-e-3", "title": "Inshot video editing", "description": "Video 3", "videoId": "PNyz9YG__h4" },
+          { "id": "ve-e-4", "title": "VN video editing", "description": "Video 4", "videoId": "dntzWNIkP9s" },
+          { "id": "ve-e-5", "title": "Last module video editing", "description": "Video 5", "videoId": "2luD23t_SM8" }
+        ]
+      },
+      {
+        "id": "graphic-design-hausa",
+        "title": "GRAPHIC DESIGN (Hausa)",
+        "topics": [
+          { "id": "gd-h-1", "title": "Graphic Design Video 1", "description": "Video 1", "videoId": "wQp8lC_MrPk" },
+          { "id": "gd-h-2", "title": "Graphic Design Video 2", "description": "Video 2", "videoId": "yHtBLJ5o7Bo" },
+          { "id": "gd-h-3", "title": "Graphic Design Video 3", "description": "Video 3", "videoId": "Hkh6TIGHiFs" },
+          { "id": "gd-h-4", "title": "Graphic Design Video 4", "description": "Video 4", "videoId": "-PXeLRUIZUY" },
+          { "id": "gd-h-5", "title": "Graphic Design Video 5", "description": "Video 5", "videoId": "cSXbkirnTnE" },
+          { "id": "gd-h-6", "title": "Graphic Design Video 6", "description": "Video 6", "videoId": "Qy_OXNpddO0" }
+        ]
+      },
+      {
+        "id": "graphic-design-english",
+        "title": "GRAPHIC DESIGN (English)",
+        "topics": [
+          { "id": "gd-e-1", "title": "Introduction to graphic design", "description": "Video 1", "videoId": "4utm_oyTRBQ" },
+          { "id": "gd-e-2", "title": "How to start graphic design", "description": "Video 2", "videoId": "PDZMTa-t9U4" },
+          { "id": "gd-e-3", "title": "Know this before designing a flier", "description": "Video 3", "videoId": "hSqdYnX5TBc" },
+          { "id": "gd-e-4", "title": "Graphics design do and don’t", "description": "Video 4", "videoId": "Ma6RBDYQWxw" },
+          { "id": "gd-e-5", "title": "Graphics design android version", "description": "Video 5", "videoId": "_7WRVKVUZ34" },
+          { "id": "gd-e-6", "title": "Graphic design android version 2", "description": "Video 6", "videoId": "AXe45yKtraE" }
+        ]
+      },
+      {
+        "id": "content-creation-hausa",
+        "title": "CONTENT CREATION (Hausa)",
+        "topics": [
+          { "id": "cc-h-1", "title": "Content Creation Video 1", "description": "Video 1", "videoId": "q6mpmYPlfVc" },
+          { "id": "cc-h-2", "title": "Content Creation Video 2", "description": "Video 2", "videoId": "cD8yjyiZV9E" },
+          { "id": "cc-h-3", "title": "Content Creation Video 3", "description": "Video 3", "videoId": "1tnODkIf_ME" },
+          { "id": "cc-h-4", "title": "Content Creation Video 4", "description": "Video 4", "videoId": "eS0UPpMupbo" }
+        ]
+      },
+      {
+        "id": "content-creation-english",
+        "title": "CONTENT CREATION (English)",
+        "topics": [
+          { "id": "cc-e-1", "title": "Introduction to content creation", "description": "Video 1", "videoId": "Q_9vMxkTvIs" },
+          { "id": "cc-e-2", "title": "How to start content creation", "description": "Video 2", "videoId": "Zd_dXCmo_xw" },
+          { "id": "cc-e-3", "title": "How to start content creation continuations", "description": "Video 3", "videoId": "zguo5FXrtF8" },
+          { "id": "cc-e-4", "title": "Best platform to start content creation", "description": "Video 4", "videoId": "5imjok4IAXk" }
+        ]
+      },
+      {
+        "id": "business-strategies",
+        "title": "BUSINESS STRATEGIES",
+        "topics": [
+          { "id": "bs-1", "title": "Business Strategies Video 1", "description": "Video 1", "videoId": "D94A3ncbEEA" },
+          { "id": "bs-2", "title": "Business Strategies Video 2", "description": "Video 2", "videoId": "ywDeWDA4Ny4" },
+          { "id": "bs-3", "title": "Business Strategies Video 3", "description": "Video 3", "videoId": "fy8xn5JXF1s" },
+          { "id": "bs-4", "title": "Business Strategies Video 4", "description": "Video 4", "videoId": "jJoUYYcd9J0" },
+          { "id": "bs-5", "title": "Business Strategies Video 5", "description": "Video 5", "videoId": "y_T5fCc7go4" },
+          { "id": "bs-6", "title": "Business Strategies Video 6", "description": "Video 6", "videoId": "thpHNH69J2E" },
+          { "id": "bs-7", "title": "Business Strategies Video 7", "description": "Video 7", "videoId": "hcL2Q8gn4qE" },
+          { "id": "bs-8", "title": "Business Strategies Video 8", "description": "Video 8", "videoId": "b0WaP4g4bn0" },
+          { "id": "bs-9", "title": "Business Strategies Video 9", "description": "Video 9", "videoId": "ZVS_N3oYCKM" },
+          { "id": "bs-10", "title": "Business Strategies Video 10", "description": "Video 10", "videoId": "Irx0k4c05fg" },
+          { "id": "bs-11", "title": "Business Strategies Video 11", "description": "Video 11", "videoId": "PSC0XnIiWJo" },
+          { "id": "bs-12", "title": "Business Strategies Video 12", "description": "Video 12", "videoId": "_6ZzEIZdstY" },
+          { "id": "bs-13", "title": "Business Strategies Video 13", "description": "Video 13", "videoId": "EjpwKg1VyUg" },
+          { "id": "bs-14", "title": "Business Strategies Video 14", "description": "Video 14", "videoId": "Xvrn9QB6G-s" },
+          { "id": "bs-15", "title": "Business Strategies Video 15", "description": "Video 15", "videoId": "KXPO05qPIuM" },
+          { "id": "bs-16", "title": "Business Strategies Video 16", "description": "Video 16", "videoId": "-LM5CMEQaDA" },
+          { "id": "bs-17", "title": "Business Strategies Video 17", "description": "Video 17", "videoId": "RCZyoPBsrUA" },
+          { "id": "bs-18", "title": "Business Strategies Video 18", "description": "Video 18", "videoId": "nn1UXcIG4o8" },
+          { "id": "bs-19", "title": "Business Strategies Video 19", "description": "Video 19", "videoId": "Oss0G0CM2EA" },
+          { "id": "bs-20", "title": "Business Strategies Video 20", "description": "Video 20", "videoId": "Ye12LPcvtn0" }
+        ]
+      }
+    ]
+  }
+]
