@@ -48,6 +48,14 @@ export async function middleware(req: NextRequest) {
       if (session) {
         return NextResponse.redirect(new URL("/~/admin", req.url));
       }
+      
+      // If they only have a payonaireToken, but they are trying to access an admin route,
+      // they MUST log in via NextAuth. Let them reach the login page.
+      const callbackUrl = nextUrl.searchParams.get("callbackUrl");
+      if (callbackUrl?.startsWith("/~")) {
+        return NextResponse.next();
+      }
+
       return NextResponse.redirect(new URL("/", req.url));
     }
     return NextResponse.next();
