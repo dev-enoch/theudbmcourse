@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import { Toaster } from "sonner";
+import NextTopLoader from 'nextjs-toploader';
 
 import { getSettings } from "@/lib/settings";
 import { AppConfig } from "@/app.config";
@@ -86,6 +87,7 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased h-full">
+        <NextTopLoader color="#4f46e5" showSpinner={false} />
         {children}
         <Toaster />
       </body>
