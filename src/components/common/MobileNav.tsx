@@ -18,7 +18,7 @@ export function MobileNav({ role, dict }: { role?: "user" | "admin", dict?: Dict
     },
     {
       label: dict?.nav.profile || "Profile",
-      href: "/~/admin/settings",
+      href: "/profile",
       icon: User,
     }
   ];
@@ -42,7 +42,7 @@ export function MobileNav({ role, dict }: { role?: "user" | "admin", dict?: Dict
             key={item.href}
             href={item.href}
             className={cn(
-              "flex flex-col items-center justify-center w-full h-full gap-1 text-muted-foreground transition-colors hover:text-foreground",
+              "flex flex-col items-center justify-center w-full h-full gap-1 text-muted-foreground transition-all active:scale-90 active:opacity-70 hover:text-foreground",
               isActive && "text-primary"
             )}
           >
