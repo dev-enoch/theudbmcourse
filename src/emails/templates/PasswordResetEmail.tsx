@@ -30,14 +30,26 @@ export const PasswordResetEmail = ({
       
       {password && (
         <Section style={credentials}>
-          <div style={{ ...row, borderBottom: "1px solid #e5e7eb" }}>
-            <div style={label}>Email</div>
-            <div style={value}>{email}</div>
-          </div>
-          <div style={row}>
-            <div style={label}>Password</div>
-            <div style={value}>{password}</div>
-          </div>
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <tbody>
+              <tr>
+                <td style={{ ...tableCell, borderBottom: "1px solid #e5e7eb" }}>
+                  <span style={label}>Email</span>
+                </td>
+                <td style={{ ...tableCell, borderBottom: "1px solid #e5e7eb", textAlign: "right" }}>
+                  <span style={value}>{email}</span>
+                </td>
+              </tr>
+              <tr>
+                <td style={tableCell}>
+                  <span style={label}>Password</span>
+                </td>
+                <td style={{ ...tableCell, textAlign: "right" }}>
+                  <span style={value}>{password}</span>
+                </td>
+              </tr>
+            </tbody>
+          </table>
         </Section>
       )}
 
@@ -78,13 +90,8 @@ const credentials = {
   width: "100%",
 };
 
-const row = {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
+const tableCell = {
   padding: "14px 16px",
-  width: "100%",
-  boxSizing: "border-box" as const,
 };
 
 const label = {

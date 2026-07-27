@@ -9,7 +9,6 @@ import {
   deleteUser as dbDeleteUser,
   resendLoginDetails,
   resetUserProgress,
-  resetDeviceLock,
 } from "@/lib/data";
 
 type AddUserInput = {

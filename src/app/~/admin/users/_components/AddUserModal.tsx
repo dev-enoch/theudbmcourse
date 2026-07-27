@@ -38,7 +38,7 @@ export function AddUserModal({}: AddUserModalProps) {
 
         if (result.success && result.user) {
           toast.success(
-            `User "${result.user.name}" added successfully! Default password: 123456`
+            `User "${result.user.name}" added successfully! An email has been sent with their generated password.`
           );
           setOpen(false);
           setName("");
