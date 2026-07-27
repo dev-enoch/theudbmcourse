@@ -28,6 +28,9 @@ export const dictionaries = {
       startCourse: "Start Course",
       reviewCourse: "Review Course",
       courseContent: "Course Content",
+      supportGroup: "Need Help?",
+      supportGroupDesc: "Join the exclusive WhatsApp support group for students to ask questions and connect.",
+      joinSupportGroup: "Join Support Group",
     },
     topic: {
       topicNotFound: "Topic Not Found",
@@ -67,6 +70,9 @@ export const dictionaries = {
       startCourse: "Fara Course",
       reviewCourse: "Koma Kan Course",
       courseContent: "Lessons Din Cikin Course",
+      supportGroup: "Kuna Neman Taimako?",
+      supportGroupDesc: "Shiga group din WhatsApp na musamman don dalibai don yin tambayoyi da haduwa da mutane.",
+      joinSupportGroup: "Shiga Group Din Support",
     },
     topic: {
       topicNotFound: "Babu Wannan Lesson",

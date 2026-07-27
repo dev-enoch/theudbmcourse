@@ -11,7 +11,7 @@ import {
   AccordionContent,
 } from "@/components/ui/accordion";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
-import { CheckCircle2, Circle, Lock, AlertCircle } from "lucide-react";
+import { CheckCircle2, Circle, Lock, AlertCircle, MessageCircle, ExternalLink } from "lucide-react";
 import AppLayout from "@/components/common/AppLayout";
 import { dictionaries } from "@/lib/i18n/dictionaries";
 import { connectDB } from "@/lib/mongoose";
@@ -194,6 +194,32 @@ export default async function CourseLandingPage(props: CourseLandingPageProps) {
                   </AccordionItem>
                 ))}
               </Accordion>
+            </CardContent>
+          </Card>
+
+          {/* Support Group Card */}
+          <Card className="mt-6 border-primary/20 bg-primary/5">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-primary">
+                <MessageCircle className="h-5 w-5" />
+                {dict.courseOverview.supportGroup}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">
+                {dict.courseOverview.supportGroupDesc}
+              </p>
+              <Button asChild variant="default" className="w-full sm:w-auto">
+                <Link
+                  href="https://chat.whatsapp.com/GS4xU9Xmb5vB30sXfn0gEm?s=cl&p=i&ilr=2&amv=2"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <MessageCircle className="mr-2 h-4 w-4" />
+                  {dict.courseOverview.joinSupportGroup}
+                  <ExternalLink className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
             </CardContent>
           </Card>
         </div>
