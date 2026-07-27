@@ -22,7 +22,7 @@ export default async function AdminLayout({
       <header className="sticky top-0 z-40 flex h-14 w-full items-center justify-between border-b bg-background px-4 lg:px-6">
         <Link href="/" className="flex items-center gap-2 font-semibold text-primary">
           <Logo />
-          <span>BAG Admin</span>
+          <span>UBDM Admin</span>
         </Link>
         <div className="flex items-center gap-4">
           <UserMenu email={session.email} role={session.role} />
@@ -42,7 +42,7 @@ export default async function AdminLayout({
         </aside>
         
         {/* Main Content */}
-        <main className="flex-1 md:ml-64 p-4 pb-24 md:pb-4 lg:p-8 bg-background">
+        <main className="flex-1 min-w-0 md:ml-64 p-4 pb-24 md:pb-4 lg:p-8 bg-background">
           <div className="max-w-[1440px] mx-auto w-full">
             {children}
           </div>

@@ -168,61 +168,63 @@ export function UserTable({
 
   return (
     <div className="space-y-4">
-      <Table>
-        <TableHeader>
-          <TableRow>
-            <TableHead>Name</TableHead>
-            <TableHead>Email</TableHead>
-            <TableHead>Role</TableHead>
-            <TableHead>
-              <span className="sr-only">Actions</span>
-            </TableHead>
-          </TableRow>
-        </TableHeader>
-
-        <TableBody>
-          {users.length > 0 ? (
-            users.map((user) => {
-              const isCurrentAdmin = user.email === currentAdminEmail;
-              const isLoading = loadingStates[user.id];
-
-              return (
-                <TableRow key={user.id}>
-                  <TableCell className="font-medium">
-                    {user.name || "-"}{" "}
-                    {isCurrentAdmin && (
-                      <span className="text-primary">(You)</span>
-                    )}
-                  </TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>
-                    <Badge
-                      variant={user.role === "admin" ? "default" : "secondary"}
-                    >
-                      {user.role}
-                    </Badge>
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => router.push(`/~/admin/users/${user.id}`)}
-                    >
-                      Manage
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              );
-            })
-          ) : (
+      <div className="overflow-x-auto">
+        <Table>
+          <TableHeader>
             <TableRow>
-              <TableCell colSpan={4} className="h-24 text-center">
-                No users found.
-              </TableCell>
+              <TableHead>Name</TableHead>
+              <TableHead>Email</TableHead>
+              <TableHead>Role</TableHead>
+              <TableHead>
+                <span className="sr-only">Actions</span>
+              </TableHead>
             </TableRow>
-          )}
-        </TableBody>
-      </Table>
+          </TableHeader>
+
+          <TableBody>
+            {users.length > 0 ? (
+              users.map((user) => {
+                const isCurrentAdmin = user.email === currentAdminEmail;
+                const isLoading = loadingStates[user.id];
+
+                return (
+                  <TableRow key={user.id}>
+                    <TableCell className="font-medium">
+                      {user.name || "-"}{" "}
+                      {isCurrentAdmin && (
+                        <span className="text-primary">(You)</span>
+                      )}
+                    </TableCell>
+                    <TableCell>{user.email}</TableCell>
+                    <TableCell>
+                      <Badge
+                        variant={user.role === "admin" ? "default" : "secondary"}
+                      >
+                        {user.role}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => router.push(`/~/admin/users/${user.id}`)}
+                      >
+                        Manage
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                );
+              })
+            ) : (
+              <TableRow>
+                <TableCell colSpan={4} className="h-24 text-center">
+                  No users found.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </div>
 
       {/* Pagination */}
       <PaginationControls

@@ -58,9 +58,9 @@ export default function AutomationsPanel({ rules }: { rules: any[] }) {
   return (
     <Card className="mb-6">
       <CardHeader>
-        <CardTitle>Email Automations Engine</CardTitle>
+        <CardTitle>Broadcast Mail</CardTitle>
         <CardDescription>
-          Build advanced email drip sequences that trigger automatically based on user behavior.
+          Send broadcast emails to your users and set up automated drip sequences.
         </CardDescription>
       </CardHeader>
       <CardContent>
