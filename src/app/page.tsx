@@ -43,7 +43,7 @@ export default async function HomePage() {
     <AppLayout dict={dict} currentLanguage={languagePreference || "en"}>
       {!languagePreference && <LanguageModal />}
       <div className="flex-1 flex flex-col">
-        <section className="w-full py-8 md:py-18 lg:py-24">
+        <section className="w-full py-6 md:py-12 lg:py-18">
           <div className="container px-4 md:px-6">
             {/* Header */}
             <div className="flex flex-col items-center text-center space-y-4">
@@ -117,10 +117,10 @@ export default async function HomePage() {
                         {/* Action */}
                         <Button asChild className="mt-auto w-full">
                           <Link href={`/courses/${course.id}`}>
-                            {isCompleted 
-                              ? dict.dashboard.reviewCourse 
-                              : percentage === 0 
-                                ? dict.dashboard.startCourse 
+                            {isCompleted
+                              ? dict.dashboard.reviewCourse
+                              : percentage === 0
+                                ? dict.dashboard.startCourse
                                 : dict.dashboard.continueCourse}
                             <ArrowRight className="ml-2 h-4 w-4" />
                           </Link>
