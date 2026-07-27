@@ -112,20 +112,5 @@ export async function resetUserProgressOnServer(userId: string) {
   }
 }
 
-/**
- * Server action to reset a user's device lock.
- */
-export async function resetDeviceLockOnServer(email: string) {
-  const session = await getAuthSession();
-  if (!session || session.role !== "admin") {
-    return { error: "Permission denied." };
-  }
 
-  try {
-    const result = await resetDeviceLock(email);
-    revalidatePath("/~/admin/users");
-    return result;
-  } catch (err: any) {
-    return { error: err.message || "Failed to reset device lock." };
-  }
 }

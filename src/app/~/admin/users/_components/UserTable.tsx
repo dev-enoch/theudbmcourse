@@ -29,11 +29,10 @@ import {
   deleteUserOnServer,
   resendLoginDetailsOnServer,
   resetUserProgressOnServer,
-  resetDeviceLockOnServer,
 } from "../actions";
 import { toast } from "sonner";
 
-type ModalType = "promote" | "resend" | "delete" | "resetProgress" | "resetDeviceLock" | null;
+type ModalType = "promote" | "resend" | "delete" | "resetProgress" | null;
 
 interface UserTableProps {
   initialUsers: User[];
@@ -110,13 +109,6 @@ export function UserTable({
           toast.error(result.error as string);
         } else {
           toast.success("User progress reset successfully.");
-        }
-      } else if (activeModalType === "resetDeviceLock") {
-        const result = await resetDeviceLockOnServer(activeUser.email);
-        if ("error" in result) {
-          toast.error(result.error as string);
-        } else {
-          toast.success("Device lock reset successfully.");
         }
       } else if (activeModalType === "delete") {
         const result = await deleteUserOnServer(activeUser.id);
@@ -243,25 +235,21 @@ export function UserTable({
               ? "Demote this user to User?"
               : "Promote this user to Admin?"
             : activeModalType === "resend"
-            ? "Resend login details?"
-            : activeModalType === "resetProgress"
-            ? "Reset course progress?"
-            : activeModalType === "resetDeviceLock"
-            ? "Reset device lock?"
-            : activeModalType === "delete"
-            ? `Delete ${activeUser?.name || activeUser?.email}?`
-            : ""
+              ? "Resend login details?"
+              : activeModalType === "resetProgress"
+                ? "Reset device lock?"
+                : activeModalType === "delete"
+                  ? `Delete ${activeUser?.name || activeUser?.email}?`
+                  : ""
         }
         description={
           activeModalType === "resend"
             ? "This will reset the user's password to the default."
             : activeModalType === "resetProgress"
-            ? "This will clear the user's course progress."
-            : activeModalType === "resetDeviceLock"
-            ? "This will clear any active device lock for the user's email."
-            : activeModalType === "delete"
-            ? "This action cannot be undone."
-            : undefined
+              ? "This will clear any active device lock for the user's email."
+              : activeModalType === "delete"
+                ? "This action cannot be undone."
+                : undefined
         }
         actionLabel={
           activeModalType === "promote"
@@ -269,14 +257,12 @@ export function UserTable({
               ? "Demote"
               : "Promote"
             : activeModalType === "resend"
-            ? "Resend"
-            : activeModalType === "resetProgress"
-            ? "Reset Progress"
-            : activeModalType === "resetDeviceLock"
-            ? "Reset Lock"
-            : activeModalType === "delete"
-            ? "Delete"
-            : ""
+              ? "Resend"
+              : activeModalType === "resetProgress"
+                ? "Reset Progress"
+                : activeModalType === "delete"
+                  ? "Delete"
+                  : ""
         }
         onConfirm={handleConfirmAction}
         loading={
