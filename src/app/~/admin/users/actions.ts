@@ -1,7 +1,6 @@
 "use server";
 
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth/authOptions";
+import { getAuthSession } from "@/lib/auth/getAuthSession";
 import { revalidatePath } from "next/cache";
 
 import {
@@ -23,8 +22,8 @@ type AddUserInput = {
  * Server action to add a new user and send login email.
  */
 export async function addUserOnServer(input: AddUserInput) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user || session.user.role !== "admin") {
+  const session = await getAuthSession();
+  if (!session || session.role !== "admin") {
     return { error: "Permission denied." };
   }
 
@@ -45,8 +44,8 @@ export async function updateUserOnServer(
   userId: string,
   updates: Partial<{ role: "user" | "admin"; active: boolean }>
 ) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user || session.user.role !== "admin") {
+  const session = await getAuthSession();
+  if (!session || session.role !== "admin") {
     return { error: "Permission denied." };
   }
 
@@ -64,8 +63,8 @@ export async function updateUserOnServer(
  * Server action to delete a user from the database.
  */
 export async function deleteUserOnServer(userId: string) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user || session.user.role !== "admin") {
+  const session = await getAuthSession();
+  if (!session || session.role !== "admin") {
     return { error: "Permission denied." };
   }
 
@@ -83,8 +82,8 @@ export async function deleteUserOnServer(userId: string) {
  * Server action to resend the login details email to a user.
  */
 export async function resendLoginDetailsOnServer(userId: string) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user || session.user.role !== "admin") {
+  const session = await getAuthSession();
+  if (!session || session.role !== "admin") {
     return { error: "Permission denied." };
   }
 
@@ -100,8 +99,8 @@ export async function resendLoginDetailsOnServer(userId: string) {
  * Server action to reset a user's course progress.
  */
 export async function resetUserProgressOnServer(userId: string) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user || session.user.role !== "admin") {
+  const session = await getAuthSession();
+  if (!session || session.role !== "admin") {
     return { error: "Permission denied." };
   }
 
@@ -118,8 +117,8 @@ export async function resetUserProgressOnServer(userId: string) {
  * Server action to reset a user's device lock.
  */
 export async function resetDeviceLockOnServer(email: string) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user || session.user.role !== "admin") {
+  const session = await getAuthSession();
+  if (!session || session.role !== "admin") {
     return { error: "Permission denied." };
   }
 

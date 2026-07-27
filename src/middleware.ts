@@ -65,9 +65,9 @@ export async function middleware(req: NextRequest) {
     return NextResponse.next();
   }
 
-  // Admin routes require NextAuth session
+  // Admin routes require NextAuth session OR valid Payonaire token cookie
   if (pathname.startsWith("/~")) {
-    if (!session) {
+    if (!session && !payonaireToken) {
       const loginUrl = new URL("/login", req.url);
       loginUrl.searchParams.set("callbackUrl", pathname);
       return NextResponse.redirect(loginUrl);

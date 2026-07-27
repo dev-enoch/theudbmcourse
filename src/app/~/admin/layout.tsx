@@ -1,5 +1,4 @@
-import { authOptions } from "@/lib/auth/authOptions";
-import { getServerSession } from "next-auth";
+import { getAuthSession } from "@/lib/auth/getAuthSession";
 import { redirect } from "next/navigation";
 import Link from "next/link";
 import { Logo } from "@/components/common/Logo";
@@ -12,10 +11,10 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const session = await getServerSession(authOptions);
+  const session = await getAuthSession();
 
-  if (!session?.user) redirect("/login");
-  if (session.user.role !== "admin") redirect("/");
+  if (!session) redirect("/login");
+  if (session.role !== "admin") redirect("/");
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
@@ -26,7 +25,7 @@ export default async function AdminLayout({
           <span>BAG Admin</span>
         </Link>
         <div className="flex items-center gap-4">
-          <UserMenu email={session.user.email!} role={session.user.role} />
+          <UserMenu email={session.email} role={session.role} />
         </div>
       </header>
       

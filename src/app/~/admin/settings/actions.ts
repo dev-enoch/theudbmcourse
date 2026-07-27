@@ -1,15 +1,14 @@
 "use server";
 
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth/authOptions";
+import { getAuthSession } from "@/lib/auth/getAuthSession";
 import { revalidatePath } from "next/cache";
 import { updateSettings } from "@/lib/settings";
 
 import { ISettings } from "@/models/Settings";
 
 export async function updateSettingsOnServer(updates: Partial<ISettings>) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user || session.user.role !== "admin") {
+  const session = await getAuthSession();
+  if (!session || session.role !== "admin") {
     return { error: "Permission denied." };
   }
 

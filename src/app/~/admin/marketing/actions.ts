@@ -1,7 +1,6 @@
 "use server";
 
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth/authOptions";
+import { getAuthSession } from "@/lib/auth/getAuthSession";
 import { connectDB } from "@/lib/mongoose";
 import User from "@/models/User";
 import Campaign from "@/models/Campaign";
@@ -11,8 +10,8 @@ import { sendEmail, getEmailHtml } from "@/lib/email";
 import { executeCampaignWorkflow } from "@/app/workflows";
 
 async function requireAdmin() {
-  const session = await getServerSession(authOptions);
-  if (!session?.user || session.user.role !== "admin") {
+  const session = await getAuthSession();
+  if (!session || session.role !== "admin") {
     throw new Error("Unauthorized");
   }
 }

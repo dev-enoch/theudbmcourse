@@ -1,8 +1,7 @@
 import { getUsers } from "@/lib/data";
 import { UserTable } from "./_components/UserTable";
 import { AddUserModal } from "./_components/AddUserModal";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth/authOptions";
+import { getAuthSession } from "@/lib/auth/getAuthSession";
 import { redirect } from "next/navigation";
 
 interface AdminUsersPageProps {
@@ -10,13 +9,13 @@ interface AdminUsersPageProps {
 }
 
 export default async function AdminUsersPage(props: AdminUsersPageProps) {
-  const session = await getServerSession(authOptions);
+  const session = await getAuthSession();
 
-  if (!session?.user?.email) {
+  if (!session?.email) {
     redirect("/login");
   }
 
-  const currentAdminEmail = session.user.email;
+  const currentAdminEmail = session.email;
 
   const searchParams = await props.searchParams;
   const page = searchParams?.page ? parseInt(searchParams.page as string, 10) : 1;

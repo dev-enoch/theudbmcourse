@@ -1,7 +1,6 @@
 import { getUserProfile, readCoursesFile } from "@/lib/data";
 import { notFound, redirect } from "next/navigation";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth/authOptions";
+import { getAuthSession } from "@/lib/auth/getAuthSession";
 import { UserProfileClient } from "./_components/UserProfileClient";
 import Link from "next/link";
 import { ChevronLeft } from "lucide-react";
@@ -11,8 +10,8 @@ export default async function UserProfilePage({
 }: {
   params: Promise<{ userId: string }>;
 }) {
-  const session = await getServerSession(authOptions);
-  if (!session?.user?.email) redirect("/login");
+  const session = await getAuthSession();
+  if (!session?.email) redirect("/login");
 
   const resolvedParams = await params;
   const user = await getUserProfile(resolvedParams.userId);
