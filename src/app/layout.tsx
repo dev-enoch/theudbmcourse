@@ -87,7 +87,7 @@ export default function RootLayout({
         />
       </head>
       <body className="font-body antialiased h-full">
-        <NextTopLoader color="#4f46e5" showSpinner={false} />
+        <NextTopLoader color="#20692b" showSpinner={false} />
         {children}
         <Toaster />
       </body>
