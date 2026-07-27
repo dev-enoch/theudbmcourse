@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { addUser } from "@/lib/data";
+import { addUser, resendLoginDetails } from "@/lib/data";
 import ClaimedOrder from "@/models/ClaimedOrder";
 import User from "@/models/User";
 import { connectDB } from "@/lib/mongoose";
@@ -41,10 +41,9 @@ export async function POST(req: Request) {
     await ClaimedOrder.findOneAndUpdate(
       { email: normalizedEmail },
       { 
-        $set: { orderId, email: normalizedEmail },
-        $setOnInsert: { deviceKey: "webhook-auto-enroll" } 
+        $set: { orderId, email: normalizedEmail }
       },
-      { upsert: true, new: true, setDefaultsOnInsert: true }
+      { upsert: true, returnDocument: "after", setDefaultsOnInsert: true }
     );
 
     // 3. Create or update the user
@@ -57,10 +56,10 @@ export async function POST(req: Request) {
         email: email,
         role: "user",
       });
-    } else {
       // User exists, just ensure they are active
       user.active = true;
       await user.save();
+      await resendLoginDetails(user._id.toString());
     }
 
     return NextResponse.json(

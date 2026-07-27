@@ -5,9 +5,12 @@ import ClaimedOrder from "@/models/ClaimedOrder";
 import { connectDB } from "@/lib/mongoose";
 import { hashPassword } from "@/lib/auth/password";
 import { Resend } from "resend";
-
 const resend = new Resend(process.env.RESEND_API_KEY);
-
+import crypto from "crypto";
+import React from "react";
+import { render } from "@react-email/render";
+import { PasswordResetEmail } from "@/emails/templates/PasswordResetEmail";
+import { DirectEmail } from "@/emails/templates/DirectEmail";
 export async function updateUserAdminDetails(userId: string, data: any) {
   try {
     await connectDB();
@@ -48,22 +51,26 @@ export async function forcePasswordReset(userId: string) {
     const user = await User.findById(userId);
     if (!user) throw new Error("User not found");
 
-    const defaultPassword = "123456";
+    const defaultPassword = crypto.randomBytes(4).toString("hex");
     const hashedPassword = await hashPassword(defaultPassword);
     
     user.password = hashedPassword;
     await user.save();
 
+    const html = await render(
+      React.createElement(PasswordResetEmail, {
+        email: user.email,
+        password: defaultPassword,
+        loginUrl: `${process.env.APP_URL}/login`,
+        isForced: true,
+      })
+    );
+
     await resend.emails.send({
       from: process.env.EMAIL_FROM || "hello@example.com",
       to: user.email,
       subject: "Security Alert: Password Reset by Admin",
-      html: `<div>
-        <h2>Hi ${user.name || "Student"},</h2>
-        <p>An administrator has reset your password.</p>
-        <p>Your new temporary password is: <strong>${defaultPassword}</strong></p>
-        <p>Please log in and change your password immediately.</p>
-      </div>`
+      html: html
     });
 
     return { success: true };
@@ -88,11 +95,18 @@ export async function sendDirectUserEmail(userId: string, subject: string, htmlC
     const user = await User.findById(userId);
     if (!user) throw new Error("User not found");
 
+    const finalHtmlContent = htmlContent.replace(/{{name}}/g, user.name || "Student");
+    const html = await render(
+      React.createElement(DirectEmail, {
+        htmlContent: finalHtmlContent,
+      })
+    );
+
     await resend.emails.send({
       from: process.env.EMAIL_FROM || "hello@example.com",
       to: user.email,
       subject,
-      html: htmlContent.replace(/{{name}}/g, user.name || "Student"),
+      html: html,
     });
 
     return { success: true };
@@ -101,32 +115,6 @@ export async function sendDirectUserEmail(userId: string, subject: string, htmlC
   }
 }
 
-export async function clearUserDeviceLock(email: string, resetAction: string = "reset-by-admin") {
-  try {
-    await connectDB();
-    const normalizedEmail = email.trim().toLowerCase();
-    const orders = await ClaimedOrder.find({ email: new RegExp(`^${normalizedEmail}$`, "i") });
-    if (!orders || orders.length === 0) throw new Error("No claimed order found for this user");
-
-    for (const order of orders) {
-      // Add to reset history only if it's a real device key
-      if (!["reset-by-admin", "reset-by-logout", "webhook-auto-enroll"].includes(order.deviceKey)) {
-        order.resetHistory.push({
-          timestamp: new Date(),
-          previousDeviceKey: order.deviceKey
-        });
-      }
-
-      
-      order.deviceKey = resetAction;
-      await order.save();
-    }
-    
-    return { success: true };
-  } catch (err: any) {
-    return { success: false, error: err.message };
-  }
-}
 
 export async function toggleLessonProgress(userId: string, topicId: string, completed: boolean) {
   try {

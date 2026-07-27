@@ -18,7 +18,6 @@ import {
   forcePasswordReset,
   updateAdminNotes,
   sendDirectUserEmail,
-  clearUserDeviceLock,
   toggleLessonProgress
 } from "../actions";
 import { deleteUserOnServer } from "../../actions";
@@ -27,11 +26,7 @@ export function UserProfileClient({ user, courses }: { user: any, courses: any[]
   const router = useRouter();
   const [loading, setLoading] = useState<string | null>(null);
   
-  const [historyPage, setHistoryPage] = useState(1);
-  const itemsPerPage = 5;
-  const resetHistory = user?.claimedOrder?.resetHistory || [];
-  const totalHistoryPages = Math.ceil(resetHistory.length / itemsPerPage);
-  const paginatedHistory = resetHistory.slice((historyPage - 1) * itemsPerPage, historyPage * itemsPerPage);
+
 
   // Form states
   const [name, setName] = useState(user.name || "");
@@ -104,18 +99,7 @@ export function UserProfileClient({ user, courses }: { user: any, courses: any[]
     setLoading(null);
   };
 
-  const handleClearDeviceLock = async () => {
-    if (!confirm("Are you sure you want to clear their device lock?")) return;
-    setLoading("device");
-    const result = await clearUserDeviceLock(user.email);
-    if (result.success) {
-      toast.success("Device lock cleared.");
-      router.refresh();
-    } else {
-      toast.error(result.error);
-    }
-    setLoading(null);
-  };
+
 
   const handleSendEmail = async () => {
     if (!directEmailSubject || !directEmailHtml) return toast.error("Fill in all fields.");
@@ -369,66 +353,6 @@ export function UserProfileClient({ user, courses }: { user: any, courses: any[]
                 {loading === "password" && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                 Generate & Send New Password
               </Button>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <MonitorSmartphone className="w-4 h-4 mr-2" />
-                Device Lock (Anti-Piracy)
-              </CardTitle>
-              <CardDescription>
-                {user.claimedOrder ? `Locked to device: ${user.claimedOrder.deviceKey.substring(0, 8)}...` : "No device lock found."}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Button 
-                variant="outline" 
-                disabled={!user.claimedOrder || loading === "device"}
-                onClick={handleClearDeviceLock}
-              >
-                {loading === "device" && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
-                Clear Device Fingerprint
-              </Button>
-              {resetHistory.length > 0 && (
-                <div className="mt-4 pt-4 border-t">
-                  <p className="text-xs font-semibold text-muted-foreground mb-2">Reset History:</p>
-                  <ul className="text-xs space-y-1">
-                    {paginatedHistory.map((rh: any, idx: number) => (
-                      <li key={idx} className="flex justify-between items-center py-1">
-                        <span>{new Date(rh.timestamp).toLocaleDateString()} {new Date(rh.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                        <span className="text-slate-400">Old: {rh.previousDeviceKey.substring(0,8)}...</span>
-                      </li>
-                    ))}
-                  </ul>
-                  {totalHistoryPages > 1 && (
-                    <div className="flex justify-between items-center mt-3 pt-2 border-t border-muted">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-7 text-xs"
-                        disabled={historyPage === 1}
-                        onClick={() => setHistoryPage(p => Math.max(1, p - 1))}
-                      >
-                        Prev
-                      </Button>
-                      <span className="text-xs text-muted-foreground">
-                        Page {historyPage} of {totalHistoryPages}
-                      </span>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-7 text-xs"
-                        disabled={historyPage === totalHistoryPages}
-                        onClick={() => setHistoryPage(p => Math.min(totalHistoryPages, p + 1))}
-                      >
-                        Next
-                      </Button>
-                    </div>
-                  )}
-                </div>
-              )}
             </CardContent>
           </Card>
         </div>

@@ -8,7 +8,14 @@ import path from "path";
 import { Course } from "./types";
 import fs from "fs/promises";
 import Settings from "@/models/Settings";
-import { sendEmail, getEmailHtml, resend } from "@/lib/email";
+import { sendEmail, resend } from "@/lib/email";
+import crypto from "crypto";
+import React from "react";
+import { render } from "@react-email/render";
+import { ActivationEmail } from "@/emails/templates/ActivationEmail";
+import { PasswordResetEmail } from "@/emails/templates/PasswordResetEmail";
+import { CourseCompletionEmail } from "@/emails/templates/CourseCompletionEmail";
+import { LessonCompletionEmail } from "@/emails/templates/LessonCompletionEmail";
 
 // -------------------------------
 // USER FETCH
@@ -107,7 +114,7 @@ export async function addUser(input: AddUserInput) {
   const existingUser = await User.findOne({ email: input.email });
   if (existingUser) throw new Error("User with this email already exists.");
 
-  const defaultPassword = "123456";
+  const defaultPassword = crypto.randomBytes(4).toString("hex");
   const hashedPassword = await hashPassword(defaultPassword);
 
   const newUser = await User.create({
@@ -120,16 +127,20 @@ export async function addUser(input: AddUserInput) {
     revokedCourses: [],
   });
 
-  // --- SEND ACTIVATION EMAIL USING TEMPLATE ---
+  // --- SEND ACTIVATION EMAIL USING REACT EMAIL ---
+  const html = await render(
+    React.createElement(ActivationEmail, {
+      email: input.email,
+      password: defaultPassword,
+      loginUrl: `${process.env.APP_URL}/login`,
+    })
+  );
+
   await resend.emails.send({
+    from: process.env.EMAIL_FROM || "hello@example.com",
     to: input.email,
-    template: {
-      id: process.env.RESEND_ACTIVATION_TEMPLATE_ID!,
-      variables: {
-        email: input.email,
-        login_url: `${process.env.APP_URL}`,
-      },
-    },
+    subject: "Your Account is Ready",
+    html: html,
   });
 
   return {
@@ -151,22 +162,27 @@ export async function resendLoginDetails(userId: string) {
   const user = await User.findById(userId);
   if (!user) throw new Error("User not found.");
 
-  const defaultPassword = "123456";
+  const defaultPassword = crypto.randomBytes(4).toString("hex");
   const hashedPassword = await hashPassword(defaultPassword);
 
   user.password = hashedPassword;
   await user.save();
 
-  // --- SEND RESEND LOGIN EMAIL USING TEMPLATE ---
+  // --- SEND RESEND LOGIN EMAIL USING REACT EMAIL ---
+  const html = await render(
+    React.createElement(PasswordResetEmail, {
+      email: user.email,
+      password: defaultPassword,
+      loginUrl: `${process.env.APP_URL}/login`,
+      isForced: false,
+    })
+  );
+
   await resend.emails.send({
+    from: process.env.EMAIL_FROM || "hello@example.com",
     to: user.email,
-    template: {
-      id: process.env.RESEND_RESEND_TEMPLATE_ID!,
-      variables: {
-        email: user.email,
-        login_url: `${process.env.APP_URL}`,
-      },
-    },
+    subject: "Your Password Was Reset",
+    html: html,
   });
 
   return {
@@ -212,11 +228,7 @@ export async function getUserProfile(userId: string) {
   const normalizedEmail = user.email.trim().toLowerCase();
   const allOrders = await ClaimedOrder.find({ email: new RegExp(`^${normalizedEmail}$`, "i") }).sort({ updatedAt: -1 }).lean() as any[];
 
-  // Find the active order if it exists, otherwise use the most recent one
-  const activeOrder = allOrders.find(
-    (o) => !["reset-by-admin", "reset-by-logout", "webhook-auto-enroll"].includes(o.deviceKey)
-  );
-  const order = activeOrder || (allOrders.length > 0 ? allOrders[0] : null);
+  const order = allOrders.length > 0 ? allOrders[0] : null;
 
   return {
     ...user,
@@ -271,13 +283,13 @@ export async function updateUserProgress(
 
     // Send lesson completion email
     if (settings?.lessonCompletionEmailsEnabled) {
-      const htmlBody = `
-        <p>Great job, ${user.name || 'Student'}!</p>
-        <p>You have successfully completed a lesson.</p>
-        <p>Keep up the great work and continue your learning journey!</p>
-        <a href="${process.env.APP_URL}" class="button">Continue Course</a>
-      `;
-      await sendEmail(user.email, "Lesson Completed! 🎉", getEmailHtml("Lesson Completed!", htmlBody)).catch(console.error);
+      const htmlBody = await render(
+        React.createElement(LessonCompletionEmail, {
+          name: user.name || "Student",
+          loginUrl: `${process.env.APP_URL}`,
+        })
+      );
+      await sendEmail(user.email, "Lesson Completed! 🎉", htmlBody).catch(console.error);
     }
 
     // Check if course is completed
@@ -298,13 +310,14 @@ export async function updateUserProgress(
       const isCourseCompleted = allTopicIds.every(id => completedTopicIds.includes(id));
 
       if (isCourseCompleted && settings?.courseCompletionEmailsEnabled) {
-        const htmlBody = `
-          <p>Congratulations, ${user.name || 'Student'}!</p>
-          <p>You have successfully completed the entire course: <strong>${courseOfTopic.title}</strong>.</p>
-          <p>Don't forget to join the exclusive group to connect with other students!</p>
-          <a href="${process.env.APP_URL}" class="button" style="background-color: #16a34a;">Go to Dashboard</a>
-        `;
-        await sendEmail(user.email, "Course Completed! 🏆", getEmailHtml("Course Completed!", htmlBody)).catch(console.error);
+        const htmlBody = await render(
+          React.createElement(CourseCompletionEmail, {
+            name: user.name || "Student",
+            courseTitle: courseOfTopic.title,
+            loginUrl: `${process.env.APP_URL}`,
+          })
+        );
+        await sendEmail(user.email, "Course Completed! 🏆", htmlBody).catch(console.error);
       }
     }
   }
@@ -321,12 +334,7 @@ export async function resetUserProgress(userId: string) {
   return { success: true, message: "Progress reset successfully." };
 }
 
-export async function resetDeviceLock(email: string) {
-  await connectDB();
-  const result = await ClaimedOrder.deleteMany({ email });
-  if (result.deletedCount === 0) throw new Error("No device lock found for this email.");
-  return { success: true, message: "Device lock reset successfully." };
-}
+
 
 // -------------------------------
 // COURSES
@@ -378,18 +386,15 @@ export async function getAdminAnalytics() {
     totalUsers,
     totalAdmins,
     suspendedUsersCount,
-    deviceLocksCount,
     courses,
     signupsResult,
     monthlyUsersResult,
     topLessonsResult,
-    accountHealthResult,
-    deviceClaimsResult,
+    accountHealthResult
   ] = await Promise.all([
     User.countDocuments({ role: "user" }),
     User.countDocuments({ role: "admin" }),
     User.countDocuments({ role: "user", active: false }),
-    ClaimedOrder.countDocuments(),
     readCoursesFile(),
     // Old 7-day signups
     User.aggregate([
@@ -428,12 +433,6 @@ export async function getAdminAnalytics() {
           count: { $sum: 1 }
         }
       }
-    ]),
-    // 4. Device Claims Over Time (30 days)
-    ClaimedOrder.aggregate([
-      { $match: { createdAt: { $gte: thirtyDaysAgo } } },
-      { $group: { _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } }, count: { $sum: 1 } } },
-      { $sort: { _id: 1 } }
     ])
   ]);
 
@@ -523,31 +522,18 @@ export async function getAdminAnalytics() {
     };
   });
 
-  // Format Device Claims (Piracy Activity)
-  const deviceClaims30Days = [];
-  for (let i = 29; i >= 0; i--) {
-    const d = new Date();
-    d.setDate(d.getDate() - i);
-    const dateStr = d.toISOString().split("T")[0];
-    const found = deviceClaimsResult.find((s: any) => s._id === dateStr);
-    deviceClaims30Days.push({
-      date: d.toLocaleDateString("en-US", { month: "short", day: "numeric" }),
-      claims: found ? found.count : 0
-    });
-  }
+
 
   return {
     totalUsers,
     totalAdmins,
     suspendedUsers: suspendedUsersCount,
-    deviceLocksCount,
     totalCourses: courses.length,
     totalCompletedLessons,
     signupsOverTime,
     monthlyRevenue,
     topLessons,
     accountHealth,
-    courseCompletions,
-    deviceClaims30Days
+    courseCompletions
   };
 }

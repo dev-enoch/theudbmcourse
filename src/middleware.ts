@@ -38,46 +38,28 @@ export async function middleware(req: NextRequest) {
 
   const session = await getToken({ req });
 
-  const payonaireToken = req.cookies.get("payonaire_access_token")?.value;
-
-  const publicRoutes = ["/login", "/welcome", "/unauthorized", "/maintenance"];
+  const publicRoutes = ["/login", "/maintenance"];
 
   if (publicRoutes.includes(pathname)) {
-    // If they already have access, redirect from login/welcome/unauthorized to appropriate home
-    if ((pathname === "/login" || pathname === "/unauthorized") && (session || payonaireToken)) {
-      if (session) {
+    // If they already have access, redirect from login to appropriate home
+    if (pathname === "/login" && session) {
+      if (session.role === "admin") {
         return NextResponse.redirect(new URL("/~/admin", req.url));
       }
-      
-      // If they only have a payonaireToken, but they are trying to access an admin route,
-      // they MUST log in via NextAuth. Let them reach the login page.
-      const callbackUrl = nextUrl.searchParams.get("callbackUrl");
-      if (callbackUrl?.startsWith("/~")) {
-        return NextResponse.next();
-      }
-
       return NextResponse.redirect(new URL("/", req.url));
     }
     return NextResponse.next();
   }
 
-  if (pathname.startsWith("/api/auth")) {
+  if (pathname.startsWith("/api/auth") || pathname.startsWith("/api/webhooks")) {
     return NextResponse.next();
   }
 
-  // Admin routes require NextAuth session OR valid Payonaire token cookie
-  if (pathname.startsWith("/~")) {
-    if (!session && !payonaireToken) {
-      const loginUrl = new URL("/login", req.url);
-      loginUrl.searchParams.set("callbackUrl", pathname);
-      return NextResponse.redirect(loginUrl);
-    }
-    return NextResponse.next();
-  }
-
-  // All other pages require NextAuth session OR valid Payonaire token cookie
-  if (!session && !payonaireToken) {
-    return NextResponse.redirect(new URL("/unauthorized", req.url));
+  // All protected routes require NextAuth session
+  if (!session) {
+    const loginUrl = new URL("/login", req.url);
+    loginUrl.searchParams.set("callbackUrl", pathname);
+    return NextResponse.redirect(loginUrl);
   }
 
   return NextResponse.next();
