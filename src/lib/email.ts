@@ -64,7 +64,7 @@ export async function sendEmail(to: string | string[], subject: string, htmlCont
       subject,
       html: htmlContent,
       text: textContent,
-      reply_to: AppConfig.emailFrom,
+      replyTo: AppConfig.emailFrom,
     });
     
     if (data.error) {
