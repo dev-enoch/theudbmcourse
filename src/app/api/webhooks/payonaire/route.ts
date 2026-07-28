@@ -48,7 +48,9 @@ export async function POST(req: Request) {
 
     // 3. Create or update the user
     let user = await User.findOne({ email });
+    let isNewUser = false;
     if (!user) {
+      isNewUser = true;
       // User doesn't exist, create them
       // addUser already sends the "Your Account Has Been Successfully Activated" email!
       await addUser({
@@ -56,10 +58,47 @@ export async function POST(req: Request) {
         email: email,
         role: "user",
       });
+    } else {
       // User exists, just ensure they are active
       user.active = true;
       await user.save();
       await resendLoginDetails(user._id.toString());
+    }
+
+    // --- SEND ORDER RECEIPT EMAIL ---
+    try {
+      const { render } = require("@react-email/render");
+      const { OrderReceiptEmail } = require("@/emails/templates/OrderReceiptEmail");
+      const { resend } = require("@/lib/email");
+      const React = require("react");
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || "https://theubdmcourse.online";
+
+      const html = await render(
+        React.createElement(OrderReceiptEmail, {
+          name: name || user?.name || "Student",
+          orderId: orderId,
+          loginUrl: `${baseUrl}/login`,
+        })
+      );
+      
+      const textContent = await render(
+        React.createElement(OrderReceiptEmail, {
+          name: name || user?.name || "Student",
+          orderId: orderId,
+          loginUrl: `${baseUrl}/login`,
+        }),
+        { plainText: true }
+      );
+
+      await resend.emails.send({
+        from: process.env.EMAIL_FROM || "hello@example.com",
+        to: email,
+        subject: "Receipt for The UBDM Course",
+        html: html,
+        text: textContent,
+      });
+    } catch (receiptError) {
+      console.error("Failed to send order receipt:", receiptError);
     }
 
     return NextResponse.json(

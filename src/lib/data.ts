@@ -66,11 +66,11 @@ type UpdateUserInput = Partial<{
 export async function updateUser(userId: string, updates: UpdateUserInput) {
   await connectDB();
 
-  if (updates.role && updates.role !== "admin") {
-    const user = await User.findById(userId).lean();
-    if (!user) throw new Error("User not found.");
+  const existingUser = await User.findById(userId).lean();
+  if (!existingUser) throw new Error("User not found.");
 
-    if (user.role === "admin") {
+  if (updates.role && updates.role !== "admin") {
+    if (existingUser.role === "admin") {
       const adminCount = await User.countDocuments({ role: "admin" });
       if (adminCount <= 1) {
         throw new Error(
@@ -87,6 +87,78 @@ export async function updateUser(userId: string, updates: UpdateUserInput) {
   ).lean();
 
   if (!updatedUser) throw new Error("User not found.");
+
+  // --- SEND STATUS CHANGE EMAIL ---
+  if (updates.active !== undefined && updates.active !== existingUser.active) {
+    try {
+      const { AccountStatusEmail } = require("@/emails/templates/AccountStatusEmail");
+      const status = updates.active ? "reactivated" : "suspended";
+      const subject = updates.active ? "Your account has been reactivated" : "Account Suspended";
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || "https://theubdmcourse.online";
+      
+      const html = await render(
+        React.createElement(AccountStatusEmail, {
+          name: updatedUser.name || "Student",
+          status: status,
+          reason: updatedUser.suspensionReason || "",
+          loginUrl: `${baseUrl}/login`,
+        })
+      );
+
+      const textContent = await render(
+        React.createElement(AccountStatusEmail, {
+          name: updatedUser.name || "Student",
+          status: status,
+          reason: updatedUser.suspensionReason || "",
+          loginUrl: `${baseUrl}/login`,
+        }),
+        { plainText: true }
+      );
+
+      await resend.emails.send({
+        from: process.env.EMAIL_FROM || "hello@example.com",
+        to: updatedUser.email,
+        subject: subject,
+        html: html,
+        text: textContent,
+      });
+    } catch (e) {
+      console.error("Failed to send account status email", e);
+    }
+  }
+
+  // --- SEND SECURITY ALERT EMAIL ---
+  if (updates.email !== undefined && updates.email !== existingUser.email) {
+    try {
+      const { SecurityAlertEmail } = require("@/emails/templates/SecurityAlertEmail");
+      
+      const html = await render(
+        React.createElement(SecurityAlertEmail, {
+          name: existingUser.name || "Student",
+          changeType: "email address",
+        })
+      );
+
+      const textContent = await render(
+        React.createElement(SecurityAlertEmail, {
+          name: existingUser.name || "Student",
+          changeType: "email address",
+        }),
+        { plainText: true }
+      );
+
+      // Send to the OLD email address
+      await resend.emails.send({
+        from: process.env.EMAIL_FROM || "hello@example.com",
+        to: existingUser.email,
+        subject: "Security Alert: Your account details were updated",
+        html: html,
+        text: textContent,
+      });
+    } catch (e) {
+      console.error("Failed to send security alert email", e);
+    }
+  }
 
   return {
     id: updatedUser._id.toString(),
@@ -128,11 +200,12 @@ export async function addUser(input: AddUserInput) {
   });
 
   // --- SEND ACTIVATION EMAIL USING REACT EMAIL ---
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || "https://theubdmcourse.online";
   const html = await render(
     React.createElement(ActivationEmail, {
       email: input.email,
       password: defaultPassword,
-      loginUrl: `${process.env.APP_URL}/login`,
+      loginUrl: `${baseUrl}/login`,
     })
   );
 
@@ -169,11 +242,12 @@ export async function resendLoginDetails(userId: string) {
   await user.save();
 
   // --- SEND RESEND LOGIN EMAIL USING REACT EMAIL ---
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || "https://theubdmcourse.online";
   const html = await render(
     React.createElement(PasswordResetEmail, {
       email: user.email,
       password: defaultPassword,
-      loginUrl: `${process.env.APP_URL}/login`,
+      loginUrl: `${baseUrl}/login`,
       isForced: false,
     })
   );
@@ -207,6 +281,37 @@ export async function deleteUser(userId: string) {
     if (adminCount <= 1) {
       throw new Error("Cannot delete the last admin user.");
     }
+  }
+
+  // --- SEND ACCOUNT DELETION EMAIL ---
+  try {
+    const { AccountDeletionEmail } = require("@/emails/templates/AccountDeletionEmail");
+    const { render } = require("@react-email/render");
+    const { resend } = require("@/lib/email");
+    const React = require("react");
+
+    const html = await render(
+      React.createElement(AccountDeletionEmail, {
+        name: user.name || "Student",
+      })
+    );
+
+    const textContent = await render(
+      React.createElement(AccountDeletionEmail, {
+        name: user.name || "Student",
+      }),
+      { plainText: true }
+    );
+
+    await resend.emails.send({
+      from: process.env.EMAIL_FROM || "hello@example.com",
+      to: user.email,
+      subject: "Your account has been deleted",
+      html: html,
+      text: textContent,
+    });
+  } catch (e) {
+    console.error("Failed to send account deletion email", e);
   }
 
   await User.findByIdAndDelete(userId);
@@ -283,10 +388,11 @@ export async function updateUserProgress(
 
     // Send lesson completion email
     if (settings?.lessonCompletionEmailsEnabled) {
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || "https://theubdmcourse.online";
       const htmlBody = await render(
         React.createElement(LessonCompletionEmail, {
           name: user.name || "Student",
-          loginUrl: `${process.env.APP_URL}`,
+          loginUrl: `${baseUrl}`,
         })
       );
       await sendEmail(user.email, "Lesson Completed! 🎉", htmlBody).catch(console.error);
@@ -310,11 +416,12 @@ export async function updateUserProgress(
       const isCourseCompleted = allTopicIds.every(id => completedTopicIds.includes(id));
 
       if (isCourseCompleted && settings?.courseCompletionEmailsEnabled) {
+        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || "https://theubdmcourse.online";
         const htmlBody = await render(
           React.createElement(CourseCompletionEmail, {
             name: user.name || "Student",
             courseTitle: courseOfTopic.title,
-            loginUrl: `${process.env.APP_URL}`,
+            loginUrl: `${baseUrl}`,
           })
         );
         await sendEmail(user.email, "Course Completed! 🏆", htmlBody).catch(console.error);

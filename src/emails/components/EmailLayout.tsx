@@ -4,11 +4,13 @@ import { Html, Head, Preview, Body, Container, Section, Img, Text } from "@react
 export interface EmailLayoutProps {
   children: React.ReactNode;
   previewText: string;
+  unsubscribeUrl?: string;
 }
 
-export function EmailLayout({ children, previewText }: EmailLayoutProps) {
+export function EmailLayout({ children, previewText, unsubscribeUrl }: EmailLayoutProps) {
   // Full-width promotional header
-  const logoUrl = `${process.env.APP_URL}/Promotional_header_for_UBDM_Course_202607262117.jpeg`; 
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || "https://theubdmcourse.online";
+  const logoUrl = `${baseUrl}/images/Promotional_header_for_UBDM_Course_202607262117.jpeg`; 
 
   return (
     <Html>
@@ -26,11 +28,17 @@ export function EmailLayout({ children, previewText }: EmailLayoutProps) {
           
           <Section style={footer}>
             <Text style={footerText}>
-              <strong>The UBDM Course Team</strong>
+              <strong>The UBDM Course Team</strong><br/>
+              [Your Physical Address Here]
             </Text>
             <Text style={footerText}>
               If you didn't expect this email, you can safely ignore it.
             </Text>
+            {unsubscribeUrl && (
+              <Text style={footerText}>
+                <a href={unsubscribeUrl} style={{ color: "#737373", textDecoration: "underline" }}>Unsubscribe</a> from future marketing emails.
+              </Text>
+            )}
           </Section>
         </Container>
       </Body>

@@ -30,18 +30,14 @@ export const ActivationEmail = ({
             <tbody>
               <tr>
                 <td style={{ ...tableCell, borderBottom: "1px solid #e5e7eb" }}>
-                  <span style={label}>Email</span>
-                </td>
-                <td style={{ ...tableCell, borderBottom: "1px solid #e5e7eb", textAlign: "right" }}>
-                  <span style={value}>{email}</span>
+                  <div style={label}>Email</div>
+                  <div style={value}>{email}</div>
                 </td>
               </tr>
               <tr>
                 <td style={tableCell}>
-                  <span style={label}>Password</span>
-                </td>
-                <td style={{ ...tableCell, textAlign: "right" }}>
-                  <span style={value}>{password}</span>
+                  <div style={label}>Password</div>
+                  <div style={value}>{password}</div>
                 </td>
               </tr>
             </tbody>
@@ -93,6 +89,7 @@ const tableCell = {
 const label = {
   color: "#737373",
   fontSize: "14px",
+  marginBottom: "4px",
 };
 
 const value = {

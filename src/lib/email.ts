@@ -6,7 +6,7 @@ export const resend = new Resend(process.env.RESEND_API_KEY || 're_dummy');
 /**
  * Clean, white-background newsletter style email wrapper
  */
-export function getEmailHtml(title: string, bodyHtml: string) {
+export function getEmailHtml(title: string, bodyHtml: string, unsubscribeUrl?: string) {
   return `
     <!DOCTYPE html>
     <html>
@@ -32,8 +32,9 @@ export function getEmailHtml(title: string, bodyHtml: string) {
             ${bodyHtml}
           </div>
           <div class="footer">
-            <p>The UBDM Course</p>
+            <p><strong>The UBDM Course</strong><br/>[Your Physical Address Here]</p>
             <p><small>You are receiving this email because you are a registered student.</small></p>
+            ${unsubscribeUrl ? `<p><small><a href="${unsubscribeUrl}" style="color: #6b7280; text-decoration: underline;">Unsubscribe</a> from marketing emails.</small></p>` : ''}
           </div>
         </div>
       </body>
@@ -49,12 +50,21 @@ export async function sendEmail(to: string | string[], subject: string, htmlCont
     return { success: true, mock: true };
   }
 
+  // Simple HTML to text converter for spam filter compliance
+  const textContent = htmlContent
+    .replace(/<style[^>]*>.*<\/style>/gi, '') // Remove style tags
+    .replace(/<[^>]+>/g, ' ') // Remove HTML tags
+    .replace(/\s+/g, ' ') // Collapse whitespace
+    .trim();
+
   try {
     const data = await resend.emails.send({
       from: AppConfig.emailFrom,
       to: Array.isArray(to) ? to : [to],
       subject,
       html: htmlContent,
+      text: textContent,
+      reply_to: AppConfig.emailFrom,
     });
     
     if (data.error) {

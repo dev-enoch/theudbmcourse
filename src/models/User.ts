@@ -18,6 +18,7 @@ export interface IUser extends Document {
   revokedCourses?: string[];
   utmSource?: string;
   languagePreference?: "ha" | "en";
+  unsubscribed?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -46,6 +47,9 @@ const UserSchema = new Schema<IUser>(
     suspensionReason: { type: String, default: "" },
     suspendedUntil: { type: Date },
     revokedCourses: { type: [String], default: [] },
+
+    // Email Compliance
+    unsubscribed: { type: Boolean, default: false },
 
     // ✔ added progress to the DB schema
     progress: {
