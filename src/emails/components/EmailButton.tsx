@@ -23,7 +23,7 @@ const buttonWrapper = {
 const button = {
   display: "inline-block",
   padding: "12px 22px",
-  backgroundColor: "#111827",
+  backgroundColor: "#20692b",
   color: "#ffffff",
   textDecoration: "none",
   borderRadius: "8px",

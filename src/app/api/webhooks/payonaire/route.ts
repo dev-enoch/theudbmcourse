@@ -91,7 +91,7 @@ export async function POST(req: Request) {
       );
 
       await resend.emails.send({
-        from: process.env.EMAIL_FROM || "hello@example.com",
+        from: process.env.EMAIL_FROM || "support@mail.theubdmcourse.online",
         to: email,
         subject: "Receipt for The UBDM Course",
         html: html,

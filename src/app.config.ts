@@ -30,8 +30,8 @@ export const AppConfig: AppConfigType = {
   payonairePurchaseLink: "https://payonaire.com",
 
   // Email Configuration (Resend)
-  emailFrom: "UBDM Support <support@theubdmcourse.online>",
-  emailDomain: "theubdmcourse.online",
+  emailFrom: "UBDM Support <support@mail.theubdmcourse.online>",
+  emailDomain: "mail.theubdmcourse.online",
 
   // Admin Seed Account
   adminEmailPlaceholder: "admin@theubdmcourse.online",

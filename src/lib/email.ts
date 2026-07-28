@@ -20,7 +20,7 @@ export function getEmailHtml(title: string, bodyHtml: string, unsubscribeUrl?: s
           .header h1 { margin: 0; font-size: 20px; color: #111827; font-weight: 600; }
           .content { padding: 32px 24px; color: #374151; font-size: 16px; line-height: 1.6; }
           .footer { background-color: #f9fafb; padding: 24px; text-align: center; color: #6b7280; font-size: 14px; border-top: 1px solid #e5e7eb; }
-          .button { display: inline-block; background-color: #6366f1; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 500; margin-top: 16px; }
+          .button { display: inline-block; background-color: #20692b; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 6px; font-weight: 500; margin-top: 16px; }
         </style>
       </head>
       <body>

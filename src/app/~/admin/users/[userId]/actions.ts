@@ -67,7 +67,7 @@ export async function forcePasswordReset(userId: string) {
     );
 
     await resend.emails.send({
-      from: process.env.EMAIL_FROM || "hello@example.com",
+      from: process.env.EMAIL_FROM || "support@mail.theubdmcourse.online",
       to: user.email,
       subject: "Security Alert: Password Reset by Admin",
       html: html
@@ -103,7 +103,7 @@ export async function sendDirectUserEmail(userId: string, subject: string, htmlC
     );
 
     await resend.emails.send({
-      from: process.env.EMAIL_FROM || "hello@example.com",
+      from: process.env.EMAIL_FROM || "support@mail.theubdmcourse.online",
       to: user.email,
       subject,
       html: html,
