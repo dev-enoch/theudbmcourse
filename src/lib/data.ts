@@ -95,7 +95,7 @@ export async function updateUser(userId: string, updates: UpdateUserInput) {
       const status = updates.active ? "reactivated" : "suspended";
       const subject = updates.active ? "Your account has been reactivated" : "Account Suspended";
       const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || "https://theubdmcourse.online";
-      
+
       const html = await render(
         React.createElement(AccountStatusEmail, {
           name: updatedUser.name || "Student",
@@ -116,7 +116,7 @@ export async function updateUser(userId: string, updates: UpdateUserInput) {
       );
 
       await resend.emails.send({
-        from: process.env.EMAIL_FROM || "support@mail.theubdmcourse.online",
+        from: process.env.EMAIL_FROM || "support@theubdmcourse.online",
         to: updatedUser.email,
         subject: subject,
         html: html,
@@ -131,7 +131,7 @@ export async function updateUser(userId: string, updates: UpdateUserInput) {
   if (updates.email !== undefined && updates.email !== existingUser.email) {
     try {
       const { SecurityAlertEmail } = require("@/emails/templates/SecurityAlertEmail");
-      
+
       const html = await render(
         React.createElement(SecurityAlertEmail, {
           name: existingUser.name || "Student",
@@ -149,7 +149,7 @@ export async function updateUser(userId: string, updates: UpdateUserInput) {
 
       // Send to the OLD email address
       await resend.emails.send({
-        from: process.env.EMAIL_FROM || "support@mail.theubdmcourse.online",
+        from: process.env.EMAIL_FROM || "support@theubdmcourse.online",
         to: existingUser.email,
         subject: "Security Alert: Your account details were updated",
         html: html,
@@ -210,7 +210,7 @@ export async function addUser(input: AddUserInput) {
   );
 
   await resend.emails.send({
-    from: process.env.EMAIL_FROM || "support@mail.theubdmcourse.online",
+    from: process.env.EMAIL_FROM || "support@theubdmcourse.online",
     to: input.email,
     subject: "Your Account is Ready",
     html: html,
@@ -253,7 +253,7 @@ export async function resendLoginDetails(userId: string) {
   );
 
   await resend.emails.send({
-    from: process.env.EMAIL_FROM || "support@mail.theubdmcourse.online",
+    from: process.env.EMAIL_FROM || "support@theubdmcourse.online",
     to: user.email,
     subject: "Your Password Was Reset",
     html: html,
@@ -304,7 +304,7 @@ export async function deleteUser(userId: string) {
     );
 
     await resend.emails.send({
-      from: process.env.EMAIL_FROM || "support@mail.theubdmcourse.online",
+      from: process.env.EMAIL_FROM || "support@theubdmcourse.online",
       to: user.email,
       subject: "Your account has been deleted",
       html: html,

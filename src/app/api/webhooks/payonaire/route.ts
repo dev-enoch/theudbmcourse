@@ -40,7 +40,7 @@ export async function POST(req: Request) {
     // 2. Log the claimed order or update existing one to preserve device lock if exists
     await ClaimedOrder.findOneAndUpdate(
       { email: normalizedEmail },
-      { 
+      {
         $set: { orderId, email: normalizedEmail }
       },
       { upsert: true, returnDocument: "after", setDefaultsOnInsert: true }
@@ -80,7 +80,7 @@ export async function POST(req: Request) {
           loginUrl: `${baseUrl}/login`,
         })
       );
-      
+
       const textContent = await render(
         React.createElement(OrderReceiptEmail, {
           name: name || user?.name || "Student",
@@ -91,7 +91,7 @@ export async function POST(req: Request) {
       );
 
       await resend.emails.send({
-        from: process.env.EMAIL_FROM || "support@mail.theubdmcourse.online",
+        from: process.env.EMAIL_FROM || "support@theubdmcourse.online",
         to: email,
         subject: "Receipt for The UBDM Course",
         html: html,
