@@ -19,7 +19,7 @@ export function EmailLayout({ children, previewText, unsubscribeUrl }: EmailLayo
       <Body style={main}>
         <Container style={container}>
           <Section style={logoContainer}>
-            <Img src={logoUrl} alt="The UBDM Course" style={logoImg} />
+            <Img src={logoUrl} alt="The UBDM Course" width={600} height={200} style={logoImg} />
           </Section>
           
           <Section>
@@ -28,8 +28,7 @@ export function EmailLayout({ children, previewText, unsubscribeUrl }: EmailLayo
           
           <Section style={footer}>
             <Text style={footerText}>
-              <strong>The UBDM Course Team</strong><br/>
-              [Your Physical Address Here]
+              <strong>The UBDM Course Team</strong>
             </Text>
             <Text style={footerText}>
               If you didn't expect this email, you can safely ignore it.
