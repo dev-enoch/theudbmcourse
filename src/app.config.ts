@@ -23,18 +23,18 @@ export const AppConfig: AppConfigType = {
   description: "An affiliate marketing course platform.",
 
   // Support & Contact
-  supportEmail: "support@theubdmcourse.online",
+  supportEmail: "mail@smtp.theubdmcourse.online",
   supportWhatsApp: "https://wa.me/2349038633816",
 
   // E-Commerce
   payonairePurchaseLink: "https://payonaire.com",
 
   // Email Configuration (Resend)
-  emailFrom: "UBDM Course <support@theubdmcourse.online>",
-  emailDomain: "theubdmcourse.online",
+  emailFrom: "UBDM Course <mail@smtp.theubdmcourse.online>",
+  emailDomain: "smtp.theubdmcourse.online",
 
   // Admin Seed Account
-  adminEmailPlaceholder: "admin@theubdmcourse.online",
+  adminEmailPlaceholder: "admin@smtp.theubdmcourse.online",
 
   // Default Group Links (for Database Seeding)
   defaultGroupLinks: [

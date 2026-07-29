@@ -9,8 +9,8 @@ export interface EmailLayoutProps {
 
 export function EmailLayout({ children, previewText, unsubscribeUrl }: EmailLayoutProps) {
   // Full-width promotional header
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || "https://theubdmcourse.online";
-  const logoUrl = `${baseUrl}/images/Promotional_header_for_UBDM_Course_202607262117.jpeg`; 
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || "https://smtp.theubdmcourse.online";
+  const logoUrl = `${baseUrl}/images/Promotional_header_for_UBDM_Course_202607262117.jpeg`;
 
   return (
     <Html>
@@ -21,11 +21,11 @@ export function EmailLayout({ children, previewText, unsubscribeUrl }: EmailLayo
           <Section style={logoContainer}>
             <Img src={logoUrl} alt="The UBDM Course" width={600} height={200} style={logoImg} />
           </Section>
-          
+
           <Section>
             {children}
           </Section>
-          
+
           <Section style={footer}>
             <Text style={footerText}>
               <strong>The UBDM Course Team</strong>

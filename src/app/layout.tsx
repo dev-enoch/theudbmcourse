@@ -20,7 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const imageUrl = "/images/Promotional_header_for_UBDM_Course_202607262117.jpeg";
 
   return {
-    metadataBase: new URL(process.env.APP_URL || "https://theubdmcourse.online"),
+    metadataBase: new URL(process.env.APP_URL || "https://smtp.theubdmcourse.online"),
     title: title,
     description: description,
     openGraph: {

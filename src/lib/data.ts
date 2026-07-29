@@ -94,7 +94,7 @@ export async function updateUser(userId: string, updates: UpdateUserInput) {
       const { AccountStatusEmail } = require("@/emails/templates/AccountStatusEmail");
       const status = updates.active ? "reactivated" : "suspended";
       const subject = updates.active ? "Your account has been reactivated" : "Account Suspended";
-      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || "https://theubdmcourse.online";
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || "https://smtp.theubdmcourse.online";
 
       const html = await render(
         React.createElement(AccountStatusEmail, {
@@ -116,7 +116,7 @@ export async function updateUser(userId: string, updates: UpdateUserInput) {
       );
 
       await resend.emails.send({
-        from: process.env.EMAIL_FROM || "support@theubdmcourse.online",
+        from: process.env.EMAIL_FROM || "mail@smtp.theubdmcourse.online",
         to: updatedUser.email,
         subject: subject,
         html: html,
@@ -149,7 +149,7 @@ export async function updateUser(userId: string, updates: UpdateUserInput) {
 
       // Send to the OLD email address
       await resend.emails.send({
-        from: process.env.EMAIL_FROM || "support@theubdmcourse.online",
+        from: process.env.EMAIL_FROM || "mail@smtp.theubdmcourse.online",
         to: existingUser.email,
         subject: "Security Alert: Your account details were updated",
         html: html,
@@ -200,7 +200,7 @@ export async function addUser(input: AddUserInput) {
   });
 
   // --- SEND ACTIVATION EMAIL USING REACT EMAIL ---
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || "https://theubdmcourse.online";
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || "https://smtp.theubdmcourse.online";
   const html = await render(
     React.createElement(ActivationEmail, {
       email: input.email,
@@ -219,7 +219,7 @@ export async function addUser(input: AddUserInput) {
   );
 
   await resend.emails.send({
-    from: process.env.EMAIL_FROM || "support@theubdmcourse.online",
+    from: process.env.EMAIL_FROM || "mail@smtp.theubdmcourse.online",
     to: input.email,
     subject: "Your Account is Ready",
     html: html,
@@ -252,7 +252,7 @@ export async function resendLoginDetails(userId: string) {
   await user.save();
 
   // --- SEND RESEND LOGIN EMAIL USING REACT EMAIL ---
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || "https://theubdmcourse.online";
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || "https://smtp.theubdmcourse.online";
   const html = await render(
     React.createElement(PasswordResetEmail, {
       email: user.email,
@@ -273,7 +273,7 @@ export async function resendLoginDetails(userId: string) {
   );
 
   await resend.emails.send({
-    from: process.env.EMAIL_FROM || "support@theubdmcourse.online",
+    from: process.env.EMAIL_FROM || "mail@smtp.theubdmcourse.online",
     to: user.email,
     subject: "Your Password Was Reset",
     html: html,
@@ -325,7 +325,7 @@ export async function deleteUser(userId: string) {
     );
 
     await resend.emails.send({
-      from: process.env.EMAIL_FROM || "support@theubdmcourse.online",
+      from: process.env.EMAIL_FROM || "mail@smtp.theubdmcourse.online",
       to: user.email,
       subject: "Your account has been deleted",
       html: html,
@@ -409,7 +409,7 @@ export async function updateUserProgress(
 
     // Send lesson completion email
     if (settings?.lessonCompletionEmailsEnabled) {
-      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || "https://theubdmcourse.online";
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || "https://smtp.theubdmcourse.online";
       const htmlBody = await render(
         React.createElement(LessonCompletionEmail, {
           name: user.name || "Student",
@@ -437,7 +437,7 @@ export async function updateUserProgress(
       const isCourseCompleted = allTopicIds.every(id => completedTopicIds.includes(id));
 
       if (isCourseCompleted && settings?.courseCompletionEmailsEnabled) {
-        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || "https://theubdmcourse.online";
+        const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || "https://smtp.theubdmcourse.online";
         const htmlBody = await render(
           React.createElement(CourseCompletionEmail, {
             name: user.name || "Student",

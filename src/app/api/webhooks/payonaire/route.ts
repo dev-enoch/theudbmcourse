@@ -71,7 +71,7 @@ export async function POST(req: Request) {
       const { OrderReceiptEmail } = require("@/emails/templates/OrderReceiptEmail");
       const { resend } = require("@/lib/email");
       const React = require("react");
-      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || "https://theubdmcourse.online";
+      const baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.APP_URL || "https://smtp.theubdmcourse.online";
 
       const html = await render(
         React.createElement(OrderReceiptEmail, {
@@ -91,7 +91,7 @@ export async function POST(req: Request) {
       );
 
       await resend.emails.send({
-        from: process.env.EMAIL_FROM || "support@theubdmcourse.online",
+        from: process.env.EMAIL_FROM || "mail@smtp.theubdmcourse.online",
         to: email,
         subject: "Receipt for The UBDM Course",
         html: html,
