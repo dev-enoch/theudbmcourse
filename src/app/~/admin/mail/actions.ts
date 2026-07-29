@@ -59,11 +59,18 @@ export async function sendMail({
     ? htmlBody
     : `<div style="font-family: sans-serif;">${htmlBody.replace(/\n/g, '<br/>')}</div>`;
 
+  const textContent = finalHtml
+    .replace(/<style[^>]*>.*<\/style>/gi, '') // Remove style tags
+    .replace(/<[^>]+>/g, ' ') // Remove HTML tags
+    .replace(/\s+/g, ' ') // Collapse whitespace
+    .trim();
+
   const payload: any = {
     from: AppConfig.emailFrom,
     to: [to],
     subject,
     html: finalHtml,
+    text: textContent,
   };
 
   if (inReplyTo) {

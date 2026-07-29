@@ -66,11 +66,22 @@ export async function forcePasswordReset(userId: string) {
       })
     );
 
+    const textContent = await render(
+      React.createElement(PasswordResetEmail, {
+        email: user.email,
+        password: defaultPassword,
+        loginUrl: `${process.env.APP_URL}/login`,
+        isForced: true,
+      }),
+      { plainText: true }
+    );
+
     await resend.emails.send({
       from: process.env.EMAIL_FROM || "support@theubdmcourse.online",
       to: user.email,
       subject: "Security Alert: Password Reset by Admin",
-      html: html
+      html: html,
+      text: textContent
     });
 
     return { success: true };
@@ -102,11 +113,19 @@ export async function sendDirectUserEmail(userId: string, subject: string, htmlC
       })
     );
 
+    const textContent = await render(
+      React.createElement(DirectEmail, {
+        htmlContent: finalHtmlContent,
+      }),
+      { plainText: true }
+    );
+
     await resend.emails.send({
       from: process.env.EMAIL_FROM || "support@theubdmcourse.online",
       to: user.email,
       subject,
       html: html,
+      text: textContent,
     });
 
     return { success: true };

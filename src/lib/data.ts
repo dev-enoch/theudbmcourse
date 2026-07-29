@@ -209,11 +209,21 @@ export async function addUser(input: AddUserInput) {
     })
   );
 
+  const textContent = await render(
+    React.createElement(ActivationEmail, {
+      email: input.email,
+      password: defaultPassword,
+      loginUrl: `${baseUrl}/login`,
+    }),
+    { plainText: true }
+  );
+
   await resend.emails.send({
     from: process.env.EMAIL_FROM || "support@theubdmcourse.online",
     to: input.email,
     subject: "Your Account is Ready",
     html: html,
+    text: textContent,
   });
 
   return {
@@ -252,11 +262,22 @@ export async function resendLoginDetails(userId: string) {
     })
   );
 
+  const textContent = await render(
+    React.createElement(PasswordResetEmail, {
+      email: user.email,
+      password: defaultPassword,
+      loginUrl: `${baseUrl}/login`,
+      isForced: false,
+    }),
+    { plainText: true }
+  );
+
   await resend.emails.send({
     from: process.env.EMAIL_FROM || "support@theubdmcourse.online",
     to: user.email,
     subject: "Your Password Was Reset",
     html: html,
+    text: textContent,
   });
 
   return {
